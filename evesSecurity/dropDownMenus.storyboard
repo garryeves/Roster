@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.17" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="ipad9_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.14"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--timeSelectViewController-->
+        <scene sceneID="291-Q7-7WC">
+            <objects>
+                <viewController storyboardIdentifier="timeView" id="Kmf-Y4-P0a" userLabel="timeSelectViewController" customClass="timeSelectViewController" customModule="Shift_Dashboard" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="9hs-zj-AvP"/>
+                        <viewControllerLayoutGuide type="bottom" id="NR6-IO-U2b"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="rpd-E3-eo4">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ZyW-Go-clV" userLabel="txtMins">
+                                <rect key="frame" x="322" y="497" width="50" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="BuM-pq-Um4"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                <connections>
+                                    <action selector="txtMins:" destination="Kmf-Y4-P0a" eventType="editingChanged" id="QIH-cw-pbx"/>
+                                </connections>
+                            </textField>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="MED-co-IDd" userLabel="txtSecs">
+                                <rect key="frame" x="411.5" y="497" width="50" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="a1G-er-2gE"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                <connections>
+                                    <action selector="txtSecs:" destination="Kmf-Y4-P0a" eventType="editingChanged" id="MO3-Dr-CPq"/>
+                                </connections>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="s" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h92-9G-FPG" userLabel="lblSecs">
+                                <rect key="frame" x="466.5" y="497" width="9" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="R3Y-tI-ZfL"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="m" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Udy-f2-HEf" userLabel="labelMins">
+                                <rect key="frame" x="377" y="497" width="14.5" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="ddO-3J-VV9"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mmr-ba-0Ef" userLabel="btnSelect">
+                                <rect key="frame" x="362" y="532" width="44" height="30"/>
+                                <state key="normal" title="Select"/>
+                                <connections>
+                                    <action selector="btnSelect:" destination="Kmf-Y4-P0a" eventType="touchUpInside" id="EZO-B7-uRr"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="MED-co-IDd" firstAttribute="leading" secondItem="Udy-f2-HEf" secondAttribute="trailing" constant="20" id="43p-Q1-uTA"/>
+                            <constraint firstItem="mmr-ba-0Ef" firstAttribute="top" secondItem="ZyW-Go-clV" secondAttribute="bottom" constant="5" id="6I9-Le-WWk"/>
+                            <constraint firstItem="ZyW-Go-clV" firstAttribute="centerY" secondItem="rpd-E3-eo4" secondAttribute="centerY" id="DWD-IS-Dj3"/>
+                            <constraint firstItem="Udy-f2-HEf" firstAttribute="centerX" secondItem="rpd-E3-eo4" secondAttribute="centerX" id="EWr-1I-3Al"/>
+                            <constraint firstItem="h92-9G-FPG" firstAttribute="top" secondItem="ZyW-Go-clV" secondAttribute="top" id="PMY-lK-YPR"/>
+                            <constraint firstItem="mmr-ba-0Ef" firstAttribute="centerX" secondItem="rpd-E3-eo4" secondAttribute="centerX" id="SLU-Io-6cu"/>
+                            <constraint firstItem="h92-9G-FPG" firstAttribute="leading" secondItem="MED-co-IDd" secondAttribute="trailing" constant="5" id="SnG-h5-FU4"/>
+                            <constraint firstItem="NR6-IO-U2b" firstAttribute="top" relation="greaterThanOrEqual" secondItem="mmr-ba-0Ef" secondAttribute="bottom" constant="5" id="cfD-6L-tIe"/>
+                            <constraint firstItem="Udy-f2-HEf" firstAttribute="top" secondItem="ZyW-Go-clV" secondAttribute="top" id="euY-xQ-2Lm"/>
+                            <constraint firstItem="MED-co-IDd" firstAttribute="top" secondItem="ZyW-Go-clV" secondAttribute="top" id="yVn-C7-85z"/>
+                            <constraint firstItem="Udy-f2-HEf" firstAttribute="leading" secondItem="ZyW-Go-clV" secondAttribute="trailing" constant="5" id="yud-w5-CEu"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="btnSelect" destination="mmr-ba-0Ef" id="czZ-lO-CwV"/>
+                        <outlet property="txtMins" destination="ZyW-Go-clV" id="SkS-Lm-xRI"/>
+                        <outlet property="txtSecs" destination="MED-co-IDd" id="LHm-Jz-Ek0"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sh7-gd-lDb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2350" y="1654"/>
+        </scene>
+        <!--pickerViewController-->
+        <scene sceneID="uEr-gb-7FN">
+            <objects>
+                <viewController storyboardIdentifier="pickerView" id="gIR-tU-07p" userLabel="pickerViewController" customClass="PickerViewController" customModule="Shift_Dashboard" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="wz7-oz-5dx"/>
+                        <viewControllerLayoutGuide type="bottom" id="lnq-yp-r5k"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Hbb-Vw-3H6">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eIp-1G-khM">
+                                <rect key="frame" x="20" y="20" width="728" height="1004"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="gIR-tU-07p" id="cXc-GV-OZm"/>
+                                    <outlet property="delegate" destination="gIR-tU-07p" id="Xh0-PY-KJi"/>
+                                </connections>
+                            </pickerView>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="eIp-1G-khM" firstAttribute="leading" secondItem="Hbb-Vw-3H6" secondAttribute="leadingMargin" id="4uZ-Um-TiH"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="eIp-1G-khM" secondAttribute="trailing" id="9de-pv-rG5"/>
+                            <constraint firstItem="eIp-1G-khM" firstAttribute="top" secondItem="wz7-oz-5dx" secondAttribute="bottom" id="kxh-pQ-zCO"/>
+                            <constraint firstItem="lnq-yp-r5k" firstAttribute="top" secondItem="eIp-1G-khM" secondAttribute="bottom" id="mfY-Mj-byo"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="myPicker" destination="eIp-1G-khM" id="sfz-WR-ld4"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8vq-Pp-ca7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2435.9375" y="1001.9531249999999"/>
+        </scene>
+        <!--DateTimePicker-->
+        <scene sceneID="SnQ-LP-AHi">
+            <objects>
+                <viewController storyboardIdentifier="datePicker" title="DateTimePicker" id="nrS-XI-BT4" customClass="dateTimePickerView" customModule="Shift_Dashboard" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="zgT-SL-T9H"/>
+                        <viewControllerLayoutGuide type="bottom" id="h0R-1B-feR"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="m5Q-CA-0ho">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="5" translatesAutoresizingMaskIntoConstraints="NO" id="5K1-T3-QsO" userLabel="datePicker">
+                                <rect key="frame" x="20" y="20" width="728" height="1004"/>
+                                <date key="date" timeIntervalSinceReferenceDate="480307233.385396">
+                                    <!--2016-03-22 02:40:33 +0000-->
+                                </date>
+                                <connections>
+                                    <action selector="datePicker:" destination="nrS-XI-BT4" eventType="valueChanged" id="nB4-XJ-ymj"/>
+                                </connections>
+                            </datePicker>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="5K1-T3-QsO" secondAttribute="trailing" id="3c7-qt-ihe"/>
+                            <constraint firstItem="5K1-T3-QsO" firstAttribute="top" secondItem="zgT-SL-T9H" secondAttribute="bottom" id="PoO-LG-NLR"/>
+                            <constraint firstItem="5K1-T3-QsO" firstAttribute="leading" secondItem="m5Q-CA-0ho" secondAttribute="leadingMargin" id="qcR-a4-uS2"/>
+                            <constraint firstItem="h0R-1B-feR" firstAttribute="top" secondItem="5K1-T3-QsO" secondAttribute="bottom" id="wQz-aZ-Bpz"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="datePicker" destination="5K1-T3-QsO" id="UzO-Vb-xfu"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="wpx-lZ-gLb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2310" y="2336"/>
+        </scene>
+    </scenes>
+</document>
