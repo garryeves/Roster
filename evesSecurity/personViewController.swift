@@ -9,42 +9,36 @@
 import UIKit
 import ContactsUI
 
-class personViewController: UIViewController, UIPopoverPresentationControllerDelegate, myCommunicationDelegate, UITableViewDataSource, UITableViewDelegate, MyPickerDelegate, CNContactPickerDelegate, UITextViewDelegate
+public class personViewController: UIViewController, UIPopoverPresentationControllerDelegate, myCommunicationDelegate, MyPickerDelegate, CNContactPickerDelegate, UITextViewDelegate
 {
-    @IBOutlet weak var tblPeople: UITableView!
     @IBOutlet weak var txtName: UITextField!
     @IBOutlet weak var btnDOB: UIButton!
     @IBOutlet weak var btnGender: UIButton!
     @IBOutlet weak var lblName: UILabel!
     @IBOutlet weak var lblDOB: UILabel!
     @IBOutlet weak var lblGener: UILabel!
-    @IBOutlet weak var btnAddresses: UIButton!
-    @IBOutlet weak var btnContacts: UIButton!
-    @IBOutlet weak var lblAddInfo: UILabel!
     @IBOutlet weak var lblNotes: UILabel!
     @IBOutlet weak var txtNotes: UITextView!
-    @IBOutlet weak var tblAddInfo: UITableView!
-    @IBOutlet weak var btnImport: UIButton!
-    @IBOutlet weak var bottomContraint: NSLayoutConstraint!
-    @IBOutlet weak var btnBack: UIBarButtonItem!
-    @IBOutlet weak var btnAdd: UIBarButtonItem!
-    @IBOutlet weak var tblContacts: UITableView!
-    @IBOutlet weak var tblAddresses: UITableView!
-    @IBOutlet weak var tblShifts: UITableView!
     @IBOutlet weak var lblRoster: UILabel!
     @IBOutlet weak var switchRoster: UISwitch!
+    @IBOutlet weak var lblLastName: UILabel!
+    @IBOutlet weak var txtLastName: UITextField!
+    @IBOutlet weak var btnShowComms: UIButton!
+    @IBOutlet weak var btnShowRoster: UIButton!
+    @IBOutlet weak var btnAddComms: UIButton!
+    @IBOutlet weak var lblActive: UILabel!
+    @IBOutlet weak var switchActive: UISwitch!
+    @IBOutlet weak var btnCoachingSessions: UIButton!
     
     var communicationDelegate: myCommunicationDelegate?
-    var clientID: Int!
-    var projectID: Int!
+    var clientID: Int64!
+    var projectID: Int64!
     
-    private var myPeople: people!
     private var keyboardDisplayed: Bool = false
-    private var selectedPerson: person!
+    public var selectedPerson: person!
     private var displayList: [String] = Array()
-    fileprivate var addInfoRecords: personAdditionalInfos!
-    
-    override func viewDidLoad()
+
+    override public func viewDidLoad()
     {
         txtNotes.layer.borderColor = UIColor.lightGray.cgColor
         txtNotes.layer.borderWidth = 0.5
@@ -52,275 +46,61 @@ class personViewController: UIViewController, UIPopoverPresentationControllerDel
         txtNotes.layer.masksToBounds = true
         txtNotes.delegate = self
         
-        addInfoRecords = personAdditionalInfos(teamID: currentUser!.currentTeam!.teamID)
-        
         hideFields()
         
-        refreshScreen()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshAddInfo), name: NotificationAddInfoDone, object: nil)
-
-        notificationCenter.addObserver(self, selector: #selector(self.keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(self.keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
-    {
-        switch tableView
+        if selectedPerson != nil
         {
-            case tblPeople:
-                if myPeople == nil
-                {
-                    return 0
-                }
-                else
-                {
-                    return myPeople.people.count
-                }
-            
-            case tblAddInfo:
-                return addInfoRecords.personAdditionalInfos.count
-            
-            case tblContacts:
-                if selectedPerson == nil
-                {
-                    return 0
-                }
-                else
-                {
-                    return selectedPerson.contacts.count
-                }
-                
-            case tblAddresses:
-                if selectedPerson == nil
-                {
-                    return 0
-                }
-                else
-                {
-                    return selectedPerson.addresses.count
-                }
-            
-            case tblShifts:
-                if selectedPerson == nil
-                {
-                    return 0
-                }
-                else
-                {
-                    return selectedPerson.shiftArray.count
-                }
-            
-            default:
-                return 0
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
-    {
-        switch tableView
-        {
-            case tblPeople:
-                let cell = tableView.dequeueReusableCell(withIdentifier:"personCell", for: indexPath) as! personListItem
-                
-                cell.lblName.text = myPeople.people[indexPath.row].name
-                
-                if myPeople.people[indexPath.row].dobText == "Select"
-                {
-                    cell.lblDOB.text = ""
-                }
-                else
-                {
-                    cell.lblDOB.text = myPeople.people[indexPath.row].dobText
-                }
-                
-                return cell
-                
-            case tblAddInfo:
-                let cell = tableView.dequeueReusableCell(withIdentifier:"cellAddInfo", for: indexPath) as! personAddInfoListItem
-
-                if selectedPerson != nil
-                {
-                    cell.lblDescription.text = addInfoRecords.personAdditionalInfos[indexPath.row].addInfoName
-                    
-                    switch addInfoRecords.personAdditionalInfos[indexPath.row].addInfoType
-                    {
-                        case perInfoText:
-                            cell.btnDate.isHidden = true
-                            cell.btnYesNo.isHidden = true
-                            cell.txtValue.isHidden = false
-                            
-                            // Get the value, if one exists
-                            
-                            let tempItem = personAddInfoEntry(addInfoName: addInfoRecords.personAdditionalInfos[indexPath.row].addInfoName, personID: selectedPerson.personID, teamID: currentUser.currentTeam!.teamID)
-                            
-                            cell.txtValue.text = tempItem.stringValue
-                            cell.addInfoEntry = tempItem
-                        
-                        case perInfoDate:
-                            cell.btnDate.isHidden = false
-                            cell.btnYesNo.isHidden = true
-                            cell.txtValue.isHidden = true
-                        
-                            // Get the value, if one exists
-                            
-                            let tempItem = personAddInfoEntry(addInfoName: addInfoRecords.personAdditionalInfos[indexPath.row].addInfoName, personID: selectedPerson.personID, teamID: currentUser.currentTeam!.teamID)
-                            
-                            cell.btnDate.setTitle(tempItem.dateString, for: .normal)
-                            cell.addInfoEntry = tempItem
-                        
-                        case perInfoYesNo:
-                            cell.btnDate.isHidden = true
-                            cell.btnYesNo.isHidden = false
-                            cell.txtValue.isHidden = true
-                            
-                            // Get the value, if one exists
-                            
-                            let tempItem = personAddInfoEntry(addInfoName: addInfoRecords.personAdditionalInfos[indexPath.row].addInfoName, personID: selectedPerson.personID, teamID: currentUser.currentTeam!.teamID)
-                            
-                            if tempItem.stringValue == ""
-                            {
-                                cell.btnYesNo.setTitle("Select", for: .normal)
-                            }
-                            else
-                            {
-                                cell.btnYesNo.setTitle(tempItem.stringValue, for: .normal)
-                            }
-                            
-                            cell.addInfoEntry = tempItem
-                        
-                        default:
-                            cell.btnDate.isHidden = true
-                            cell.btnYesNo.isHidden = true
-                            cell.txtValue.isHidden = true
-                    }
-            
-                    cell.parentViewController = self
-                }
-                return cell
-            
-            case tblContacts:
-                let cell = tableView.dequeueReusableCell(withIdentifier:"cellContact", for: indexPath) as! contactDetailsItem
-                cell.lblType.text = selectedPerson.contacts[indexPath.row].contactType
-                cell.lblDetail.text = selectedPerson.contacts[indexPath.row].contactValue
-                return cell
-            
-            case tblAddresses:
-                let cell = tableView.dequeueReusableCell(withIdentifier:"cellAddress", for: indexPath) as! contactDetailsItem
-                cell.lblType.text = selectedPerson.addresses[indexPath.row].addressType
-                cell.lblDetail.text = selectedPerson.addresses[indexPath.row].addressLine1
-                return cell
-            
-            case tblShifts:
-                let cell = tableView.dequeueReusableCell(withIdentifier:"cellShift", for: indexPath) as! contactDetailsItem
-                
-                // Build the display string
-                
-                let dateString = "\(selectedPerson.shiftArray[indexPath.row].workDateString) \(selectedPerson.shiftArray[indexPath.row].startTimeString) - \(selectedPerson.shiftArray[indexPath.row].endTimeString)"
-                cell.lblType.text = dateString
-                
-                let tempProject = project(projectID: selectedPerson.shiftArray[indexPath.row].projectID, teamID: currentUser.currentTeam!.teamID)
-                cell.lblDetail.text = tempProject.projectName
-                
-            return cell
-            
-            default:
-                return UITableViewCell()
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
-    {
-        switch tableView
-        {
-            case tblPeople:
-                showFields()
-                if selectedPerson != nil
-                {
-                    if txtName.isFirstResponder
-                    {
-                        validateName("")
-                    }
-                }
-                selectedPerson = myPeople.people[indexPath.row]
-                
-                loadDetails()
-            
-            case tblAddInfo:
-                let _ = 1
-            
-            case tblContacts:
-                let contactsView = personStoryboard.instantiateViewController(withIdentifier: "contactsForm") as! contactsViewController
-                contactsView.modalPresentationStyle = .popover
-                
-                let popover = contactsView.popoverPresentationController!
-                popover.delegate = self
-                popover.sourceView = btnContacts
-                popover.sourceRect = btnContacts.bounds
-                popover.permittedArrowDirections = .any
-                
-                contactsView.workingPerson = selectedPerson
-                contactsView.preferredContentSize = CGSize(width: 700,height: 120)
-                
-                self.present(contactsView, animated: true, completion: nil)
-            
-            case tblAddresses:
-                let addressView = personStoryboard.instantiateViewController(withIdentifier: "addressView") as! addressesViewController
-                addressView.modalPresentationStyle = .popover
-                
-                let popover = addressView.popoverPresentationController!
-                popover.delegate = self
-                popover.sourceView = btnAddresses
-                popover.sourceRect = btnAddresses.bounds
-                popover.permittedArrowDirections = .any
-                
-                addressView.workingPerson = selectedPerson
-                addressView.preferredContentSize = CGSize(width: 700,height: 300)
-                
-                self.present(addressView, animated: true, completion: nil)
-            
-            default:
-                let _ = 1
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle
-    {
-        if tableView == tblPeople
-        {
-            return UITableViewCellEditingStyle.delete
-        }
-        return UITableViewCellEditingStyle.none
-    }
-    
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath)
-    {
-        if editingStyle == .delete
-        {
-            if tableView == tblPeople
-            {
-                myPeople.people[indexPath.row].delete()
-            }
-            
+            showFields()
+            loadDetails()
             refreshScreen()
         }
+
+        if currentUser.checkWritePermission(coachingRoleType)
+        {
+            btnCoachingSessions.isHidden = false
+        }
+        else
+        {
+            btnCoachingSessions.isHidden = true
+        }
+        
+        if currentUser.currentTeam!.ShiftList == nil
+        {
+            btnShowRoster.isHidden = true
+        }
+        else
+        {
+            if (currentUser.currentTeam?.ShiftList?.count)! > 0
+            {
+                btnShowRoster.isHidden = false
+            }
+            else
+            {
+                btnShowRoster.isHidden = true
+            }
+        }
+    }
+    
+    override public func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
     }
     
     @IBAction func switchRoster(_ sender: UISwitch)
     {
         if sender.isOn
         {
-            selectedPerson.canRoster = "True"
+            selectedPerson.canRoster = true
         }
         else
         {
-            selectedPerson.canRoster = "False"
+            selectedPerson.canRoster = false
         }
+    }
+    
+    @IBAction func switchActive(_ sender: UISwitch)
+    {
+        selectedPerson.isActive = sender.isOn
     }
     
     @IBAction func btnDOB(_ sender: UIButton)
@@ -381,88 +161,122 @@ class personViewController: UIViewController, UIPopoverPresentationControllerDel
         }
     }
     
-    @IBAction func btnAdd(_ sender: UIBarButtonItem)
+    @IBAction func btnShowComms(_ sender: UIButton)
     {
-        selectedPerson = person(teamID: currentUser.currentTeam!.teamID)
+        let commsView = settingsStoryboard.instantiateViewController(withIdentifier: "commsList") as! commsListViewController
+        commsView.modalPresentationStyle = .popover
         
-        if clientID != nil
-        {
-            selectedPerson.clientID = clientID
-        }
-        
-        if projectID != nil
-        {
-            selectedPerson.projectID = projectID
-        }
-        
-        showFields()
-        
-        txtName.text = selectedPerson.name
-        btnDOB.setTitle("Select", for: .normal)
-        btnGender.setTitle("Select", for: .normal)
-        txtNotes.text = selectedPerson.note
-        switchRoster.isOn = false
-        
-        tblAddInfo.reloadData()
-    }
-    
-    @IBAction func btnAddresses(_ sender: UIButton)
-    {
-        let addressView = personStoryboard.instantiateViewController(withIdentifier: "addressView") as! addressesViewController
-        addressView.modalPresentationStyle = .popover
-        
-        let popover = addressView.popoverPresentationController!
+        let popover = commsView.popoverPresentationController!
         popover.delegate = self
         popover.sourceView = sender
         popover.sourceRect = sender.bounds
         popover.permittedArrowDirections = .any
         
-        addressView.workingPerson = selectedPerson
-        addressView.preferredContentSize = CGSize(width: 700,height: 300)
-        
-        self.present(addressView, animated: true, completion: nil)
+        commsView.preferredContentSize = CGSize(width: 800,height: 800)
+        commsView.passedPerson = selectedPerson
+        self.present(commsView, animated: true, completion: nil)
     }
     
-    @IBAction func btnContacts(_ sender: UIButton)
-    {
-        let contactsView = personStoryboard.instantiateViewController(withIdentifier: "contactsForm") as! contactsViewController
-        contactsView.modalPresentationStyle = .popover
+    @IBAction func btnAddressList(_ sender: UIButton) {
+//        let commsView = personStoryboard.instantiateViewController(withIdentifier: "addressList") as! addressListViewController
+//        commsView.modalPresentationStyle = .popover
+//        
+//        let popover = commsView.popoverPresentationController!
+//        popover.delegate = self
+//        popover.sourceView = sender
+//        popover.sourceRect = sender.bounds
+//        popover.permittedArrowDirections = .any
+//        
+//        commsView.preferredContentSize = CGSize(width: 800,height: 800)
+//        commsView.passedPerson = selectedPerson
+//        self.present(commsView, animated: true, completion: nil)
+    }
+    
+    @IBAction func btnContactList(_ sender: UIButton) {
+//        let commsView = personStoryboard.instantiateViewController(withIdentifier: "contactList") as! contactListViewController
+//        commsView.modalPresentationStyle = .popover
+//        
+//        let popover = commsView.popoverPresentationController!
+//        popover.delegate = self
+//        popover.sourceView = sender
+//        popover.sourceRect = sender.bounds
+//        popover.permittedArrowDirections = .any
+//        
+//        commsView.preferredContentSize = CGSize(width: 800,height: 800)
+//        commsView.passedPerson = selectedPerson
+//        self.present(commsView, animated: true, completion: nil)
+    }
+    
+    @IBAction func btnPersonalInfoList(_ sender: UIButton) {
+        let commsView = personStoryboard.instantiateViewController(withIdentifier: "addInfoList") as! addInfoListViewController
+        commsView.modalPresentationStyle = .popover
         
-        let popover = contactsView.popoverPresentationController!
+        let popover = commsView.popoverPresentationController!
         popover.delegate = self
         popover.sourceView = sender
         popover.sourceRect = sender.bounds
         popover.permittedArrowDirections = .any
         
-        contactsView.workingPerson = selectedPerson
-        contactsView.preferredContentSize = CGSize(width: 700,height: 120)
-        
-        self.present(contactsView, animated: true, completion: nil)
+        commsView.preferredContentSize = CGSize(width: 400,height: 800)
+        commsView.passedPerson = selectedPerson
+        self.present(commsView, animated: true, completion: nil)
     }
     
-    func textViewDidEndEditing(_ textView: UITextView)
+    @IBAction func btnShowRoster(_ sender: UIButton)
+    {
+//        let commsView = shiftsStoryboard.instantiateViewController(withIdentifier: "personsRoster") as! personsRosterViewController
+//        commsView.modalPresentationStyle = .popover
+//        
+//        let popover = commsView.popoverPresentationController!
+//        popover.delegate = self
+//        popover.sourceView = sender
+//        popover.sourceRect = sender.bounds
+//        popover.permittedArrowDirections = .any
+//        
+//        commsView.preferredContentSize = CGSize(width: 800,height: 800)
+//        commsView.passedPerson = selectedPerson
+//        self.present(commsView, animated: true, completion: nil)
+    }
+    
+    @IBAction func btnCoachingSessions(_ sender: UIButton) {
+        let commsView = coursesStoryboard.instantiateViewController(withIdentifier: "sessionNotesViewController") as! sessionNotesViewController
+        commsView.modalPresentationStyle = .popover
+        
+        let popover = commsView.popoverPresentationController!
+        popover.delegate = self
+        popover.sourceView = sender
+        popover.sourceRect = sender.bounds
+        popover.permittedArrowDirections = .any
+        
+        commsView.preferredContentSize = CGSize(width: 800,height: 800)
+        commsView.passedPerson = selectedPerson
+        self.present(commsView, animated: true, completion: nil)
+    }
+    
+    @IBAction func btnAddComms(_ sender: UIButton)
+    {
+//        let newComm = commsLogEntry(teamID: (currentUser.currentTeam?.teamID)!)
+//        newComm.personID = selectedPerson.personID
+//        
+//        let commsView = settingsStoryboard.instantiateViewController(withIdentifier: "commsLogView") as! commsLogView
+//        commsView.modalPresentationStyle = .popover
+//        
+//        let popover = commsView.popoverPresentationController!
+//        popover.delegate = self
+//        popover.sourceView = sender
+//        popover.sourceRect = sender.bounds
+//        popover.permittedArrowDirections = .any
+//        
+//        commsView.preferredContentSize = CGSize(width: 500,height: 800)
+//        commsView.workingEntry = newComm
+//        self.present(commsView, animated: true, completion: nil)
+    }
+    
+    public func textViewDidEndEditing(_ textView: UITextView)
     {
         if textView == txtNotes
         {
             selectedPerson.note = txtNotes.text!
-        }
-    }
-
-    @IBAction func btnBack(_ sender: UIBarButtonItem)
-    {
-        if txtName.isFirstResponder
-        {
-            validateName("exit")
-        }
-        else
-        {
-            if txtNotes.isFirstResponder
-            {
-                selectedPerson.note = txtNotes.text!
-            }
-            
-            self.dismiss(animated: true, completion: nil)
-            communicationDelegate?.refreshScreen!()
         }
     }
     
@@ -473,7 +287,7 @@ class personViewController: UIViewController, UIPopoverPresentationControllerDel
         self.present(cnPicker, animated: true, completion: nil)
     }
     
-    func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact])
+    public func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact])
     {
         contacts.forEach{ contact in
             
@@ -490,7 +304,8 @@ class personViewController: UIViewController, UIPopoverPresentationControllerDel
                 workingRecord.projectID = projectID
             }
             
-            workingRecord.name = workingContact.fullName
+            workingRecord.lastName = workingContact.lastName
+            workingRecord.firstName = workingContact.firstName
             
             if workingContact.dateOfBirth != nil
             {
@@ -505,9 +320,7 @@ class personViewController: UIViewController, UIPopoverPresentationControllerDel
                 {
                     if myItem.type == myType
                     {
-                        let workingAddress = address(teamID: currentUser.currentTeam!.teamID)
-                        workingAddress.personID = workingRecord.personID
-                        workingAddress.addressType = myItem.type
+                        let workingAddress = address(teamID: currentUser.currentTeam!.teamID, addressType: myItem.type, personID: workingRecord.personID)
                         workingAddress.addressLine1 = myItem.line1
                         workingAddress.addressLine2 = myItem.line2
                         workingAddress.city = myItem.city
@@ -527,28 +340,28 @@ class personViewController: UIViewController, UIPopoverPresentationControllerDel
                 {
                     if myItem.type == myType
                     {
-                        let workingDetail = contactItem(teamID: currentUser.currentTeam!.teamID)
-                        workingDetail.personID = workingRecord.personID
-                        workingDetail.contactType = myItem.type
+                        let workingDetail = contactItem(teamID: currentUser.currentTeam!.teamID, contactType: myItem.type, personID: workingRecord.personID, clientID: 0, projectID: 0)
+
+                        sleep(1)
                         workingDetail.contactValue = myItem.detail
-                        
+
                         workingDetail.save()
                         break
                     }
                 }
             }
-            
+
             for myItem in workingContact.emailAddresses
             {
                 for myType in ["Home Email", "Office Email"]
                 {
                     if myItem.type == myType
                     {
-                        let workingDetail = contactItem(teamID: currentUser.currentTeam!.teamID)
-                        workingDetail.personID = workingRecord.personID
-                        workingDetail.contactType = myItem.type
-                        workingDetail.contactValue = myItem.detail
+                        let workingDetail = contactItem(teamID: currentUser.currentTeam!.teamID, contactType: myItem.type, personID: workingRecord.personID, clientID: 0, projectID: 0)
                         
+                        sleep(1)
+                        workingDetail.contactValue = myItem.detail
+
                         workingDetail.save()
                         break
                     }
@@ -562,58 +375,53 @@ class personViewController: UIViewController, UIPopoverPresentationControllerDel
         refreshScreen()
     }
     
-    func contactPickerDidCancel(_ picker: CNContactPickerViewController)
+    public func contactPickerDidCancel(_ picker: CNContactPickerViewController)
     {
         print("Cancel Contact Picker")
     }
     
     @IBAction func txtName(_ sender: UITextField)
     {
-        validateName("refresh")
+        if sender == txtName
+        {
+            selectedPerson.firstName = txtName.text!
+        }
+        
+        if sender == txtLastName
+        {
+            selectedPerson.lastName = txtLastName.text!
+        }
     }
     
     func validateName(_ postAction: String)
     {
-        let workingPerson = selectedPerson!
-        let currentName = workingPerson.name
-        let newName = txtName.text!
+        let currentLastName = selectedPerson.lastName
+        let currentFirstName = selectedPerson.firstName
+        let newFirstName = txtName.text!
+        let newLastName = txtLastName.text
         
-        if (currentName != "" && currentName != "Name") && newName != currentName
+//        if (currentName != "" && currentName != "Name") && newFirstName != currentFirstName
+        if (newLastName != currentLastName) || (newFirstName != currentFirstName)
         {
             let alert = UIAlertController(title: "Change Name", message:
-                "Change name from \(currentName) to \(txtName.text!)", preferredStyle: UIAlertControllerStyle.alert)
+                "Change name from \(currentFirstName) \(currentLastName) to \(newFirstName) \(newLastName!)", preferredStyle: UIAlertController.Style.alert)
             
-            let yesOption = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler:  {(action: UIAlertAction) -> () in
-                workingPerson.name = newName
+            let yesOption = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default, handler:  {(action: UIAlertAction) -> () in
+                self.selectedPerson.lastName = newLastName!
+                self.selectedPerson.firstName = newFirstName
                 
-                if postAction == "refresh"
-                {
-                    self.refreshScreen()
-                }
-                else if postAction == "exit"
+                if postAction == "exit"
                 {
                     self.dismiss(animated: true, completion: nil)
                     self.communicationDelegate?.refreshScreen!()
-                }
-                else
-                {
-                    self.tblPeople.reloadData()
                 }
             })
             
-            let noOption = UIAlertAction(title: "No", style: UIAlertActionStyle.default, handler: {(action: UIAlertAction) -> () in
-                if postAction == "refresh"
-                {
-                    self.txtName.text! = currentName
-                }
-                else if postAction == "exit"
+            let noOption = UIAlertAction(title: "No", style: UIAlertAction.Style.default, handler: {(action: UIAlertAction) -> () in
+                if postAction == "exit"
                 {
                     self.dismiss(animated: true, completion: nil)
                     self.communicationDelegate?.refreshScreen!()
-                }
-                else
-                {
-                    self.tblPeople.reloadData()
                 }
             })
             
@@ -621,22 +429,15 @@ class personViewController: UIViewController, UIPopoverPresentationControllerDel
             alert.addAction(noOption)
             self.present(alert, animated: false, completion: nil)
         }
-        else if (workingPerson.name == "" || workingPerson.name == "Name") && (newName != "" && newName != "Name")
+        else if (selectedPerson.name == "" || selectedPerson.name == "Name") && ((newLastName != "" && newLastName != "Name") || (newFirstName != "" && newFirstName != "Name"))
         {
-            workingPerson.name = newName
+            self.selectedPerson.lastName = newLastName!
+            self.selectedPerson.firstName = newFirstName
             
-            if postAction == "refresh"
-            {
-                self.refreshScreen()
-            }
-            else if postAction == "exit"
+            if postAction == "exit"
             {
                 self.dismiss(animated: true, completion: nil)
                 self.communicationDelegate?.refreshScreen!()
-            }
-            else
-            {
-                self.tblPeople.reloadData()
             }
         }
         else
@@ -649,7 +450,7 @@ class personViewController: UIViewController, UIPopoverPresentationControllerDel
         }
     }
     
-    func myPickerDidFinish(_ source: String, selectedItem:Int)
+    public func myPickerDidFinish(_ source: String, selectedItem:Int)
     {
         if source == "gender"
         {
@@ -658,7 +459,7 @@ class personViewController: UIViewController, UIPopoverPresentationControllerDel
         }
     }
 
-    func myPickerDidFinish(_ source: String, selectedDate:Date)
+    public func myPickerDidFinish(_ source: String, selectedDate:Date)
     {
         if source == "DOB"
         {
@@ -675,26 +476,16 @@ class personViewController: UIViewController, UIPopoverPresentationControllerDel
         lblName.isHidden = true
         lblDOB.isHidden = true
         lblGener.isHidden = true
-        btnAddresses.isHidden = true
-        btnContacts.isHidden = true
-        lblAddInfo.isHidden = true
         lblNotes.isHidden = true
         txtNotes.isHidden = true
-        tblAddInfo.isHidden = true
-        btnImport.isHidden = false
-        tblContacts.isHidden = true
-        tblAddresses.isHidden = true
-        tblShifts.isHidden = true
         lblRoster.isHidden = true
         switchRoster.isHidden = true
-        if currentUser.checkPermission(hrRoleType) == writePermission
-        {
-            btnAdd.isEnabled = true
-        }
-        else
-        {
-            btnAdd.isEnabled = false
-        }
+        switchActive.isHidden = true
+        lblLastName.isHidden = true
+        txtLastName.isHidden = true
+        btnShowComms.isHidden = true
+        btnShowRoster.isHidden = true
+        btnAddComms.isHidden = true
     }
     
     func showFields()
@@ -705,79 +496,34 @@ class personViewController: UIViewController, UIPopoverPresentationControllerDel
         lblName.isHidden = false
         lblDOB.isHidden = false
         lblGener.isHidden = false
-        btnAddresses.isHidden = false
-        btnContacts.isHidden = false
-        lblAddInfo.isHidden = false
         lblNotes.isHidden = false
         txtNotes.isHidden = false
-        tblAddInfo.isHidden = false
-        btnImport.isHidden = true
-        tblContacts.isHidden = false
-        tblAddresses.isHidden = false
-        tblShifts.isHidden = false
         lblRoster.isHidden = false
         switchRoster.isHidden = false
-        
-        if currentUser.checkPermission(hrRoleType) == writePermission
-        {
-            btnAdd.isEnabled = true
-        }
-        else
-        {
-           btnAdd.isEnabled = false
-        }
+        switchActive.isHidden = false
+        lblLastName.isHidden = false
+        txtLastName.isHidden = false
+        btnShowComms.isHidden = false
+        btnShowRoster.isHidden = false
+        btnAddComms.isHidden = false
     }
     
-    @objc func keyboardWillShow(_ notification: Notification)
+    public func refreshScreen()
     {
-        let deviceIdiom = getDeviceType()
-        
-        if deviceIdiom == .pad
-        {
-            if !keyboardDisplayed
-            {
-                if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue
-                {
-                    bottomContraint.constant = CGFloat(20) + keyboardSize.height
-                }
-                
-                keyboardDisplayed = true
-            }
-        }
-        self.updateViewConstraints()
-        self.view.layoutIfNeeded()
-    }
-    
-    @objc func keyboardWillHide(_ notification: Notification)
-    {
-        let deviceIdiom = getDeviceType()
-        
-        if deviceIdiom == .pad
-        {
-            bottomContraint.constant = 20
-            
-            keyboardDisplayed = false
-        }
-        self.updateViewConstraints()
-        self.view.layoutIfNeeded()
-    }
-    
-    func refreshScreen()
-    {
-        if clientID != nil
-        {
-            myPeople = people(clientID: clientID, teamID: currentUser.currentTeam!.teamID)
-        }
-        else if projectID != nil
-        {
-            myPeople = people(projectID: projectID, teamID: currentUser.currentTeam!.teamID)
-        }
-        else
-        {
-            myPeople = people(teamID: currentUser.currentTeam!.teamID)
-        }
-        
-        tblPeople.reloadData()
+//        if clientID != nil
+//        {
+//            myPeople = people(clientID: clientID, teamID: currentUser.currentTeam!.teamID)
+//        }
+//        else if projectID != nil
+//        {
+//            myPeople = people(projectID: projectID, teamID: currentUser.currentTeam!.teamID)
+//        }
+//        else
+//        {
+//            myPeople = people(teamID: currentUser.currentTeam!.teamID)
+//        }
+//
+//        tblPeople.reloadData()
         loadDetails()
     }
     
@@ -785,35 +531,32 @@ class personViewController: UIViewController, UIPopoverPresentationControllerDel
     {
         if selectedPerson != nil
         {
-            selectedPerson.loadAddresses()
-            selectedPerson.loadContacts()
-            selectedPerson.loadAddInfo()
-            selectedPerson.loadShifts()
-            
-            txtName.text = selectedPerson.name
+            txtName.text = selectedPerson.firstName
+            txtLastName.text = selectedPerson.lastName
             btnDOB.setTitle(selectedPerson.dobText, for: .normal)
             btnGender.setTitle(selectedPerson.gender, for: .normal)
             txtNotes.text = selectedPerson.note
-            btnAddresses.setTitle("Addresses (\(selectedPerson.addresses.count))", for: .normal)
-            btnContacts.setTitle("Contact Details (\(selectedPerson.contacts.count))", for: .normal)
-            if selectedPerson.canRoster == "True"
+            switchActive.isOn = selectedPerson.isActive
+            
+            if appName == "EvesSecurity"
             {
-                switchRoster.isOn = true
+                lblRoster.isHidden = false
+                switchRoster.isHidden = false
+                if selectedPerson.canRoster
+                {
+                    switchRoster.isOn = true
+                }
+                else
+                {
+                    switchRoster.isOn = false
+                }
             }
             else
             {
-                switchRoster.isOn = false
+                lblRoster.isHidden = true
+                switchRoster.isHidden = true
             }
-            tblAddInfo.reloadData()
-            tblAddresses.reloadData()
-            tblContacts.reloadData()
-            tblShifts.reloadData()
         }
-    }
-    
-    @objc func refreshAddInfo()
-    {
-        tblAddInfo.reloadData()
     }
 }
 
@@ -830,8 +573,10 @@ class personAddInfoListItem: UITableViewCell, MyPickerDelegate, UIPopoverPresent
     @IBOutlet weak var btnDate: UIButton!
     @IBOutlet weak var txtValue: UITextField!
     
-    var parentViewController: personViewController!
+    var parentViewController: addInfoListViewController!
     var addInfoEntry: personAddInfoEntry!
+    var passedPerson: person!
+    var addInfoName: String!
 
     fileprivate var displayList: [String] = Array()
     
@@ -839,6 +584,7 @@ class personAddInfoListItem: UITableViewCell, MyPickerDelegate, UIPopoverPresent
     {
         displayList.removeAll()
         
+        displayList.append("")
         displayList.append("Yes")
         displayList.append("No")
         
@@ -885,30 +631,54 @@ class personAddInfoListItem: UITableViewCell, MyPickerDelegate, UIPopoverPresent
     
     @IBAction func txtValue(_ sender: UITextField)
     {
+        if addInfoEntry == nil
+        {
+            addInfoEntry = personAddInfoEntry(addInfoName: addInfoName, personID: passedPerson.personID, teamID: (currentUser.currentTeam?.teamID)!)
+        }
+        
         addInfoEntry.stringValue = sender.text!
         addInfoEntry.save()
+        
+        currentUser.currentTeam?.personAddInfoEntry = nil
+        
         NotificationCenter.default.post(name: NotificationAddInfoDone, object: nil)
     }
     
-    func myPickerDidFinish(_ source: String, selectedItem:Int)
+    public func myPickerDidFinish(_ source: String, selectedItem:Int)
     {
         if source == "YesNo"
         {
             if selectedItem >= 0
             {
-                addInfoEntry.stringValue = displayList[selectedItem]
-                addInfoEntry.save()
+                if addInfoEntry == nil
+                {
+                    addInfoEntry = personAddInfoEntry(addInfoName: addInfoName, personID: passedPerson.personID, teamID: (currentUser.currentTeam?.teamID)!)
+                }
+                
+                addInfoEntry!.stringValue = displayList[selectedItem]
+                addInfoEntry!.save()
+                
+                currentUser.currentTeam?.personAddInfoEntry = nil
+                
                 NotificationCenter.default.post(name: NotificationAddInfoDone, object: nil)
             }
         }
     }
     
-    func myPickerDidFinish(_ source: String, selectedDate:Date)
+    public func myPickerDidFinish(_ source: String, selectedDate:Date)
     {
         if source == "Date"
         {
+            if addInfoEntry == nil
+            {
+                addInfoEntry = personAddInfoEntry(addInfoName: addInfoName, personID: passedPerson.personID, teamID: (currentUser.currentTeam?.teamID)!)
+            }
+            
             addInfoEntry.dateValue = selectedDate
             addInfoEntry.save()
+            
+            currentUser.currentTeam?.personAddInfoEntry = nil
+            
             NotificationCenter.default.post(name: NotificationAddInfoDone, object: nil)
         }
     }
@@ -918,11 +688,26 @@ class contactDetailsItem: UITableViewCell
 {
     @IBOutlet weak var lblType: UILabel!
     @IBOutlet weak var lblDetail: UILabel!
+    @IBOutlet weak var txtDetail: UITextField!
+    
+    var contactDetail: contactItem!
     
     override func layoutSubviews()
     {
         contentView.frame = bounds
         super.layoutSubviews()
+    }
+    
+    @IBAction func txtDetails(_ sender: UITextField)
+    {
+//        if contactDetail == nil
+//        {
+//            contactDetail = contactItem(teamID: teamID)
+//            contactDetail.personID = personID
+//            contactDetail.contactType = lblType.text!
+//        }
+        contactDetail.contactValue = sender.text!
+        contactDetail.save()
     }
 }
 

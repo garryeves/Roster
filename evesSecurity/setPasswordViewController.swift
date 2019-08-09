@@ -8,7 +8,7 @@
 
 import UIKit
 
-class setPasswordViewController: UIViewController, UIPopoverPresentationControllerDelegate
+public class setPasswordViewController: UIViewController, UIPopoverPresentationControllerDelegate
 {
     @IBOutlet weak var txtPassword: UITextField!
     @IBOutlet weak var txtVeriftPassword: UITextField!
@@ -16,11 +16,11 @@ class setPasswordViewController: UIViewController, UIPopoverPresentationControll
     @IBOutlet weak var btnSetPassword: UIBarButtonItem!
     @IBOutlet weak var btnBack: UIBarButtonItem!
     
-    override func viewDidLoad()
+    override public func viewDidLoad()
     {
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
@@ -48,7 +48,7 @@ class setPasswordViewController: UIViewController, UIPopoverPresentationControll
             {
                 let alert = UIAlertController(title: "Password", message: "Password must be a minimum of 6 characters", preferredStyle: .actionSheet)
                 
-                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
                 
                 alert.isModalInPopover = true
                 let popover = alert.popoverPresentationController
@@ -64,7 +64,7 @@ class setPasswordViewController: UIViewController, UIPopoverPresentationControll
         {
             let alert = UIAlertController(title: "Password", message: "Password and verification are different", preferredStyle: .actionSheet)
             
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default,
                                           handler: { (action: UIAlertAction) -> () in
                                             self.dismiss(animated: true, completion: nil)
             }))

@@ -7,38 +7,47 @@
 //
 
 import Foundation
-import UIKit
 
-class alertListItem: UITableViewCell
+import UIKit
+import SwiftUI
+
+public struct alertSummary: Identifiable
 {
-    @IBOutlet weak var lblAlert: UILabel!
-    @IBOutlet weak var lblName: UILabel!
-    
-    override func layoutSubviews()
-    {
-        contentView.frame = bounds
-        super.layoutSubviews()
-    }
+    public let id = UUID()
+    public var displayText: String
+    public var displayAmount: Int
 }
 
-class alerts: NSObject
+public class alerts: NSObject, Identifiable
 {
-    var alertList: [alertItem] = Array()
+    public let id = UUID()
+    public var alertList: [alertItem] = Array()
+    public var alertSummaryList: [alertSummary] = Array()
+    public var isLoading: Bool = false
     
-    func clearAlerts()
+    
+    public func clearAlerts()
     {
         alertList.removeAll()
+        alertSummaryList.removeAll()
+    }
+    
+    public func displayAlertSummary() -> [alertSummary]
+    {
+        return alertSummaryList.filter { $0.displayAmount > 0 }
     }
 }
 
-class alertItem: NSObject
+public class alertItem: NSObject, Identifiable
 {
+    public let id = UUID()
     fileprivate var myDisplayText: String = ""
     fileprivate var myName: String = ""
     fileprivate var mySource: String = ""
+    fileprivate var myType: String = ""
     fileprivate var mySourceObject: Any!
     
-    var displayText: String
+    public var displayText: String
     {
         get
         {
@@ -50,7 +59,19 @@ class alertItem: NSObject
         }
     }
     
-    var name: String
+    public var type: String
+    {
+        get
+        {
+            return myType
+        }
+        set
+        {
+            myType = newValue
+        }
+    }
+    
+    public var name: String
     {
         get
         {
@@ -62,7 +83,7 @@ class alertItem: NSObject
         }
     }
     
-    var source: String
+    public var source: String
     {
         get
         {
@@ -74,7 +95,7 @@ class alertItem: NSObject
         }
     }
     
-    var object: Any?
+    public var object: Any?
     {
         get
         {

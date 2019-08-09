@@ -7,63 +7,148 @@
 //
 
 import Foundation
-import CoreData
+//import CoreData
 import CloudKit
+import SwiftUI
 
-class rates: NSObject
+public class rates: NSObject, Identifiable
 {
+    public let id = UUID()
     fileprivate var myRates:[rate] = Array()
     
-    init(clientID: Int, teamID: Int)
+    public init(clientID: Int64, teamID: Int64)
     {
-        for myItem in myDatabaseConnection.getRates(clientID: clientID, teamID: teamID)
+        if currentUser.currentTeam!.rates == nil
         {
-            let myObject = rate(rateID: Int(myItem.rateID),
-                                clientID: Int(myItem.clientID),
-                                rateName: myItem.rateName!,
-                                rateAmount: myItem.rateAmount,
-                                chargeAmount: myItem.chargeAmount,
-                                startDate: myItem.startDate! as Date,
-            teamID: Int(myItem.teamID))
-            myRates.append(myObject)
+            currentUser.currentTeam!.rates = myCloudDB.getRates(teamID: teamID)
+        }
+        
+        //        var returnArray: [Rates] = Array()
+        
+        //        for item in (currentUser.currentTeam?.rates)!
+        //        for item in myCloudDB.getRates(clientID: clientID, teamID: teamID)
+        //        {
+        //            if item.clientID == clientID
+        //            {
+        //                returnArray.append(item)
+        //            }
+        //        }
+        //
+        //        for myItem in returnArray
+        //        {
+        //            let myObject = rate(rateID: myItem.rateID,
+        //                                clientID: myItem.clientID,
+        //                                rateName: myItem.rateName!,
+        //                                rateAmount: myItem.rateAmount,
+        //                                chargeAmount: myItem.chargeAmount,
+        //                                startDate: myItem.startDate! as Date,
+        //                                teamID: myItem.teamID,
+        //                                active: myItem.active)
+        //            myRates.append(myObject)
+        //        }
+        
+        
+        for item in (currentUser.currentTeam?.rates)!
+        {
+            if item.clientID == clientID
+            {
+                let myObject = rate(rateID: item.rateID,
+                                    clientID: item.clientID,
+                                    rateName: item.rateName!,
+                                    rateAmount: item.rateAmount,
+                                    chargeAmount: item.chargeAmount,
+                                    startDate: item.startDate! as Date,
+                                    teamID: item.teamID,
+                                    active: item.active)
+                myRates.append(myObject)
+            }
         }
         
         if myRates.count > 0
         {
             myRates.sort
-            {
-                if $0.startDate == $1.startDate
                 {
-                    return $0.rateName < $1.rateName
-                }
-                else
-                {
-                    return $0.startDate < $1.startDate
-                }
+                    if $0.isActive == $1.isActive
+                    {
+                        if $0.startDate == $1.startDate
+                        {
+                            return $0.rateName < $1.rateName
+                        }
+                        else
+                        {
+                            return $0.startDate < $1.startDate
+                        }
+                    }
+                    else
+                    {
+                        return $0.isActive && !$1.isActive
+                    }
             }
         }
     }
     
-    var rates: [rate]
+    public init(teamID: Int64)
+    {
+        if currentUser.currentTeam?.rates == nil
+        {
+            currentUser.currentTeam?.rates = myCloudDB.getRates(teamID: teamID)
+        }
+        
+        for myItem in (currentUser.currentTeam?.rates)!
+        {
+            let myObject = rate(rateID: myItem.rateID,
+                                clientID: myItem.clientID,
+                                rateName: myItem.rateName!,
+                                rateAmount: myItem.rateAmount,
+                                chargeAmount: myItem.chargeAmount,
+                                startDate: myItem.startDate! as Date,
+                                teamID: myItem.teamID,
+                                active: myItem.active)
+            myRates.append(myObject)
+        }
+    }
+    
+    public func append(_ newrecord: rate)
+    {
+        myRates.append(newrecord)
+    }
+    
+    public var rates: [rate]
     {
         get
         {
             return myRates
         }
     }
+    
+    public func checkRate(_ rateID: Int64) -> Bool
+    {
+        let filteredItems = myRates.filter { $0.rateID == rateID}
+        
+        if filteredItems.count > 0
+        {
+            return true
+        }
+        else
+        {
+            return false
+        }
+    }
 }
 
-class rate: NSObject
+public class rate: NSObject, Identifiable
 {
-    fileprivate var myRateID: Int = 0
-    fileprivate var myClientID: Int = 0
+    public let id = UUID()
+    fileprivate var myRateID: Int64 = 0
+    fileprivate var myClientID: Int64 = 0
     fileprivate var myRateName: String = ""
     fileprivate var myRateAmount: Double = 0.0
     fileprivate var myChargeAmount: Double = 0.0
     fileprivate var myStartDate: Date = getDefaultDate()
-    fileprivate var myTeamID: Int = 0
+    fileprivate var myTeamID: Int64 = 0
+    fileprivate var myActive: Bool = true
     
-    var rateID: Int
+    public var rateID: Int64
     {
         get
         {
@@ -71,7 +156,7 @@ class rate: NSObject
         }
     }
     
-    var clientID: Int
+    public var clientID: Int64
     {
         get
         {
@@ -79,7 +164,7 @@ class rate: NSObject
         }
     }
     
-    var rateName: String
+    public var rateName: String
     {
         get
         {
@@ -91,7 +176,7 @@ class rate: NSObject
         }
     }
     
-    var rateAmount: Double
+    public var rateAmount: Double
     {
         get
         {
@@ -102,8 +187,8 @@ class rate: NSObject
             myRateAmount = newValue
         }
     }
-
-    var chargeAmount: Double
+    
+    public var chargeAmount: Double
     {
         get
         {
@@ -115,7 +200,15 @@ class rate: NSObject
         }
     }
     
-    var startDate: Date
+    public var GP: String
+    {
+        get
+        {
+            return String(format: "%.1f", ((myChargeAmount - myRateAmount) / myChargeAmount) * 100.0)
+        }
+    }
+    
+    public var startDate: Date
     {
         get
         {
@@ -127,7 +220,7 @@ class rate: NSObject
         }
     }
     
-    var displayStartDate: String
+    public var displayStartDate: String
     {
         get
         {
@@ -144,11 +237,11 @@ class rate: NSObject
         }
     }
     
-    var hasShiftEntry: Bool
+    public var hasShiftEntry: Bool
     {
         get
         {
-            if myDatabaseConnection.getShiftForRate(rateID: myRateID, type: shiftShiftType, teamID: myTeamID).count > 0
+            if myCloudDB.getShiftForRate(rateID: myRateID, type: shiftShiftType, teamID: myTeamID).count > 0
             {
                 return true
             }
@@ -158,43 +251,96 @@ class rate: NSObject
             }
         }
     }
-
-    init(clientID: Int, teamID: Int)
+    
+    public var isActive: Bool
+    {
+        get
+        {
+            return myActive
+        }
+        set
+        {
+            myActive = newValue
+            save()
+            currentUser.currentTeam?.rates = nil
+        }
+    }
+    
+    public init(clientID: Int64, teamID: Int64)
     {
         super.init()
         
-        myRateID = myDatabaseConnection.getNextID("Rates", teamID: teamID)
+        myRateID = myCloudDB.getNextID("Rates", teamID: teamID)
         myClientID = clientID
         myTeamID = teamID
         
         save()
+        currentUser.currentTeam?.rates = nil
     }
     
-    init(rateID: Int, teamID: Int)
+    public init(clientID: Int64,
+                rateName: String,
+                rateAmount: Double,
+                chargeAmount: Double,
+                startDate: Date,
+                teamID: Int64)
     {
         super.init()
-        let myReturn = myDatabaseConnection.getRatesDetails(rateID, teamID: teamID)
         
-        for myItem in myReturn
+        myRateID = myCloudDB.getNextID("Rates", teamID: teamID)
+        myClientID = clientID
+        myRateName = rateName
+        myRateAmount = rateAmount
+        myChargeAmount = chargeAmount
+        myStartDate = startDate
+        myTeamID = teamID
+        
+        save()
+        
+        currentUser.currentTeam?.rates = nil
+    }
+    
+    public init(rateID: Int64, teamID: Int64)
+    {
+        super.init()
+        if currentUser.currentTeam?.rates == nil
         {
-            myRateID = Int(myItem.rateID)
-            myClientID = Int(myItem.clientID)
+            currentUser.currentTeam?.rates = myCloudDB.getRates(teamID: teamID)
+        }
+        
+        var myItem: Rates!
+        
+        for item in (currentUser.currentTeam?.rates)!
+        {
+            if item.rateID == rateID
+            {
+                myItem = item
+                break
+            }
+        }
+        
+        if myItem != nil
+        {
+            myRateID = myItem.rateID
+            myClientID = myItem.clientID
             myRateName = myItem.rateName!
             myRateAmount = myItem.rateAmount
             myChargeAmount = myItem.chargeAmount
             myStartDate = myItem.startDate! as Date
-            myTeamID = Int(myItem.teamID)
+            myTeamID = myItem.teamID
+            myActive = myItem.active
         }
     }
     
-    init(rateID: Int,
-         clientID: Int,
-         rateName: String,
-         rateAmount: Double,
-         chargeAmount: Double,
-         startDate: Date,
-         teamID: Int
-         )
+    public init(rateID: Int64,
+                clientID: Int64,
+                rateName: String,
+                rateAmount: Double,
+                chargeAmount: Double,
+                startDate: Date,
+                teamID: Int64,
+                active: Bool
+        )
     {
         super.init()
         
@@ -205,357 +351,360 @@ class rate: NSObject
         myChargeAmount = chargeAmount
         myStartDate = startDate
         myTeamID = teamID
+        myActive = active
     }
     
-    func save()
+    public func save()
     {
-        if currentUser.checkPermission(financialsRoleType) == writePermission || currentUser.checkPermission(salesRoleType) == writePermission
+        if currentUser.checkWritePermission(financialsRoleType) || currentUser.checkWritePermission(salesRoleType)
         {
-            myDatabaseConnection.saveRates(myRateID,
-                                           clientID: myClientID,
-                                            rateName: myRateName,
-                                            rateAmount: myRateAmount,
-                                            chargeAmount: myChargeAmount,
-                                            startDate: myStartDate,
-                                            teamID: myTeamID
-                                             )
+            let temp = Rates(chargeAmount: myChargeAmount, clientID: myClientID, rateAmount: myRateAmount, rateID: myRateID, rateName: myRateName, startDate: myStartDate, teamID: myTeamID, active: myActive)
+            
+            myCloudDB.saveRatesRecordToCloudKit(temp)
         }
     }
     
-    func delete()
+    public func delete()
     {
-        if currentUser.checkPermission(financialsRoleType) == writePermission || currentUser.checkPermission(salesRoleType) == writePermission
+        if currentUser.checkWritePermission(financialsRoleType) || currentUser.checkWritePermission(salesRoleType)
         {
-            myDatabaseConnection.deleteRates(myRateID, teamID: myTeamID)
+            myCloudDB.deleteRates(myRateID, teamID: myTeamID)
+            currentUser.currentTeam?.rates = nil
         }
     }
 }
 
-extension coreDatabase
-{
-    func saveRates(_ rateID: Int,
-                   clientID: Int,
-                   rateName: String,
-                   rateAmount: Double,
-                   chargeAmount: Double,
-                   startDate: Date,
-                   teamID: Int,
-                     updateTime: Date =  Date(), updateType: String = "CODE")
-    {
-        var myItem: Rates!
-        
-        let myReturn = getRatesDetails(rateID, teamID: teamID)
-        
-        if myReturn.count == 0
-        { // Add
-            myItem = Rates(context: objectContext)
-            myItem.rateID = Int64(rateID)
-            myItem.clientID = Int64(clientID)
-            myItem.rateName = rateName
-            myItem.rateAmount = rateAmount
-            myItem.chargeAmount = chargeAmount
-            myItem.startDate = startDate
-            myItem.teamID = Int64(teamID)
-            
-            if updateType == "CODE"
-            {
-                myItem.updateTime =  Date()
-                
-                myItem.updateType = "Add"
-            }
-            else
-            {
-                myItem.updateTime = updateTime
-                myItem.updateType = updateType
-            }
-        }
-        else
-        {
-            myItem = myReturn[0]
-            myItem.clientID = Int64(clientID)
-            myItem.rateName = rateName
-            myItem.rateAmount = rateAmount
-            myItem.chargeAmount = chargeAmount
-            myItem.startDate = startDate
-            
-            if updateType == "CODE"
-            {
-                myItem.updateTime =  Date()
-                if myItem.updateType != "Add"
-                {
-                    myItem.updateType = "Update"
-                }
-            }
-            else
-            {
-                myItem.updateTime = updateTime
-                myItem.updateType = updateType
-            }
-        }
-        
-        saveContext()
+//extension coreDatabase
+//{
+//    func saveRates(_ rateID: Int,
+//                   clientID: Int,
+//                   rateName: String,
+//                   rateAmount: Double,
+//                   chargeAmount: Double,
+//                   startDate: Date,
+//                   teamID: Int,
+//                     updateTime: Date =  Date(), updateType: String = "CODE")
+//    {
+//        var myItem: Rates!
+//
+//        let myReturn = getRatesDetails(rateID, teamID: teamID)
+//
+//        if myReturn.count == 0
+//        { // Add
+//            myItem = Rates(context: objectContext)
+//            myItem.rateID = Int64(rateID)
+//            myItem.clientID = Int64(clientID)
+//            myItem.rateName = rateName
+//            myItem.rateAmount = rateAmount
+//            myItem.chargeAmount = chargeAmount
+//            myItem.startDate = startDate
+//            myItem.teamID = Int64(teamID)
+//
+//            if updateType == "CODE"
+//            {
+//                myItem.updateTime =  Date()
+//
+//                myItem.updateType = "Add"
+//            }
+//            else
+//            {
+//                myItem.updateTime = updateTime
+//                myItem.updateType = updateType
+//            }
+//        }
+//        else
+//        {
+//            myItem = myReturn[0]
+//            myItem.clientID = Int64(clientID)
+//            myItem.rateName = rateName
+//            myItem.rateAmount = rateAmount
+//            myItem.chargeAmount = chargeAmount
+//            myItem.startDate = startDate
+//
+//            if updateType == "CODE"
+//            {
+//                myItem.updateTime =  Date()
+//                if myItem.updateType != "Add"
+//                {
+//                    myItem.updateType = "Update"
+//                }
+//            }
+//            else
+//            {
+//                myItem.updateTime = updateTime
+//                myItem.updateType = updateType
+//            }
+//        }
+//
+//        saveContext()
+//
+//        self.recordsProcessed += 1
+//    }
+//
+//    func restoreRate(_ rateID: Int, teamID: Int)
+//    {
+//        for myItem in getRatesDetails(rateID, teamID: teamID)
+//        {
+//            myItem.updateType = "Update"
+//            myItem.updateTime = Date()
+//        }
+//        saveContext()
+//    }
+//
+//    func resetAllRates()
+//    {
+//        let fetchRequest = NSFetchRequest<Rates>(entityName: "Rates")
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults = try objectContext.fetch(fetchRequest)
+//            for myItem in fetchResults
+//            {
+//                myItem.updateTime =  Date()
+//                myItem.updateType = "Delete"
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: \(error)")
+//        }
+//
+//        saveContext()
+//    }
+//
+//    func clearDeletedRates(predicate: NSPredicate)
+//    {
+//        let fetchRequest2 = NSFetchRequest<Rates>(entityName: "Rates")
+//
+//        // Set the predicate on the fetch request
+//        fetchRequest2.predicate = predicate
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                objectContext.delete(myItem2 as NSManagedObject)
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: \(error)")
+//        }
+//        saveContext()
+//    }
+//
+//    func clearSyncedRates(predicate: NSPredicate)
+//    {
+//        let fetchRequest2 = NSFetchRequest<Rates>(entityName: "Rates")
+//
+//        // Set the predicate on the fetch request
+//        fetchRequest2.predicate = predicate
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                myItem2.updateType = ""
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: \(error)")
+//        }
+//
+//        saveContext()
+//    }
+//
+//    func getRatesForSync(_ syncDate: Date) -> [Rates]
+//    {
+//        let fetchRequest = NSFetchRequest<Rates>(entityName: "Rates")
+//
+//        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
+//
+//        // Set the predicate on the fetch request
+//
+//        fetchRequest.predicate = predicate
+//        // Execute the fetch request, and cast the results to an array of  objects
+//        do
+//        {
+//            let fetchResults = try objectContext.fetch(fetchRequest)
+//
+//            return fetchResults
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: \(error)")
+//            return []
+//        }
+//    }
+//
+//    func deleteAllRates()
+//    {
+//        let fetchRequest2 = NSFetchRequest<Rates>(entityName: "Rates")
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                self.objectContext.delete(myItem2 as NSManagedObject)
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: \(error)")
+//        }
+//
+//        saveContext()
+//    }
+//}
+//
 
-        self.recordsProcessed += 1
-    }
-    
-    func deleteRates(_ rateID: Int, teamID: Int)
-    {
-        let myReturn = getRatesDetails(rateID, teamID: teamID)
-        
-        if myReturn.count > 0
-        {
-            let myItem = myReturn[0]
-            myItem.updateTime =  Date()
-            myItem.updateType = "Delete"
-        }
-        
-        saveContext()
-    }
-    
-    func getRates(clientID: Int, teamID: Int)->[Rates]
-    {
-        let fetchRequest = NSFetchRequest<Rates>(entityName: "Rates")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(clientID == \(clientID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func getRatesDetails(_ rateID: Int, teamID: Int)->[Rates]
-    {
-        let fetchRequest = NSFetchRequest<Rates>(entityName: "Rates")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(rateID == \(rateID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func getDeletedRates(_ teamID: Int)->[Rates]
-    {
-        let fetchRequest = NSFetchRequest<Rates>(entityName: "Rates")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(updateType == \"Delete\") AND (teamID == \(teamID))")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        let sortDescriptor = NSSortDescriptor(key: "updateTime", ascending: false)
-        let sortDescriptors = [sortDescriptor]
-        fetchRequest.sortDescriptors = sortDescriptors
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func restoreRate(_ rateID: Int, teamID: Int)
-    {
-        for myItem in getRatesDetails(rateID, teamID: teamID)
-        {
-            myItem.updateType = "Update"
-            myItem.updateTime = Date()
-        }
-        saveContext()
-    }
-    
-    func resetAllRates()
-    {
-        let fetchRequest = NSFetchRequest<Rates>(entityName: "Rates")
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            for myItem in fetchResults
-            {
-                myItem.updateTime =  Date()
-                myItem.updateType = "Delete"
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        
-        saveContext()
-    }
-    
-    func clearDeletedRates(predicate: NSPredicate)
-    {
-        let fetchRequest2 = NSFetchRequest<Rates>(entityName: "Rates")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                objectContext.delete(myItem2 as NSManagedObject)
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        saveContext()
-    }
-    
-    func clearSyncedRates(predicate: NSPredicate)
-    {
-        let fetchRequest2 = NSFetchRequest<Rates>(entityName: "Rates")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                myItem2.updateType = ""
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        
-        saveContext()
-    }
-    
-    func getRatesForSync(_ syncDate: Date) -> [Rates]
-    {
-        let fetchRequest = NSFetchRequest<Rates>(entityName: "Rates")
-        
-        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
-        
-        // Set the predicate on the fetch request
-        
-        fetchRequest.predicate = predicate
-        // Execute the fetch request, and cast the results to an array of  objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func deleteAllRates()
-    {
-        let fetchRequest2 = NSFetchRequest<Rates>(entityName: "Rates")
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                self.objectContext.delete(myItem2 as NSManagedObject)
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        
-        saveContext()
-    }
+public struct Rates {
+    public var chargeAmount: Double
+    public var clientID: Int64
+    public var rateAmount: Double
+    public var rateID: Int64
+    public var rateName: String?
+    public var startDate: Date?
+    public var teamID: Int64
+    public var active: Bool!
 }
 
 extension CloudKitInteraction
 {
-    func saveRatesToCloudKit()
+    private func populateRates(_ records: [CKRecord]) -> [Rates]
     {
-        for myItem in myDatabaseConnection.getRatesForSync(getSyncDateForTable(tableName: "Rates"))
+        var tempArray: [Rates] = Array()
+        
+        for record in records
         {
-            saveRatesRecordToCloudKit(myItem)
+            var rateID: Int64 = 0
+            if record.object(forKey: "rateID") != nil
+            {
+                rateID = record.object(forKey: "rateID") as! Int64
+            }
+            
+            var clientID: Int64 = 0
+            if record.object(forKey: "clientID") != nil
+            {
+                clientID = record.object(forKey: "clientID") as! Int64
+            }
+            
+            var rateAmount: Double = 0.0
+            if record.object(forKey: "rateAmount") != nil
+            {
+                rateAmount = record.object(forKey: "rateAmount") as! Double
+            }
+            
+            var chargeAmount: Double = 0.0
+            if record.object(forKey: "chargeAmount") != nil
+            {
+                chargeAmount = record.object(forKey: "chargeAmount") as! Double
+            }
+            
+            var startDate: Date = getDefaultDate()
+            if record.object(forKey: "startDate") != nil
+            {
+                startDate = record.object(forKey: "startDate") as! Date
+            }
+            
+            var active: Bool = true
+            if record.object(forKey: "active") != nil
+            {
+                if record.object(forKey: "active") as? String == "false"
+                {
+                    active = false
+                }
+            }
+            
+            var teamID: Int64 = 0
+            if record.object(forKey: "teamID") != nil
+            {
+                teamID = record.object(forKey: "teamID") as! Int64
+            }
+            
+            let tempItem = Rates(chargeAmount: chargeAmount,
+                                 clientID: clientID,
+                                 rateAmount: rateAmount,
+                                 rateID: rateID,
+                                 rateName: record.object(forKey: "rateName") as? String,
+                                 startDate: startDate,
+                                 teamID: teamID,
+                                 active: active)
+            
+            tempArray.append(tempItem)
         }
+        
+        return tempArray
     }
     
-    func updateRatesInCoreData()
+    func getRates(clientID: Int64, teamID: Int64)->[Rates]
     {
-        let predicate: NSPredicate = NSPredicate(format: "(updateTime >= %@) AND \(buildTeamList(currentUser.userID))", getSyncDateForTable(tableName: "Rates") as CVarArg)
-        let query: CKQuery = CKQuery(recordType: "Rates", predicate: predicate)
+        let predicate = NSPredicate(format: "(clientID == \(clientID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
         
-        let operation = CKQueryOperation(query: query)
-
-        operation.recordFetchedBlock = { (record) in
-            self.updateRatesRecord(record)
-        }
-        let operationQueue = OperationQueue()
+        let query = CKQuery(recordType: "Rates", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
         
-        executePublicQueryOperation(targetTable: "Rates", queryOperation: operation, onOperationQueue: operationQueue)
+        sem.wait()
+        let shiftArray: [Rates] = populateRates(returnArray)
+        
+        return shiftArray
     }
     
-//    func deleteRates(rateID: Int)
-//    {
-//        let sem = DispatchSemaphore(value: 0);
-//        
-//        var myRecordList: [CKRecordID] = Array()
-//        let predicate: NSPredicate = NSPredicate(format: "\(buildTeamList(currentUser.userID)) AND (rateID == \(rateID))")
-//        let query: CKQuery = CKQuery(recordType: "Rates", predicate: predicate)
-//        publicDB.perform(query, inZoneWith: nil, completionHandler: {(results: [CKRecord]?, error: Error?) in
-//            for record in results!
-//            {
-//                myRecordList.append(record.recordID)
-//            }
-//            self.performPublicDelete(myRecordList)
-//            sem.signal()
-//        })
-//        
-//        sem.wait()
-//    }
-
+    func getRates(teamID: Int64)->[Rates]
+    {
+        let predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\")")
+        
+        let query = CKQuery(recordType: "Rates", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Rates] = populateRates(returnArray)
+        
+        return shiftArray
+    }
+    
+    func getRatesDetails(_ rateID: Int64, teamID: Int64)->[Rates]
+    {
+        let predicate = NSPredicate(format: "(rateID == \(rateID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
+        
+        let query = CKQuery(recordType: "Rates", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Rates] = populateRates(returnArray)
+        
+        return shiftArray
+    }
+    
+    func deleteRates(_ rateID: Int64, teamID: Int64)
+    {
+        let predicate = NSPredicate(format: "(rateID == \(rateID)) AND (teamID == \(teamID))")
+        
+        let sem = DispatchSemaphore(value: 0)
+        
+        let query = CKQuery(recordType: "Rates", predicate: predicate)
+        publicDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
+            
+            self.performPublicDelete(records!)
+            
+            sem.signal()
+        })
+        sem.wait()
+    }
+    
     func saveRatesRecordToCloudKit(_ sourceRecord: Rates)
     {
         let sem = DispatchSemaphore(value: 0)
@@ -581,12 +730,14 @@ extension CloudKitInteraction
                     record!.setValue(sourceRecord.rateAmount, forKey: "rateAmount")
                     record!.setValue(sourceRecord.chargeAmount, forKey: "chargeAmount")
                     record!.setValue(sourceRecord.startDate, forKey: "startDate")
-                    
-                    if sourceRecord.updateTime != nil
+                    if sourceRecord.active
                     {
-                        record!.setValue(sourceRecord.updateTime, forKey: "updateTime")
+                        record!.setValue("true", forKey: "active")
                     }
-                    record!.setValue(sourceRecord.updateType, forKey: "updateType")
+                    else
+                    {
+                        record!.setValue("false", forKey: "active")
+                    }
                     
                     // Save this record again
                     self.publicDB.save(record!, completionHandler: { (savedRecord, saveError) in
@@ -594,6 +745,7 @@ extension CloudKitInteraction
                         {
                             NSLog("Error saving record: \(saveError!.localizedDescription)")
                             self.saveOK = false
+                            sem.signal()
                         }
                         else
                         {
@@ -601,6 +753,7 @@ extension CloudKitInteraction
                             {
                                 NSLog("Successfully updated record!")
                             }
+                            sem.signal()
                         }
                     })
                 }
@@ -613,20 +766,23 @@ extension CloudKitInteraction
                     record.setValue(sourceRecord.rateAmount, forKey: "rateAmount")
                     record.setValue(sourceRecord.chargeAmount, forKey: "chargeAmount")
                     record.setValue(sourceRecord.startDate, forKey: "startDate")
-                    
                     record.setValue(sourceRecord.teamID, forKey: "teamID")
                     
-                    if sourceRecord.updateTime != nil
+                    if sourceRecord.active
                     {
-                        record.setValue(sourceRecord.updateTime, forKey: "updateTime")
+                        record.setValue("true", forKey: "active")
                     }
-                    record.setValue(sourceRecord.updateType, forKey: "updateType")
+                    else
+                    {
+                        record.setValue("false", forKey: "active")
+                    }
                     
                     self.publicDB.save(record, completionHandler: { (savedRecord, saveError) in
                         if saveError != nil
                         {
                             NSLog("Error saving record: \(saveError!.localizedDescription)")
                             self.saveOK = false
+                            sem.signal()
                         }
                         else
                         {
@@ -634,85 +790,30 @@ extension CloudKitInteraction
                             {
                                 NSLog("Successfully saved record!")
                             }
+                            sem.signal()
                         }
                     })
                 }
             }
-            sem.signal()
         })
         sem.wait()
+        
+        sleep(2)
     }
-
-    func updateRatesRecord(_ sourceRecord: CKRecord)
+    
+    func getDeletedRates(_ teamID: Int64)->[Rates]
     {
-        let rateName = sourceRecord.object(forKey: "rateName") as! String
+        let predicate = NSPredicate(format: "(updateType == \"Delete\") AND (teamID == \(teamID))")
         
-        var rateID: Int = 0
-        if sourceRecord.object(forKey: "rateID") != nil
-        {
-            rateID = sourceRecord.object(forKey: "rateID") as! Int
-        }
+        let query = CKQuery(recordType: "Clients", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
         
-        var clientID: Int = 0
-        if sourceRecord.object(forKey: "clientID") != nil
-        {
-            clientID = sourceRecord.object(forKey: "clientID") as! Int
-        }
+        sem.wait()
         
-        var rateAmount: Double = 0.0
-        if sourceRecord.object(forKey: "rateAmount") != nil
-        {
-            rateAmount = sourceRecord.object(forKey: "rateAmount") as! Double
-        }
+        let shiftArray: [Rates] = populateRates(returnArray)
         
-        var chargeAmount: Double = 0.0
-        if sourceRecord.object(forKey: "chargeAmount") != nil
-        {
-            chargeAmount = sourceRecord.object(forKey: "chargeAmount") as! Double
-        }
-        
-        var startDate: Date = getDefaultDate()
-        if sourceRecord.object(forKey: "startDate") != nil
-        {
-            startDate = sourceRecord.object(forKey: "startDate") as! Date
-        }
-        
-        var updateTime = Date()
-        if sourceRecord.object(forKey: "updateTime") != nil
-        {
-            updateTime = sourceRecord.object(forKey: "updateTime") as! Date
-        }
-        
-        var updateType: String = ""
-        if sourceRecord.object(forKey: "updateType") != nil
-        {
-            updateType = sourceRecord.object(forKey: "updateType") as! String
-        }
-        
-        var teamID: Int = 0
-        if sourceRecord.object(forKey: "teamID") != nil
-        {
-            teamID = sourceRecord.object(forKey: "teamID") as! Int
-        }
-        
-        myDatabaseConnection.recordsToChange += 1
-        
-        while self.recordCount > 0
-        {
-            usleep(self.sleepTime)
-        }
-        
-        self.recordCount += 1
-        
-        myDatabaseConnection.saveRates(rateID,
-                                         clientID: clientID,
-                                         rateName: rateName,
-                                         rateAmount: rateAmount,
-                                         chargeAmount: chargeAmount,
-                                         startDate: startDate,
-                                         teamID: teamID
-                                         , updateTime: updateTime, updateType: updateType)
-        self.recordCount -= 1
+        return shiftArray
     }
 }
 

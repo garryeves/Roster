@@ -10,28 +10,30 @@ import Foundation
 
 import UIKit
 
-@objc protocol MyPickerDelegate
+@objc public protocol MyPickerDelegate
 {
     @objc optional func myPickerDidFinish(_ source: String, selectedItem:Int)
     @objc optional func myPickerDidFinish(_ source: String, selectedDouble:Double)
     @objc optional func myPickerDidFinish(_ source: String, selectedString:String)
     @objc optional func myPickerDidFinish(_ source: String, selectedDate:Date)
     @objc optional func myPickerDidFinish(_ source: String)
+    @objc optional func refreshScreen()
+    @objc optional func shiftDeleted(projectID: Int64, shiftLineID: Int64, weekEndDate: Date, workDate: Date, teamID: Int64)
 }
 
-class PickerViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource
+public class PickerViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource
 {
     @IBOutlet weak var myPicker: UIPickerView!
     
-    var pickerValues: [String]?
-    var source: String?
-    var currentValue: String?
-    var delegate: MyPickerDelegate?
+    public var pickerValues: [String]?
+    public var source: String?
+    public var currentValue: String?
+    public var delegate: MyPickerDelegate?
     
     private var selectedRow: Int = 0
     private var maxLines: CGFloat = 0.0
     
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
                 
@@ -68,13 +70,18 @@ class PickerViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         myPicker.selectRow(selectedRow, inComponent: 0, animated: true)
     }
     
-    override func viewWillDisappear(_ animated: Bool)
+    override public func viewDidDisappear(_ animated: Bool)
     {
-        super.viewWillDisappear(animated)
+        super.viewDidDisappear(animated)
         delegate!.myPickerDidFinish!(source!, selectedItem: selectedRow)
     }
+    override public func viewWillDisappear(_ animated: Bool)
+    {
+        super.viewWillDisappear(animated)
+//        delegate!.myPickerDidFinish!(source!, selectedItem: selectedRow)
+    }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }

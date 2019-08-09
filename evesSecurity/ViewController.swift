@@ -7,37 +7,44 @@
 //
 
 import UIKit
+import evesShared
 
-class ViewController: UIViewController, myCommunicationDelegate
+class ViewController: UIViewController, myCommunicationDelegate, MyPickerDelegate, UIPopoverPresentationControllerDelegate
 {
-    @IBOutlet weak var progressbar: UIProgressView!
+    @IBOutlet weak var btnDummy: UIButton!
+    @IBOutlet weak var lblMessage: UILabel!
+    @IBOutlet weak var lblMessage2: UILabel!
+    
+    private var displayList: [String] = Array()
+    private var teamList: userTeams!
     
     override func viewDidLoad()
     {
-        myDatabaseConnection = coreDatabase()
-        myCloudDB = CloudKitInteraction()
-
-        progressbar.progress = 0.0
-        progressbar.progressViewStyle = .bar
-        
-        progressbar.layer.borderWidth = 2
-        progressbar.layer.borderColor = UIColor.black.cgColor
-        
-        if readDefaultInt(userDefaultName) <= 0
-        {
-            Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.loadNewUserScreen), userInfo: nil, repeats: false)
-        }
-        else
-        {
-            if readDefaultString(userDefaultPassword) != ""
-            {
-                Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.showPasswordScreen), userInfo: nil, repeats: false)
-            }
-            else
-            {
-                passwordCorrect()
-            }
-        }
+//        let myReachability = Reachability()
+//        if !myReachability.isConnectedToNetwork()
+//        {
+//            lblMessage.text = "You are not connected to the Internet"
+//            lblMessage2.text = "Please connect to the Internet to use this app."
+//        }
+//        else
+//        {
+//            myCloudDB = CloudKitInteraction()
+//            if readDefaultInt(userDefaultName) <= 0
+//            {
+//                Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.loadNewUserScreen), userInfo: nil, repeats: false)
+//            }
+//            else
+//            {
+//                if readDefaultString(userDefaultPassword) != ""
+//                {
+//                    Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.showPasswordScreen), userInfo: nil, repeats: false)
+//                }
+//                else
+//                {
+//                    passwordCorrect()
+//                }
+//            }
+//        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -45,115 +52,122 @@ class ViewController: UIViewController, myCommunicationDelegate
         // Dispose of any resources that can be recreated.
     }
  
-    @objc func loadNewUserScreen()
-    {
-        let loginViewControl = loginStoryboard.instantiateViewController(withIdentifier: "newInstance") as! newInstanceViewController
-        loginViewControl.communicationDelegate = self
-        self.present(loginViewControl, animated: true, completion: nil)
-    }
+//    @objc func loadNewUserScreen()
+//    {
+//        openUser(self, commsDelegate: self)
+//    }
+//
+//    func orgEdit(_ organisation: team?)
+//    {
+//        openOrg(target: organisation, sourceView: self, commsDelegate: self)
+//    }
+//
+//    func userCreated(_ userRecord: userItem, teamID: Int64)
+//    {
+//        // Add the user/team combo to userteams
+//
+//        let myItem = userTeamItem(userID: userRecord.userID, teamID: teamID)
+//
+//        myItem.save()
+//
+//        openUserForm(userRecord, sourceView: self, commsDelegate: self)
+//    }
+//
+//    @objc func userLoaded()
+//    {
+//        notificationCenter.removeObserver(NotificationUserLoaded)
+//        callLoadMainScreen()
+//    }
+//
+//    @objc func showPasswordScreen()
+//    {
+//        openPassword(self, commsDelegate: self)
+//    }
+//
+//    func callLoadMainScreen()
+//    {
+//gaza move all this into new code
+//        if currentUser.currentTeam == nil
+//        {
+//            currentUser.loadTeams()
+//        }
+//
+//        if readDefaultInt("teamID") >= 0
+//        {
+//            currentUser.currentTeam = team(teamID: Int64(readDefaultInt("teamID")))
+//        }
+//
+//        let iapInstance = IAPHandler()
+//        iapInstance.checkReceipt()
+//
+//        DispatchQueue.main.async
+//        {
+//            self.teamList = userTeams(userID: currentUser.userID)
+//            self.displayList.removeAll()
+//
+//            if self.teamList.UserTeams.count > 1
+//            {
+//                for myItem in self.teamList.UserTeams
+//                {
+//                    let tempTeam = team(teamID: myItem.teamID)
+//                    self.displayList.append(tempTeam.name)
+//                }
+//
+//                if self.displayList.count > 0
+//                {
+//                    let pickerView = pickerStoryboard.instantiateViewController(withIdentifier: "pickerView") as! PickerViewController
+//                    pickerView.modalPresentationStyle = .popover
+//
+//                    let popover = pickerView.popoverPresentationController!
+//                    popover.delegate = self
+//                    popover.sourceView = self.btnDummy
+//                    popover.sourceRect = self.btnDummy.bounds
+//                    popover.permittedArrowDirections = .any
+//
+//                    pickerView.source = "TeamList"
+//                    pickerView.delegate = self
+//                    pickerView.pickerValues = self.displayList
+//                    pickerView.preferredContentSize = CGSize(width: 600,height: 400)
+//                    pickerView.currentValue = self.btnDummy.currentTitle!
+//                    self.present(pickerView, animated: true, completion: nil)
+//                }
+//            }
+//            else
+//            {
+//                Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.loadMainScreen), userInfo: nil, repeats: false)
+//            }
+//        }
+ //   }
     
-    func orgEdit(_ organisation: team?)
+    func myPickerDidFinish(_ source: String, selectedItem:Int)
     {
-        let orgEditViewControl = loginStoryboard.instantiateViewController(withIdentifier: "orgEdit") as! orgEditViewController
-        orgEditViewControl.communicationDelegate = self
-        orgEditViewControl.workingOrganisation = organisation
-        self.present(orgEditViewControl, animated: true, completion: nil)
-    }
-    
-    func userCreated(_ userRecord: userItem, teamID: Int)
-    {
-        // Add the user/team combo to userteams
-        
-        let myItem = userTeamItem(userID: userRecord.userID, teamID: teamID)
-        
-        myItem.save()
-        
-        let userEditViewControl = loginStoryboard.instantiateViewController(withIdentifier: "userForm") as! userFormViewController
-        userEditViewControl.workingUser = userRecord
-        userEditViewControl.communicationDelegate = self
-        userEditViewControl.initialUser = true
-        self.present(userEditViewControl, animated: true, completion: nil)
-    }
-    
-    @objc func userLoaded()
-    {
-        notificationCenter.removeObserver(NotificationUserLoaded)
-        callLoadMainScreen()
-    }
-    
-    @objc func showPasswordScreen()
-    {
-        let passwordViewControl = loginStoryboard.instantiateViewController(withIdentifier: "enterPassword") as! validatePasswordViewController
-        passwordViewControl.communicationDelegate = self
-        self.present(passwordViewControl, animated: true, completion: nil)
-    }
-    
-    func callLoadMainScreen()
-    {
-        let iapInstance = IAPHandler()
-        iapInstance.checkReceipt()
-        
-        
-        DispatchQueue.main.async
+        if source == "TeamList"
         {
-            Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.loadMainScreen), userInfo: nil, repeats: false)
-        }
-    }
-    
-    func loadMainScreen()
-    {
-        myDatabaseConnection.recordsProcessed = 0
-        
-myDatabaseConnection.fixDropDowns()
-        
-        
-        
-        let myReachability = Reachability()
-        if myReachability.isConnectedToNetwork()
-        {
-            DispatchQueue.global().async
+            if selectedItem >= 0
             {
-                myDBSync.sync()
-            }
-            
-            Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(self.progressBarStatus), userInfo: nil, repeats: false)
-        }
-        else
-        {
-            DispatchQueue.main.async
-            {
-                let mainViewControl = self.storyboard?.instantiateViewController(withIdentifier: "mainScreen") as! securityViewController
-                mainViewControl.communicationDelegate = self
-                self.present(mainViewControl, animated: true, completion: nil)
-            }
-        }
-    }
-    
-    @objc func progressBarStatus()
-    {
-        if myDBSync.syncProgress < myDBSync.syncTotal
-        {
-            progressbar.progress = Float(myDBSync.syncProgress) / Float(myDBSync.syncTotal)
-            Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(self.progressBarStatus), userInfo: nil, repeats: false)
-        }
-        else
-        {
-            sleep(3)
-            
-            DispatchQueue.main.async
-            {
-                let mainViewControl = self.storyboard?.instantiateViewController(withIdentifier: "mainScreen") as! securityViewController
-                mainViewControl.communicationDelegate = self
-                self.present(mainViewControl, animated: true, completion: nil)
+                currentUser.currentTeam = team(teamID: teamList.UserTeams[selectedItem].teamID)
+                writeDefaultInt("teamID", value: Int(currentUser.currentTeam!.teamID))
+   //             loadMainScreen()
             }
         }
     }
     
-    func passwordCorrect()
-    {
-        notificationCenter.addObserver(self, selector: #selector(self.userLoaded), name: NotificationUserLoaded, object: nil)
-        currentUser = userItem(userID: Int(readDefaultString(userDefaultName))!)
-        currentUser.getUserDetails()
-    }
+//    func loadMainScreen()
+//    {
+//        let myReachability = Reachability()
+//        if myReachability.isConnectedToNetwork()
+//        {
+//            let split = self.storyboard?.instantiateViewController(withIdentifier: "mainSplitViewControl") as! mainSplitView
+//
+//            self.view.window?.rootViewController = split
+//        }
+//    }
+//
+//    func passwordCorrect()
+//    {
+//        notificationCenter.addObserver(self, selector: #selector(self.userLoaded), name: NotificationUserLoaded, object: nil)
+//        currentUser = userItem(userID: Int64(readDefaultString(userDefaultName))!)
+//        currentUser.getUserDetails()
+//    }
 }
 

@@ -7,27 +7,34 @@
 //
 
 import Foundation
-import CoreData
+//import CoreData
 import CloudKit
+import SwiftUI
 
-class personAdditionalInfos: NSObject
+public class personAdditionalInfos: NSObject, Identifiable
 {
+    public let id = UUID()
     fileprivate var myAdditional:[personAdditionalInfo] = Array()
     
-    init(teamID: Int)
+    public init(teamID: Int64)
     {
-        for myItem in myDatabaseConnection.getPersonAdditionalInfo(teamID: teamID)
+        if currentUser.currentTeam?.personAdditionalInfo == nil
         {
-            let myObject = personAdditionalInfo(addInfoID: Int(myItem.addInfoID),
-                                   addInfoName: myItem.addInfoName!,
-                addInfoType: myItem.addInfoType!,
-                teamID: Int(myItem.teamID)
-                                   )
+            currentUser.currentTeam?.personAdditionalInfo = myCloudDB.getPersonAdditionalInfo(teamID: teamID)
+        }
+        
+        for myItem in (currentUser.currentTeam?.personAdditionalInfo)!
+        {
+            let myObject = personAdditionalInfo(addInfoID: myItem.addInfoID,
+                                                addInfoName: myItem.addInfoName!,
+                                                addInfoType: myItem.addInfoType!,
+                                                teamID: myItem.teamID
+            )
             myAdditional.append(myObject)
         }
     }
     
-    var personAdditionalInfos: [personAdditionalInfo]
+    public var personAdditionalInfos: [personAdditionalInfo]
     {
         get
         {
@@ -36,14 +43,15 @@ class personAdditionalInfos: NSObject
     }
 }
 
-class personAdditionalInfo: NSObject
+public class personAdditionalInfo: NSObject, Identifiable
 {
-    fileprivate var myAddInfoID: Int = 0
+    public let id = UUID()
+    fileprivate var myAddInfoID: Int64 = 0
     fileprivate var myAddInfoName: String = ""
     fileprivate var myAddInfoType: String = ""
-    fileprivate var myTeamID: Int = 0
+    fileprivate var myTeamID: Int64 = 0
     
-    var addInfoID: Int
+    public var addInfoID: Int64
     {
         get
         {
@@ -51,7 +59,7 @@ class personAdditionalInfo: NSObject
         }
     }
     
-    var addInfoName: String
+    public var addInfoName: String
     {
         get
         {
@@ -63,7 +71,7 @@ class personAdditionalInfo: NSObject
         }
     }
     
-    var addInfoType: String
+    public var addInfoType: String
     {
         get
         {
@@ -75,35 +83,53 @@ class personAdditionalInfo: NSObject
         }
     }
     
-    init(teamID: Int)
+    override public init() {}
+    
+    public init(teamID: Int64)
     {
         super.init()
         
-        myAddInfoID = myDatabaseConnection.getNextID("personAdditionalInfo", teamID: teamID)
+        myAddInfoID = myCloudDB.getNextID("personAdditionalInfo", teamID: teamID)
         myTeamID = teamID
         
+        currentUser.currentTeam?.personAdditionalInfo = nil
         save()
     }
     
-    init(addInfoID: Int, teamID: Int)
+    public init(addInfoID: Int64, teamID: Int64)
     {
         super.init()
-        let myReturn = myDatabaseConnection.getPersonAdditionalInfoDetails(addInfoID, teamID: teamID)
         
-        for myItem in myReturn
+        if currentUser.currentTeam?.personAdditionalInfo == nil
         {
-            myAddInfoID = Int(myItem.addInfoID)
+            currentUser.currentTeam?.personAdditionalInfo = myCloudDB.getPersonAdditionalInfo(teamID: teamID)
+        }
+        
+        var myItem: PersonAdditionalInfo!
+        
+        for item in (currentUser.currentTeam?.personAdditionalInfo)!
+        {
+            if item.addInfoID == addInfoID
+            {
+                myItem = item
+                break
+            }
+        }
+        
+        if myItem != nil
+        {
+            myAddInfoID = myItem.addInfoID
             myAddInfoName = myItem.addInfoName!
             myAddInfoType = myItem.addInfoType!
-            myTeamID = Int(myItem.teamID)
+            myTeamID = myItem.teamID
         }
     }
     
-    init(addInfoID: Int,
-         addInfoName: String,
-         addInfoType: String,
-         teamID: Int
-         )
+    public init(addInfoID: Int64,
+                addInfoName: String,
+                addInfoType: String,
+                teamID: Int64
+        )
     {
         super.init()
         
@@ -113,304 +139,283 @@ class personAdditionalInfo: NSObject
         myTeamID = teamID
     }
     
-    func save()
+    public func save()
     {
-        if currentUser.checkPermission(adminRoleType) == writePermission
+        if currentUser.checkWritePermission(adminRoleType)
         {
-            myDatabaseConnection.savePersonAdditionalInfo(myAddInfoID,
-                                             addInfoName: myAddInfoName,
-                                             addInfoType: myAddInfoType,
-                                             teamID: myTeamID
-                                             )
+            let temp = PersonAdditionalInfo(addInfoID: myAddInfoID, addInfoName: myAddInfoName, addInfoType: myAddInfoType, teamID: myTeamID)
+            
+            myCloudDB.savePersonAdditionalInfoRecordToCloudKit(temp)
         }
     }
     
-    func delete()
+    public func delete()
     {
-        if currentUser.checkPermission(adminRoleType) == writePermission
+        if currentUser.checkWritePermission(adminRoleType)
         {
-            myDatabaseConnection.deletePersonAdditionalInfo(myAddInfoID, teamID: myTeamID)
+            myCloudDB.deletePersonAdditionalInfo(myAddInfoID, teamID: myTeamID)
+            currentUser.currentTeam?.personAdditionalInfo = nil
         }
     }
 }
 
-extension coreDatabase
-{
-    func savePersonAdditionalInfo(_ addInfoID: Int,
-                     addInfoName: String,
-                     addInfoType: String,
-                     teamID: Int,
-                     updateTime: Date =  Date(), updateType: String = "CODE")
-    {
-        var myItem: PersonAdditionalInfo!
-        
-        let myReturn = getPersonAdditionalInfoDetails(addInfoID, teamID: teamID)
-        
-        if myReturn.count == 0
-        { // Add
-            myItem = PersonAdditionalInfo(context: objectContext)
-            myItem.addInfoID = Int64(addInfoID)
-            myItem.addInfoName = addInfoName
-            myItem.addInfoType = addInfoType
-            myItem.teamID = Int64(teamID)
-            
-            if updateType == "CODE"
-            {
-                myItem.updateTime =  Date()
-                
-                myItem.updateType = "Add"
-            }
-            else
-            {
-                myItem.updateTime = updateTime
-                myItem.updateType = updateType
-            }
-        }
-        else
-        {
-            myItem = myReturn[0]
-            myItem.addInfoName = addInfoName
-            myItem.addInfoType = addInfoType
-            
-            if updateType == "CODE"
-            {
-                myItem.updateTime =  Date()
-                if myItem.updateType != "Add"
-                {
-                    myItem.updateType = "Update"
-                }
-            }
-            else
-            {
-                myItem.updateTime = updateTime
-                myItem.updateType = updateType
-            }
-        }
-        
-        saveContext()
+//extension coreDatabase
+//{
+//    func savePersonAdditionalInfo(_ addInfoID: Int,
+//                     addInfoName: String,
+//                     addInfoType: String,
+//                     teamID: Int,
+//                     updateTime: Date =  Date(), updateType: String = "CODE")
+//    {
+//        var myItem: PersonAdditionalInfo!
+//
+//        let myReturn = getPersonAdditionalInfoDetails(addInfoID, teamID: teamID)
+//
+//        if myReturn.count == 0
+//        { // Add
+//            myItem = PersonAdditionalInfo(context: objectContext)
+//            myItem.addInfoID = Int64(addInfoID)
+//            myItem.addInfoName = addInfoName
+//            myItem.addInfoType = addInfoType
+//            myItem.teamID = Int64(teamID)
+//
+//            if updateType == "CODE"
+//            {
+//                myItem.updateTime =  Date()
+//
+//                myItem.updateType = "Add"
+//            }
+//            else
+//            {
+//                myItem.updateTime = updateTime
+//                myItem.updateType = updateType
+//            }
+//        }
+//        else
+//        {
+//            myItem = myReturn[0]
+//            myItem.addInfoName = addInfoName
+//            myItem.addInfoType = addInfoType
+//
+//            if updateType == "CODE"
+//            {
+//                myItem.updateTime =  Date()
+//                if myItem.updateType != "Add"
+//                {
+//                    myItem.updateType = "Update"
+//                }
+//            }
+//            else
+//            {
+//                myItem.updateTime = updateTime
+//                myItem.updateType = updateType
+//            }
+//        }
+//
+//        saveContext()
+//
+//        self.recordsProcessed += 1
+//    }
+//
+//
+//    func resetAllPersonAdditionalInfoDetails()
+//    {
+//        let fetchRequest = NSFetchRequest<PersonAdditionalInfo>(entityName: "PersonAdditionalInfo")
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults = try objectContext.fetch(fetchRequest)
+//            for myItem in fetchResults
+//            {
+//                myItem.updateTime =  Date()
+//                myItem.updateType = "Delete"
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: \(error)")
+//        }
+//
+//        saveContext()
+//    }
+//
+//    func clearDeletedPersonAdditionalInfo(predicate: NSPredicate)
+//    {
+//        let fetchRequest2 = NSFetchRequest<PersonAdditionalInfo>(entityName: "PersonAdditionalInfo")
+//
+//        // Set the predicate on the fetch request
+//        fetchRequest2.predicate = predicate
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                objectContext.delete(myItem2 as NSManagedObject)
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: \(error)")
+//        }
+//        saveContext()
+//    }
+//
+//    func clearSyncedPersonAdditionalInfo(predicate: NSPredicate)
+//    {
+//        let fetchRequest2 = NSFetchRequest<PersonAdditionalInfo>(entityName: "PersonAdditionalInfo")
+//
+//        // Set the predicate on the fetch request
+//        fetchRequest2.predicate = predicate
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                myItem2.updateType = ""
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: \(error)")
+//        }
+//
+//        saveContext()
+//    }
+//
+//    func getPersonAdditionalInfoForSync(_ syncDate: Date) -> [PersonAdditionalInfo]
+//    {
+//        let fetchRequest = NSFetchRequest<PersonAdditionalInfo>(entityName: "PersonAdditionalInfo")
+//
+//        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
+//
+//        // Set the predicate on the fetch request
+//
+//        fetchRequest.predicate = predicate
+//        // Execute the fetch request, and cast the results to an array of  objects
+//        do
+//        {
+//            let fetchResults = try objectContext.fetch(fetchRequest)
+//
+//            return fetchResults
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: \(error)")
+//            return []
+//        }
+//    }
+//
+//    func deleteAllPersonAdditionalInfo()
+//    {
+//        let fetchRequest2 = NSFetchRequest<PersonAdditionalInfo>(entityName: "PersonAdditionalInfo")
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                self.objectContext.delete(myItem2 as NSManagedObject)
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: \(error)")
+//        }
+//
+//        saveContext()
+//    }
+//}
+//
 
-        self.recordsProcessed += 1
-    }
-    
-    func deletePersonAdditionalInfo(_ addInfoID: Int, teamID: Int)
-    {
-        let myReturn = getPersonAdditionalInfoDetails(addInfoID, teamID: teamID)
-        
-        if myReturn.count > 0
-        {
-            let myItem = myReturn[0]
-            myItem.updateTime =  Date()
-            myItem.updateType = "Delete"
-        }
-        
-        saveContext()
-    }
-    
-    func getPersonAdditionalInfo(teamID: Int)->[PersonAdditionalInfo]
-    {
-        let fetchRequest = NSFetchRequest<PersonAdditionalInfo>(entityName: "PersonAdditionalInfo")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\")")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func getPersonAdditionalInfoDetails(_ addInfoID: Int, teamID: Int)->[PersonAdditionalInfo]
-    {
-        let fetchRequest = NSFetchRequest<PersonAdditionalInfo>(entityName: "PersonAdditionalInfo")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(addInfoID == \(addInfoID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func resetAllPersonAdditionalInfoDetails()
-    {
-        let fetchRequest = NSFetchRequest<PersonAdditionalInfo>(entityName: "PersonAdditionalInfo")
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            for myItem in fetchResults
-            {
-                myItem.updateTime =  Date()
-                myItem.updateType = "Delete"
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        
-        saveContext()
-    }
-    
-    func clearDeletedPersonAdditionalInfo(predicate: NSPredicate)
-    {
-        let fetchRequest2 = NSFetchRequest<PersonAdditionalInfo>(entityName: "PersonAdditionalInfo")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                objectContext.delete(myItem2 as NSManagedObject)
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        saveContext()
-    }
-    
-    func clearSyncedPersonAdditionalInfo(predicate: NSPredicate)
-    {
-        let fetchRequest2 = NSFetchRequest<PersonAdditionalInfo>(entityName: "PersonAdditionalInfo")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                myItem2.updateType = ""
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        
-        saveContext()
-    }
-    
-    func getPersonAdditionalInfoForSync(_ syncDate: Date) -> [PersonAdditionalInfo]
-    {
-        let fetchRequest = NSFetchRequest<PersonAdditionalInfo>(entityName: "PersonAdditionalInfo")
-        
-        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
-        
-        // Set the predicate on the fetch request
-        
-        fetchRequest.predicate = predicate
-        // Execute the fetch request, and cast the results to an array of  objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func deleteAllPersonAdditionalInfo()
-    {
-        let fetchRequest2 = NSFetchRequest<PersonAdditionalInfo>(entityName: "PersonAdditionalInfo")
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                self.objectContext.delete(myItem2 as NSManagedObject)
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        
-        saveContext()
-    }
+public struct PersonAdditionalInfo {
+    public var addInfoID: Int64
+    public var addInfoName: String?
+    public var addInfoType: String?
+    public var teamID: Int64
 }
 
 extension CloudKitInteraction
 {
-    func savePersonAdditionalInfoToCloudKit()
+    private func populatePersonAdditionalInfo(_ records: [CKRecord]) -> [PersonAdditionalInfo]
     {
-        for myItem in myDatabaseConnection.getPersonAdditionalInfoForSync(getSyncDateForTable(tableName: "PersonAdditionalInfo"))
+        var tempArray: [PersonAdditionalInfo] = Array()
+        
+        for record in records
         {
-            savePersonAdditionalInfoRecordToCloudKit(myItem)
+            var addInfoID: Int64 = 0
+            if record.object(forKey: "addInfoID") != nil
+            {
+                addInfoID = record.object(forKey: "addInfoID") as! Int64
+            }
+            
+            var teamID: Int64 = 0
+            if record.object(forKey: "teamID") != nil
+            {
+                teamID = record.object(forKey: "teamID") as! Int64
+            }
+            
+            let tempItem = PersonAdditionalInfo(addInfoID: addInfoID,
+                                                addInfoName: record.object(forKey: "addInfoName") as? String,
+                                                addInfoType: record.object(forKey: "addInfoType") as? String,
+                                                teamID: teamID)
+            
+            tempArray.append(tempItem)
         }
+        
+        return tempArray
     }
     
-    func updatePersonAdditionalInfoInCoreData()
+    func getPersonAdditionalInfo(teamID: Int64)->[PersonAdditionalInfo]
     {
-        let predicate: NSPredicate = NSPredicate(format: "(updateTime >= %@) AND \(buildTeamList(currentUser.userID))", getSyncDateForTable(tableName: "PersonAdditionalInfo") as CVarArg)
-        let query: CKQuery = CKQuery(recordType: "PersonAdditionalInfo", predicate: predicate)
+        let predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\")")
         
-        let operation = CKQueryOperation(query: query)
-
-        operation.recordFetchedBlock = { (record) in
-            self.updatePersonAdditionalInfoRecord(record)
-        }
-        let operationQueue = OperationQueue()
+        let query = CKQuery(recordType: "PersonAdditionalInfo", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
         
-        executePublicQueryOperation(targetTable: "PersonAdditionalInfo", queryOperation: operation, onOperationQueue: operationQueue)
+        sem.wait()
+        
+        let shiftArray: [PersonAdditionalInfo] = populatePersonAdditionalInfo(returnArray)
+        
+        return shiftArray
     }
     
-//    func deletePersonAdditionalInfo(addInfoID: Int)
-//    {
-//        let sem = DispatchSemaphore(value: 0);
-//        
-//        var myRecordList: [CKRecordID] = Array()
-//        let predicate: NSPredicate = NSPredicate(format: "\(buildTeamList(currentUser.userID)) AND (addInfoID == \(addInfoID))")
-//        let query: CKQuery = CKQuery(recordType: "PersonAdditionalInfo", predicate: predicate)
-//        publicDB.perform(query, inZoneWith: nil, completionHandler: {(results: [CKRecord]?, error: Error?) in
-//            for record in results!
-//            {
-//                myRecordList.append(record.recordID)
-//            }
-//            self.performPublicDelete(myRecordList)
-//            sem.signal()
-//        })
-//        
-//        sem.wait()
-//    }
+    func getPersonAdditionalInfoDetails(_ addInfoID: Int64, teamID: Int64)->[PersonAdditionalInfo]
+    {
+        let predicate = NSPredicate(format: "(addInfoID == \(addInfoID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
+        
+        let query = CKQuery(recordType: "PersonAdditionalInfo", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [PersonAdditionalInfo] = populatePersonAdditionalInfo(returnArray)
+        
+        return shiftArray
+    }
+    
+    func deletePersonAdditionalInfo(_ addInfoID: Int64, teamID: Int64)
+    {
+        let predicate = NSPredicate(format: "(addInfoID == \(addInfoID)) AND (teamID == \(teamID))")
+        
+        let sem = DispatchSemaphore(value: 0)
+        
+        let query = CKQuery(recordType: "PersonAdditionalInfo", predicate: predicate)
+        publicDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
+            
+            self.performPublicDelete(records!)
+            
+            sem.signal()
+        })
+        sem.wait()
+    }
     
     func savePersonAdditionalInfoRecordToCloudKit(_ sourceRecord: PersonAdditionalInfo)
     {
@@ -437,18 +442,13 @@ extension CloudKitInteraction
                     record!.setValue(sourceRecord.addInfoName, forKey: "addInfoName")
                     record!.setValue(sourceRecord.addInfoType, forKey: "addInfoType")
                     
-                    if sourceRecord.updateTime != nil
-                    {
-                        record!.setValue(sourceRecord.updateTime, forKey: "updateTime")
-                    }
-                    record!.setValue(sourceRecord.updateType, forKey: "updateType")
-                    
                     // Save this record again
                     self.publicDB.save(record!, completionHandler: { (savedRecord, saveError) in
                         if saveError != nil
                         {
                             NSLog("Error saving record:  GRE B - \(saveError!.localizedDescription)")
                             self.saveOK = false
+                            sem.signal()
                         }
                         else
                         {
@@ -456,6 +456,7 @@ extension CloudKitInteraction
                             {
                                 NSLog("Successfully updated record!")
                             }
+                            sem.signal()
                         }
                     })
                 }
@@ -464,20 +465,14 @@ extension CloudKitInteraction
                     let record = CKRecord(recordType: "PersonAdditionalInfo")
                     record.setValue(sourceRecord.addInfoName, forKey: "addInfoName")
                     record.setValue(sourceRecord.addInfoType, forKey: "addInfoType")
-                    
                     record.setValue(sourceRecord.teamID, forKey: "teamID")
-                    
-                    if sourceRecord.updateTime != nil
-                    {
-                        record.setValue(sourceRecord.updateTime, forKey: "updateTime")
-                    }
-                    record.setValue(sourceRecord.updateType, forKey: "updateType")
                     
                     self.publicDB.save(record, completionHandler: { (savedRecord, saveError) in
                         if saveError != nil
                         {
                             NSLog("Error saving record:  GRE C - \(saveError!.localizedDescription)")
                             self.saveOK = false
+                            sem.signal()
                         }
                         else
                         {
@@ -485,59 +480,12 @@ extension CloudKitInteraction
                             {
                                 NSLog("Successfully saved record!")
                             }
+                            sem.signal()
                         }
                     })
                 }
             }
-            sem.signal()
         })
         sem.wait()
     }
-    
-    func updatePersonAdditionalInfoRecord(_ sourceRecord: CKRecord)
-    {
-        let addInfoName = sourceRecord.object(forKey: "addInfoName") as! String
-        let addInfoType = sourceRecord.object(forKey: "addInfoType") as! String
-        
-        var addInfoID: Int = 0
-        if sourceRecord.object(forKey: "addInfoID") != nil
-        {
-            addInfoID = sourceRecord.object(forKey: "addInfoID") as! Int
-        }
-        
-        var updateTime = Date()
-        if sourceRecord.object(forKey: "updateTime") != nil
-        {
-            updateTime = sourceRecord.object(forKey: "updateTime") as! Date
-        }
-        
-        var updateType: String = ""
-        if sourceRecord.object(forKey: "updateType") != nil
-        {
-            updateType = sourceRecord.object(forKey: "updateType") as! String
-        }
-        
-        var teamID: Int = 0
-        if sourceRecord.object(forKey: "teamID") != nil
-        {
-            teamID = sourceRecord.object(forKey: "teamID") as! Int
-        }
-        
-        myDatabaseConnection.recordsToChange += 1
-        
-        while self.recordCount > 0
-        {
-            usleep(self.sleepTime)
-        }
-        
-        self.recordCount += 1
-        
-        myDatabaseConnection.savePersonAdditionalInfo(addInfoID,
-                                         addInfoName: addInfoName,
-                                         addInfoType: addInfoType,
-                                         teamID: teamID
-                                         , updateTime: updateTime, updateType: updateType)
-        self.recordCount -= 1
-    }
-    
 }

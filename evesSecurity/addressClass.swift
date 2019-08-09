@@ -7,74 +7,122 @@
 //
 
 import Foundation
-import CoreData
+//import CoreData
 import CloudKit
+import SwiftUI
 
-class personAddresses: NSObject
+public class personAddresses: NSObject, Identifiable
 {
+    public let id = UUID()
     fileprivate var myAddresses:[address] = Array()
     
-    init(personID: Int, teamID: Int)
+    public init(personID: Int64, teamID: Int64)
     {
-        for myItem in myDatabaseConnection.getAddressForPerson(personID: personID, teamID: teamID)
+        if currentUser.currentTeam?.addresses == nil
         {
-            let myContext = address(addressID: Int(myItem.addressID),
-                                    addressLine1: myItem.addressLine1!,
-                                    addressLine2: myItem.addressLine2!,
-                                    city: myItem.city!,
-                                    clientID: Int(myItem.clientID),
-                                    country: myItem.country!,
-                                    personID: Int(myItem.personID),
-                                    postcode: myItem.postcode!,
-                                    projectID: Int(myItem.projectID),
-                                    state: myItem.state!,
-                                    addressType: myItem.addressType!,
-                                    teamID: Int(myItem.teamID))
-                myAddresses.append(myContext)
+            currentUser.currentTeam?.addresses = myCloudDB.getAddresses(teamID: teamID)
         }
-    }
-    
-    init(clientID: Int, teamID: Int)
-    {
-        for myItem in myDatabaseConnection.getAddressForClient(clientID: clientID, teamID: teamID)
+        
+        var workingArray: [Addresses] = Array()
+        
+        for item in (currentUser.currentTeam?.addresses)!
         {
-            let myContext = address(addressID: Int(myItem.addressID),
+            if (item.personID == personID)
+            {
+                workingArray.append(item)
+            }
+        }
+        
+        for myItem in workingArray
+        {
+            let myContext = address(addressID: myItem.addressID,
                                     addressLine1: myItem.addressLine1!,
                                     addressLine2: myItem.addressLine2!,
                                     city: myItem.city!,
-                                    clientID: Int(myItem.clientID),
+                                    clientID: myItem.clientID,
                                     country: myItem.country!,
-                                    personID: Int(myItem.personID),
+                                    personID: myItem.personID,
                                     postcode: myItem.postcode!,
-                                    projectID: Int(myItem.projectID),
+                                    projectID: myItem.projectID,
                                     state: myItem.state!,
                                     addressType: myItem.addressType!,
-                teamID: Int(myItem.teamID))
+                                    teamID: myItem.teamID)
             myAddresses.append(myContext)
         }
     }
     
-    init(projectID: Int, teamID: Int)
+    public init(clientID: Int64, teamID: Int64)
     {
-        for myItem in myDatabaseConnection.getAddressForProject(projectID: projectID, teamID: teamID)
+        if currentUser.currentTeam?.addresses == nil
         {
-            let myContext = address(addressID: Int(myItem.addressID),
+            currentUser.currentTeam?.addresses = myCloudDB.getAddresses(teamID: teamID)
+        }
+        
+        var workingArray: [Addresses] = Array()
+        
+        for item in (currentUser.currentTeam?.addresses)!
+        {
+            if (item.clientID == clientID)
+            {
+                workingArray.append(item)
+            }
+        }
+        
+        for myItem in workingArray
+        {
+            let myContext = address(addressID: myItem.addressID,
                                     addressLine1: myItem.addressLine1!,
                                     addressLine2: myItem.addressLine2!,
                                     city: myItem.city!,
-                                    clientID: Int(myItem.clientID),
+                                    clientID: myItem.clientID,
                                     country: myItem.country!,
-                                    personID: Int(myItem.personID),
+                                    personID: myItem.personID,
                                     postcode: myItem.postcode!,
-                                    projectID: Int(myItem.projectID),
+                                    projectID: myItem.projectID,
                                     state: myItem.state!,
                                     addressType: myItem.addressType!,
-                                    teamID: Int(myItem.teamID))
+                                    teamID: myItem.teamID)
+            
             myAddresses.append(myContext)
         }
     }
     
-    var addresses: [address]
+    public init(projectID: Int64, teamID: Int64)
+    {
+        if currentUser.currentTeam?.addresses == nil
+        {
+            currentUser.currentTeam?.addresses = myCloudDB.getAddresses(teamID: teamID)
+        }
+        
+        var workingArray: [Addresses] = Array()
+        
+        for item in (currentUser.currentTeam?.addresses)!
+        {
+            if (item.projectID == projectID)
+            {
+                workingArray.append(item)
+            }
+        }
+        
+        for myItem in workingArray
+        {
+            let myContext = address(addressID: myItem.addressID,
+                                    addressLine1: myItem.addressLine1!,
+                                    addressLine2: myItem.addressLine2!,
+                                    city: myItem.city!,
+                                    clientID: myItem.clientID,
+                                    country: myItem.country!,
+                                    personID: myItem.personID,
+                                    postcode: myItem.postcode!,
+                                    projectID: myItem.projectID,
+                                    state: myItem.state!,
+                                    addressType: myItem.addressType!,
+                                    teamID: myItem.teamID)
+            myAddresses.append(myContext)
+        }
+    }
+    
+    public var addresses: [address]
     {
         get
         {
@@ -83,22 +131,23 @@ class personAddresses: NSObject
     }
 }
 
-class address: NSObject
+public class address: NSObject, Identifiable
 {
-    fileprivate var myAddressID: Int = 0
+    public let id = UUID()
+    fileprivate var myAddressID: Int64 = 0
     fileprivate var myAddressLine1: String = ""
     fileprivate var myAddressLine2: String = ""
     fileprivate var myCity: String = ""
-    fileprivate var myClientID: Int = 0
+    fileprivate var myClientID: Int64 = 0
     fileprivate var myCountry: String = ""
-    fileprivate var myPersonID: Int = 0
+    fileprivate var myPersonID: Int64 = 0
     fileprivate var myPostcode: String = ""
-    fileprivate var myProjectID: Int = 0
+    fileprivate var myProjectID: Int64 = 0
     fileprivate var myState: String = ""
     fileprivate var myAddressType: String = ""
-    fileprivate var myTeamID: Int = 0
-
-    var addressID: Int
+    fileprivate var myTeamID: Int64 = 0
+    
+    public var addressID: Int64
     {
         get
         {
@@ -106,7 +155,7 @@ class address: NSObject
         }
     }
     
-    var addressLine1: String
+    public var addressLine1: String
     {
         get
         {
@@ -118,7 +167,7 @@ class address: NSObject
         }
     }
     
-    var addressLine2: String
+    public var addressLine2: String
     {
         get
         {
@@ -130,7 +179,7 @@ class address: NSObject
         }
     }
     
-    var city: String
+    public var city: String
     {
         get
         {
@@ -142,7 +191,7 @@ class address: NSObject
         }
     }
     
-    var clientID: Int
+    public var clientID: Int64
     {
         get
         {
@@ -154,7 +203,7 @@ class address: NSObject
         }
     }
     
-    var country: String
+    public var country: String
     {
         get
         {
@@ -166,7 +215,7 @@ class address: NSObject
         }
     }
     
-    var personID: Int
+    public var personID: Int64
     {
         get
         {
@@ -178,7 +227,7 @@ class address: NSObject
         }
     }
     
-    var postcode: String
+    public var postcode: String
     {
         get
         {
@@ -190,7 +239,7 @@ class address: NSObject
         }
     }
     
-    var projectID: Int
+    public var projectID: Int64
     {
         get
         {
@@ -202,7 +251,7 @@ class address: NSObject
         }
     }
     
-    var state: String
+    public var state: String
     {
         get
         {
@@ -214,7 +263,7 @@ class address: NSObject
         }
     }
     
-    var addressType: String
+    public var addressType: String
     {
         get
         {
@@ -226,50 +275,74 @@ class address: NSObject
         }
     }
     
-    init(teamID: Int)
+    override public init()
     {
         super.init()
-        
-        myAddressID = myDatabaseConnection.getNextID("Address", teamID: teamID)
-        myTeamID = teamID
-        
-        save()
     }
     
-    init(addressID: Int, teamID: Int)
+    public init(teamID: Int64, addressType: String, personID: Int64)
     {
         super.init()
-        let myReturn = myDatabaseConnection.getAddressDetails(addressID, teamID: teamID)
         
-        for myItem in myReturn
+        myAddressID = myCloudDB.getNextID("Address", teamID: teamID)
+        myTeamID = teamID
+        myAddressType = addressType
+        myPersonID = personID
+        
+        save()
+        
+        currentUser.currentTeam?.addresses = nil
+    }
+    
+    public init(addressID: Int64, teamID: Int64)
+    {
+        super.init()
+        
+        if currentUser.currentTeam?.addresses == nil
         {
-            myAddressID = Int(myItem.addressID)
+            currentUser.currentTeam?.addresses = myCloudDB.getAddresses(teamID: teamID)
+        }
+        
+        var myItem: Addresses!
+        
+        for item in (currentUser.currentTeam?.addresses)!
+        {
+            if (item.addressID == addressID)
+            {
+                myItem = item
+                break
+            }
+        }
+        
+        if myItem != nil
+        {
+            myAddressID = myItem.addressID
             myAddressLine1 = myItem.addressLine1!
             myAddressLine2 = myItem.addressLine2!
             myCity = myItem.city!
-            myClientID = Int(myItem.clientID)
+            myClientID = myItem.clientID
             myCountry = myItem.country!
-            myPersonID = Int(myItem.personID)
+            myPersonID = myItem.personID
             myPostcode = myItem.postcode!
-            myProjectID = Int(myItem.projectID)
+            myProjectID = myItem.projectID
             myState = myItem.state!
             myAddressType = myItem.addressType!
-            myTeamID = Int(myItem.teamID)
+            myTeamID = myItem.teamID
         }
     }
     
-    init(addressID: Int,
-        addressLine1: String,
-        addressLine2: String,
-        city: String,
-        clientID: Int,
-        country: String,
-        personID: Int,
-        postcode: String,
-        projectID: Int,
-        state: String,
-        addressType: String,
-        teamID: Int)
+    public init(addressID: Int64,
+                addressLine1: String,
+                addressLine2: String,
+                city: String,
+                clientID: Int64,
+                country: String,
+                personID: Int64,
+                postcode: String,
+                projectID: Int64,
+                state: String,
+                addressType: String,
+                teamID: Int64)
     {
         super.init()
         
@@ -286,384 +359,392 @@ class address: NSObject
         myAddressType = addressType
         myTeamID = teamID
     }
-
-    func save()
+    
+    public func save()
     {
-        if currentUser.checkPermission(hrRoleType) == writePermission
+        if currentUser.checkWritePermission(hrRoleType)
         {
-            myDatabaseConnection.saveAddress(myAddressID,
-                addressLine1: myAddressLine1,
-                addressLine2: myAddressLine2,
-                city: myCity,
-                clientID: myClientID,
-                country: myCountry,
-                personID: myPersonID,
-                postcode: myPostcode,
-                projectID: myProjectID,
-                state: myState,
-                addressType: myAddressType,
-                teamID: myTeamID)
+            let temp = Addresses(addressID: myAddressID, addressLine1: myAddressLine1, addressLine2: myAddressLine2, addressType: myAddressType, city: myCity, clientID: myClientID, country: myCountry, personID: myPersonID, postcode: myPostcode, projectID: myProjectID, state: myState, teamID: myTeamID)
+            
+            myCloudDB.saveAddressRecordToCloudKit(temp)
+            
+            currentUser.currentTeam?.addresses = nil
+            
+            //      currentUser.currentTeam?.addresses = myCloudDB.getAddresses(teamID: (currentUser.currentTeam?.teamID)!)
         }
     }
     
-    func delete()
+    public func delete()
     {
-        if currentUser.checkPermission(hrRoleType) == writePermission
+        if currentUser.checkWritePermission(hrRoleType)
         {
-            myDatabaseConnection.deleteAddress(myAddressID, teamID: myTeamID)
+            myCloudDB.deleteAddress(myAddressID, teamID: myTeamID)
+            currentUser.currentTeam?.addresses = nil
         }
     }
 }
 
-extension coreDatabase
-{
-    func saveAddress(_ addressID: Int,
-                     addressLine1: String,
-                     addressLine2: String,
-                     city: String,
-                     clientID: Int,
-                     country: String,
-                     personID: Int,
-                     postcode: String,
-                     projectID: Int,
-                     state: String,
-                     addressType: String,
-                     teamID: Int,
-                     updateTime: Date =  Date(), updateType: String = "CODE")
-    {
-        var myItem: Addresses!
-        
-        let myReturn = getAddressDetails(addressID, teamID: teamID)
-        
-        if myReturn.count == 0
-        { // Add
-            myItem = Addresses(context: objectContext)
-            myItem.addressID = Int64(addressID)
-            myItem.addressLine1 = addressLine1
-            myItem.addressLine2 = addressLine2
-            myItem.city = city
-            myItem.clientID = Int64(clientID)
-            myItem.country = country
-            myItem.personID = Int64(personID)
-            myItem.postcode = postcode
-            myItem.projectID = Int64(projectID)
-            myItem.state = state
-            myItem.addressType = addressType
-            myItem.teamID = Int64(teamID)
+//extension coreDatabase
+//{
+//    func saveAddress(_ addressID: Int,
+//                     addressLine1: String,
+//                     addressLine2: String,
+//                     city: String,
+//                     clientID: Int,
+//                     country: String,
+//                     personID: Int,
+//                     postcode: String,
+//                     projectID: Int,
+//                     state: String,
+//                     addressType: String,
+//                     teamID: Int,
+//                     updateTime: Date =  Date(), updateType: String = "CODE")
+//    {
+//        var myItem: Addresses!
+//
+//        let myReturn = getAddressDetails(addressID, teamID: teamID)
+//
+//        if myReturn.count == 0
+//        { // Add
+//            myItem = Addresses(context: objectContext)
+//            myItem.addressID = Int64(addressID)
+//            myItem.addressLine1 = addressLine1
+//            myItem.addressLine2 = addressLine2
+//            myItem.city = city
+//            myItem.clientID = Int64(clientID)
+//            myItem.country = country
+//            myItem.personID = Int64(personID)
+//            myItem.postcode = postcode
+//            myItem.projectID = Int64(projectID)
+//            myItem.state = state
+//            myItem.addressType = addressType
+//            myItem.teamID = Int64(teamID)
+//
+//            if updateType == "CODE"
+//            {
+//                myItem.updateTime =  Date()
+//
+//                myItem.updateType = "Add"
+//            }
+//            else
+//            {
+//                myItem.updateTime = updateTime
+//                myItem.updateType = updateType
+//            }
+//        }
+//        else
+//        {
+//            myItem = myReturn[0]
+//            myItem.addressLine1 = addressLine1
+//            myItem.addressLine2 = addressLine2
+//            myItem.city = city
+//            myItem.clientID = Int64(clientID)
+//            myItem.country = country
+//            myItem.personID = Int64(personID)
+//            myItem.postcode = postcode
+//            myItem.projectID = Int64(projectID)
+//            myItem.state = state
+//            myItem.addressType = addressType
+//
+//            if updateType == "CODE"
+//            {
+//                myItem.updateTime =  Date()
+//                if myItem.updateType != "Add"
+//                {
+//                    myItem.updateType = "Update"
+//                }
+//            }
+//            else
+//            {
+//                myItem.updateTime = updateTime
+//                myItem.updateType = updateType
+//            }
+//        }
+//
+//        saveContext()
+//
+//        self.recordsProcessed += 1
+//    }
+//
 
-            if updateType == "CODE"
-            {
-                myItem.updateTime =  Date()
-                
-                myItem.updateType = "Add"
-            }
-            else
-            {
-                myItem.updateTime = updateTime
-                myItem.updateType = updateType
-            }
-        }
-        else
-        {
-            myItem = myReturn[0]
-            myItem.addressLine1 = addressLine1
-            myItem.addressLine2 = addressLine2
-            myItem.city = city
-            myItem.clientID = Int64(clientID)
-            myItem.country = country
-            myItem.personID = Int64(personID)
-            myItem.postcode = postcode
-            myItem.projectID = Int64(projectID)
-            myItem.state = state
-            myItem.addressType = addressType
-            
-            if updateType == "CODE"
-            {
-                myItem.updateTime =  Date()
-                if myItem.updateType != "Add"
-                {
-                    myItem.updateType = "Update"
-                }
-            }
-            else
-            {
-                myItem.updateTime = updateTime
-                myItem.updateType = updateType
-            }
-        }
-        
-        saveContext()
 
-        self.recordsProcessed += 1
-    }
-    
-    func deleteAddress(_ addressID: Int, teamID: Int)
-    {
-        let myReturn = getAddressDetails(addressID, teamID: teamID)
-        
-        if myReturn.count > 0
-        {
-            let myItem = myReturn[0]
-            myItem.updateTime =  Date()
-            myItem.updateType = "Delete"
-        }
-        
-        saveContext()
-    }
-    
-    func getAddressForPerson(personID: Int, teamID: Int)->[Addresses]
-    {
-        let fetchRequest = NSFetchRequest<Addresses>(entityName: "Addresses")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(personID == \(personID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func getAddressForClient(clientID: Int, teamID: Int)->[Addresses]
-    {
-        let fetchRequest = NSFetchRequest<Addresses>(entityName: "Addresses")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(clientID == \(clientID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func getAddressForProject(projectID: Int, teamID: Int)->[Addresses]
-    {
-        let fetchRequest = NSFetchRequest<Addresses>(entityName: "Addresses")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(projectID == \(projectID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
+//    func resetAllAddresses()
+//    {
+//        let fetchRequest = NSFetchRequest<Addresses>(entityName: "Addresses")
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults = try objectContext.fetch(fetchRequest)
+//            for myItem in fetchResults
+//            {
+//                myItem.updateTime =  Date()
+//                myItem.updateType = "Delete"
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: \(error)")
+//        }
+//
+//        saveContext()
+//    }
+//
+//    func clearDeletedAddresses(predicate: NSPredicate)
+//    {
+//        let fetchRequest2 = NSFetchRequest<Addresses>(entityName: "Addresses")
+//
+//        // Set the predicate on the fetch request
+//        fetchRequest2.predicate = predicate
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                objectContext.delete(myItem2 as NSManagedObject)
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: \(error)")
+//        }
+//        saveContext()
+//    }
+//
+//    func clearSyncedAddresses(predicate: NSPredicate)
+//    {
+//        let fetchRequest2 = NSFetchRequest<Addresses>(entityName: "Addresses")
+//
+//        // Set the predicate on the fetch request
+//        fetchRequest2.predicate = predicate
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                myItem2.updateType = ""
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: \(error)")
+//        }
+//
+//        saveContext()
+//    }
+//
+//    func getAddressesForSync(_ syncDate: Date) -> [Addresses]
+//    {
+//        let fetchRequest = NSFetchRequest<Addresses>(entityName: "Addresses")
+//
+//        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
+//
+//        // Set the predicate on the fetch request
+//
+//        fetchRequest.predicate = predicate
+//        // Execute the fetch request, and cast the results to an array of  objects
+//        do
+//        {
+//            let fetchResults = try objectContext.fetch(fetchRequest)
+//
+//            return fetchResults
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: \(error)")
+//            return returnArray
+//        }
+//    }
+//
+//    func deleteAllAddresses()
+//    {
+//        let fetchRequest2 = NSFetchRequest<Addresses>(entityName: "Addresses")
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                self.objectContext.delete(myItem2 as NSManagedObject)
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: \(error)")
+//        }
+//
+//        saveContext()
+//    }
+//}
+//
 
-    func getAddressDetails(_ addressID: Int, teamID: Int)->[Addresses]
-    {
-        let fetchRequest = NSFetchRequest<Addresses>(entityName: "Addresses")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(addressID == \(addressID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func resetAllAddresses()
-    {
-        let fetchRequest = NSFetchRequest<Addresses>(entityName: "Addresses")
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            for myItem in fetchResults
-            {
-                myItem.updateTime =  Date()
-                myItem.updateType = "Delete"
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        
-        saveContext()
-    }
-    
-    func clearDeletedAddresses(predicate: NSPredicate)
-    {
-        let fetchRequest2 = NSFetchRequest<Addresses>(entityName: "Addresses")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                objectContext.delete(myItem2 as NSManagedObject)
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        saveContext()
-    }
-    
-    func clearSyncedAddresses(predicate: NSPredicate)
-    {
-        let fetchRequest2 = NSFetchRequest<Addresses>(entityName: "Addresses")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                myItem2.updateType = ""
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        
-        saveContext()
-    }
-    
-    func getAddressesForSync(_ syncDate: Date) -> [Addresses]
-    {
-        let fetchRequest = NSFetchRequest<Addresses>(entityName: "Addresses")
-        
-        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
-        
-        // Set the predicate on the fetch request
-        
-        fetchRequest.predicate = predicate
-        // Execute the fetch request, and cast the results to an array of  objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func deleteAllAddresses()
-    {
-        let fetchRequest2 = NSFetchRequest<Addresses>(entityName: "Addresses")
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                self.objectContext.delete(myItem2 as NSManagedObject)
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        
-        saveContext()
-    }
+public struct Addresses {
+    public var addressID: Int64
+    public var addressLine1: String?
+    public var addressLine2: String?
+    public var addressType: String?
+    public var city: String?
+    public var clientID: Int64
+    public var country: String?
+    public var personID: Int64
+    public var postcode: String?
+    public var projectID: Int64
+    public var state: String?
+    public var teamID: Int64
 }
 
 extension CloudKitInteraction
 {
-    func saveAddressToCloudKit()
+    private func populateAddresses(_ records: [CKRecord]) -> [Addresses]
     {
-        for myItem in myDatabaseConnection.getAddressesForSync(getSyncDateForTable(tableName: "Addresses"))
+        var tempArray: [Addresses] = Array()
+        
+        for record in records
         {
-            saveAddressRecordToCloudKit(myItem)
+            var addressID: Int64 = 0
+            if record.object(forKey: "addressID") != nil
+            {
+                addressID = record.object(forKey: "addressID") as! Int64
+            }
+            
+            var clientID: Int64 = 0
+            if record.object(forKey: "clientID") != nil
+            {
+                clientID = record.object(forKey: "clientID") as! Int64
+            }
+            
+            var personID: Int64 = 0
+            if record.object(forKey: "personID") != nil
+            {
+                personID = record.object(forKey: "personID") as! Int64
+            }
+            
+            var projectID: Int64 = 0
+            if record.object(forKey: "projectID") != nil
+            {
+                projectID = record.object(forKey: "projectID") as! Int64
+            }
+            
+            var teamID: Int64 = 0
+            if record.object(forKey: "teamID") != nil
+            {
+                teamID = record.object(forKey: "teamID") as! Int64
+            }
+            
+            let tempItem = Addresses(addressID: addressID,
+                                     addressLine1: record.object(forKey: "addressLine1") as? String,
+                                     addressLine2: record.object(forKey: "addressLine2") as? String,
+                                     addressType: record.object(forKey: "addressType") as? String,
+                                     city: record.object(forKey: "city") as? String,
+                                     clientID: clientID,
+                                     country: record.object(forKey: "country") as? String,
+                                     personID: personID,
+                                     postcode: record.object(forKey: "postcode") as? String,
+                                     projectID: projectID,
+                                     state: record.object(forKey: "state") as? String,
+                                     teamID: teamID)
+            
+            tempArray.append(tempItem)
         }
+        
+        return tempArray
     }
     
-    func updateAddressInCoreData()
+    func getAddressForPerson(personID: Int64, teamID: Int64)->[Addresses]
     {
-        let predicate: NSPredicate = NSPredicate(format: "(updateTime >= %@) AND \(buildTeamList(currentUser.userID))", getSyncDateForTable(tableName: "Addresses") as CVarArg)
-        let query: CKQuery = CKQuery(recordType: "Addresses", predicate: predicate)
+        let predicate = NSPredicate(format: "(personID == \(personID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
         
-        let operation = CKQueryOperation(query: query)
+        let query = CKQuery(recordType: "Addresses", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
         
-        operation.recordFetchedBlock = { (record) in
-            self.updateAddressRecord(record)
-        }
-        let operationQueue = OperationQueue()
+        sem.wait()
         
-        executePublicQueryOperation(targetTable: "Addresses", queryOperation: operation, onOperationQueue: operationQueue)
+        let shiftArray: [Addresses] = populateAddresses(returnArray)
+        
+        return shiftArray
     }
     
-//    func deleteAddress(addressID: Int)
-//    {
-//        let sem = DispatchSemaphore(value: 0);
-//
-//        var myRecordList: [CKRecordID] = Array()
-//        let predicate: NSPredicate = NSPredicate(format: "\(buildTeamList(currentUser.userID)) AND (addressID == \(addressID))")
-//        let query: CKQuery = CKQuery(recordType: "Addresses", predicate: predicate)
-//        publicDB.perform(query, inZoneWith: nil, completionHandler: {(results: [CKRecord]?, error: Error?) in
-//            for record in results!
-//            {
-//                myRecordList.append(record.recordID)
-//            }
-//            self.performPublicDelete(myRecordList)
-//            sem.signal()
-//        })
-//
-//        sem.wait()
-//    }
+    func getAddresses(teamID: Int64)->[Addresses]
+    {
+        let predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\")")
+        
+        let query = CKQuery(recordType: "Addresses", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Addresses] = populateAddresses(returnArray)
+        
+        return shiftArray
+    }
+    
+    func getAddressForClient(clientID: Int64, teamID: Int64)->[Addresses]
+    {
+        let predicate = NSPredicate(format: "(clientID == \(clientID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
+        
+        let query = CKQuery(recordType: "Addresses", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Addresses] = populateAddresses(returnArray)
+        
+        return shiftArray
+    }
+    
+    func getAddressForProject(projectID: Int64, teamID: Int64)->[Addresses]
+    {
+        let predicate = NSPredicate(format: "(projectID == \(projectID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
+        
+        let query = CKQuery(recordType: "Addresses", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Addresses] = populateAddresses(returnArray)
+        
+        return shiftArray
+    }
+    
+    func getAddressDetails(_ addressID: Int64, teamID: Int64)->[Addresses]
+    {
+        let predicate = NSPredicate(format: "(addressID == \(addressID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
+        
+        let query = CKQuery(recordType: "Addresses", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Addresses] = populateAddresses(returnArray)
+        
+        return shiftArray
+    }
+    
+    func deleteAddress(_ addressID: Int64, teamID: Int64)
+    {
+        let predicate = NSPredicate(format: "(addressID == \(addressID)) AND (teamID == \(teamID))")
+        
+        let sem = DispatchSemaphore(value: 0)
+        
+        let query = CKQuery(recordType: "Addresses", predicate: predicate)
+        publicDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
+            
+            self.performPublicDelete(records!)
+            
+            sem.signal()
+        })
+        sem.wait()
+    }
     
     func saveAddressRecordToCloudKit(_ sourceRecord: Addresses)
     {
@@ -698,18 +779,13 @@ extension CloudKitInteraction
                     record!.setValue(sourceRecord.state, forKey: "state")
                     record!.setValue(sourceRecord.addressType, forKey: "addressType")
                     
-                    if sourceRecord.updateTime != nil
-                    {
-                        record!.setValue(sourceRecord.updateTime, forKey: "updateTime")
-                    }
-                    record!.setValue(sourceRecord.updateType, forKey: "updateType")
-                    
                     // Save this record again
                     self.publicDB.save(record!, completionHandler: { (savedRecord, saveError) in
                         if saveError != nil
                         {
                             NSLog("Error saving record: \(saveError!.localizedDescription)")
                             self.saveOK = false
+                            sem.signal()
                         }
                         else
                         {
@@ -717,6 +793,7 @@ extension CloudKitInteraction
                             {
                                 NSLog("Successfully updated record!")
                             }
+                            sem.signal()
                         }
                     })
                 }
@@ -735,18 +812,13 @@ extension CloudKitInteraction
                     record.setValue(sourceRecord.state, forKey: "state")
                     record.setValue(sourceRecord.teamID, forKey: "teamID")
                     record.setValue(sourceRecord.addressType, forKey: "addressType")
-
-                    if sourceRecord.updateTime != nil
-                    {
-                        record.setValue(sourceRecord.updateTime, forKey: "updateTime")
-                    }
-                    record.setValue(sourceRecord.updateType, forKey: "updateType")
                     
                     self.publicDB.save(record, completionHandler: { (savedRecord, saveError) in
                         if saveError != nil
                         {
                             NSLog("Error saving record: \(saveError!.localizedDescription)")
                             self.saveOK = false
+                            sem.signal()
                         }
                         else
                         {
@@ -754,89 +826,12 @@ extension CloudKitInteraction
                             {
                                 NSLog("Successfully saved record!")
                             }
+                            sem.signal()
                         }
                     })
                 }
             }
-            sem.signal()
         })
         sem.wait()
-    }
-    
-    func updateAddressRecord(_ sourceRecord: CKRecord)
-    {
-        let addressLine1 = sourceRecord.object(forKey: "addressLine1") as! String
-        let addressLine2 = sourceRecord.object(forKey: "addressLine2") as! String
-        let city = sourceRecord.object(forKey: "city") as! String
-        let country = sourceRecord.object(forKey: "country") as! String
-        let postcode = sourceRecord.object(forKey: "postcode") as! String
-        let state = sourceRecord.object(forKey: "state") as! String
-        let addressType = sourceRecord.object(forKey: "addressType") as! String
-        
-        var addressID: Int = 0
-        if sourceRecord.object(forKey: "addressID") != nil
-        {
-            addressID = sourceRecord.object(forKey: "addressID") as! Int
-        }
-        
-        var clientID: Int = 0
-        if sourceRecord.object(forKey: "clientID") != nil
-        {
-            clientID = sourceRecord.object(forKey: "clientID") as! Int
-        }
-        
-        var personID: Int = 0
-        if sourceRecord.object(forKey: "personID") != nil
-        {
-            personID = sourceRecord.object(forKey: "personID") as! Int
-        }
-        
-        var projectID: Int = 0
-        if sourceRecord.object(forKey: "projectID") != nil
-        {
-            projectID = sourceRecord.object(forKey: "projectID") as! Int
-        }
-        
-        var updateTime = Date()
-        if sourceRecord.object(forKey: "updateTime") != nil
-        {
-            updateTime = sourceRecord.object(forKey: "updateTime") as! Date
-        }
-        
-        var updateType: String = ""
-        if sourceRecord.object(forKey: "updateType") != nil
-        {
-            updateType = sourceRecord.object(forKey: "updateType") as! String
-        }
-        
-        var teamID: Int = 0
-        if sourceRecord.object(forKey: "teamID") != nil
-        {
-            teamID = sourceRecord.object(forKey: "teamID") as! Int
-        }
-        
-        myDatabaseConnection.recordsToChange += 1
-        
-        while self.recordCount > 0
-        {
-            usleep(self.sleepTime)
-        }
-        
-        self.recordCount += 1
-        
-        myDatabaseConnection.saveAddress(addressID,
-                                         addressLine1: addressLine1,
-                                         addressLine2: addressLine2,
-                                         city: city,
-                                         clientID: clientID,
-                                         country: country,
-                                         personID: personID,
-                                         postcode: postcode,
-                                         projectID: projectID,
-                                         state: state,
-                                         addressType: addressType,
-                                         teamID: teamID
-                , updateTime: updateTime, updateType: updateType)
-        self.recordCount -= 1
     }
 }

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class userFormViewController: UIViewController, UIPopoverPresentationControllerDelegate, UITableViewDataSource, UITableViewDelegate
+public class userFormViewController: UIViewController, UIPopoverPresentationControllerDelegate, UITableViewDataSource, UITableViewDelegate
 {
     @IBOutlet weak var btnPassPhrase: UIButton!
     @IBOutlet weak var txtName: UITextField!
@@ -28,13 +28,13 @@ class userFormViewController: UIViewController, UIPopoverPresentationControllerD
     @IBOutlet weak var lblPassPhraseTitle: UILabel!
     @IBOutlet weak var lblPassPhraseExpiryTitle: UILabel!
     
-    var workingUser: userItem!
-    var communicationDelegate: myCommunicationDelegate?
-    var initialUser: Bool = false
+    public var workingUser: userItem!
+    public var communicationDelegate: myCommunicationDelegate?
+    public var initialUser: Bool = false
     
     fileprivate var userList: userItems!
     
-    override func viewDidLoad()
+    override public func viewDidLoad()
     {
         hideFields()
         if !initialUser
@@ -69,14 +69,14 @@ class userFormViewController: UIViewController, UIPopoverPresentationControllerD
         }
     }
     
-    override func viewDidAppear(_ animated: Bool)
+    override public func viewDidAppear(_ animated: Bool)
     {
         let myReachability = Reachability()
         if !myReachability.isConnectedToNetwork()
         {
             let alert = UIAlertController(title: "User Maintenance", message: "You must be connected to the Internet to create or edit users", preferredStyle: .actionSheet)
             
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default,
                                           handler: { (action: UIAlertAction) -> () in
                                             self.dismiss(animated: true, completion: nil)
             }))
@@ -91,12 +91,12 @@ class userFormViewController: UIViewController, UIPopoverPresentationControllerD
         }
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
         switch tableView
         {
@@ -118,14 +118,14 @@ class userFormViewController: UIViewController, UIPopoverPresentationControllerD
                 else
                 {
                     return workingUser.roles.userRole.count
-            }
+                }
             
             default:
                 return 0
         }
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
         switch tableView
         {
@@ -153,32 +153,48 @@ class userFormViewController: UIViewController, UIPopoverPresentationControllerD
         
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
         if tableView == tblUsers
         {
             workingUser = userItem(userID: userList.users[indexPath.row].userID)
-            workingUser.name = userList.users[indexPath.row].name
-            workingUser.email = userList.users[indexPath.row].email
-            workingUser.passPhrase = userList.users[indexPath.row].passPhrase
-            workingUser.phraseDate = userList.users[indexPath.row].phraseDate
+            workingUser.name = userList.users[indexPath.row].name!
+            workingUser.email = userList.users[indexPath.row].email!
+            
+            if userList.users[indexPath.row].passPhrase == nil
+            {
+                workingUser.passPhrase = ""
+            }
+            else
+            {
+                workingUser.passPhrase = userList.users[indexPath.row].passPhrase!
+            }
+            
+            if userList.users[indexPath.row].phraseDate == nil
+            {
+                workingUser.phraseDate = Date()
+            }
+            else
+            {
+                workingUser.phraseDate = userList.users[indexPath.row].phraseDate!
+            }
             workingUser.currentTeam = currentUser.currentTeam
             populateForm()
         }
     }
     
-    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle
+    public func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle
     {
         if tableView == tblUsers
         {
-            return UITableViewCellEditingStyle.delete
+            return UITableViewCell.EditingStyle.delete
         }
-        return UITableViewCellEditingStyle.none
+        return UITableViewCell.EditingStyle.none
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath)
+    public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath)
     {
-        if currentUser.checkPermission(adminRoleType) == writePermission
+        if currentUser.checkWritePermission(adminRoleType)
         {
             if tableView == tblUsers
             {
@@ -206,8 +222,11 @@ class userFormViewController: UIViewController, UIPopoverPresentationControllerD
         {
             lblLoadingUsers.text = "Creating and Saving User.  Please wait"
             lblLoadingUsers.isHidden = false
-            notificationCenter.addObserver(self, selector: #selector(self.userCreated), name: NotificationUserCreated, object: nil)
             workingUser = userItem(currentTeam: currentUser.currentTeam!, userName: txtName.text!, userEmail: txtEmail.text!)
+            
+            workingUser.addInitialUserRoles()
+
+            getUserListForTeam()
         }
         else
         {
@@ -275,21 +294,6 @@ class userFormViewController: UIViewController, UIPopoverPresentationControllerD
         }
     }
     
-    @objc func userCreated()
-    {
-//        DispatchQueue.global().async
-//        {
-//            myDBSync.sync()
-//        }
-        
-        DispatchQueue.main.async
-        {
-            self.workingUser.addInitialUserRoles()
-        }
-        
-        getUserListForTeam()
-    }
-    
     func hideFields()
     {
         txtName.isHidden = true
@@ -355,7 +359,7 @@ class userFormViewController: UIViewController, UIPopoverPresentationControllerD
         btnSave.isEnabled = false
         tblRoles.reloadData()
         
-        if currentUser.checkPermission(adminRoleType) != writePermission
+        if !currentUser.checkWritePermission(adminRoleType)
         {
             btnAdd.isEnabled = false
             btnSave.isEnabled = false
@@ -381,34 +385,30 @@ class userFormViewController: UIViewController, UIPopoverPresentationControllerD
             firstRecordDone = true
         }
         
-        notificationCenter.addObserver(self, selector: #selector(self.userListRetrieved), name: NotificationUserListLoaded, object: nil)
-        
         userList = userItems(userList: userString)
-    }
-    
-    @objc func userListRetrieved()
-    {
-        notificationCenter.removeObserver(NotificationUserListLoaded)
-
-        DispatchQueue.main.async
+        
+        if userList.users.count > 0
         {
-            self.tblUsers.isHidden = false
-            self.lblLoadingUsers.isHidden = true
-            self.tblUsers.reloadData()
-            
-            if self.workingUser != nil
-            {
-                self.lblLoadingUsers.isHidden = true
-                self.btnSave.isEnabled = false
-                self.btnAdd.isEnabled = true
-                self.lblPassPhraseTitle.isHidden = false
-                self.lblPhrase.isHidden = false
-                self.lblPassPhraseExpiryTitle.isHidden = false
-                self.lblDate.isHidden = false
-                self.btnPassPhrase.isHidden = false
-                self.lblRoles.isHidden = false
-                self.tblRoles.isHidden = false
-                self.populateForm()
+            DispatchQueue.main.async
+                {
+                    self.tblUsers.isHidden = false
+                    self.lblLoadingUsers.isHidden = true
+                    self.tblUsers.reloadData()
+                    
+                    if self.workingUser != nil
+                    {
+                        self.lblLoadingUsers.isHidden = true
+                        self.btnSave.isEnabled = false
+                        self.btnAdd.isEnabled = true
+                        self.lblPassPhraseTitle.isHidden = false
+                        self.lblPhrase.isHidden = false
+                        self.lblPassPhraseExpiryTitle.isHidden = false
+                        self.lblDate.isHidden = false
+                        self.btnPassPhrase.isHidden = false
+                        self.lblRoles.isHidden = false
+                        self.tblRoles.isHidden = false
+                        self.populateForm()
+                    }
             }
         }
     }
@@ -421,9 +421,9 @@ class userFormViewController: UIViewController, UIPopoverPresentationControllerD
 
         var userCount: Int = 0
         
-        for myItem in myDatabaseConnection.getTeamsIOwn(teamOwner)
+        for myItem in myCloudDB.getTeamsIOwn(teamOwner)
         {
-            let tempTeam = userTeams(teamID: Int(myItem.teamID))
+            let tempTeam = userTeams(teamID: myItem.teamID)
             
             userCount += tempTeam.UserTeams.count
         }
@@ -431,9 +431,9 @@ class userFormViewController: UIViewController, UIPopoverPresentationControllerD
         if userCount > currentUser.currentTeam!.subscriptionLevel
         {
             let alert = UIAlertController(title: "Subscription Number Expired", message:
-                "Your teams User count if \(userCount) has exceeded your permitted total of \(currentUser.currentTeam!.subscriptionLevel).  Either delete some users from your team, or contact your Administator to increase the maximum number of users.", preferredStyle: UIAlertControllerStyle.alert)
+                "Your teams User count if \(userCount) has exceeded your permitted total of \(currentUser.currentTeam!.subscriptionLevel).  Either delete some users from your team, or contact your Administator to increase the maximum number of users.", preferredStyle: UIAlertController.Style.alert)
             
-            let yesOption = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: nil)
+            let yesOption = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default, handler: nil)
             
             alert.addAction(yesOption)
             self.present(alert, animated: false, completion: nil)
@@ -489,7 +489,7 @@ class userPermissions: UITableViewCell, UIPopoverPresentationControllerDelegate,
         }
     }
     
-    func myPickerDidFinish(_ source: String, selectedItem:Int)
+    public func myPickerDidFinish(_ source: String, selectedItem:Int)
     {
         var workingItem: Int = 0
         

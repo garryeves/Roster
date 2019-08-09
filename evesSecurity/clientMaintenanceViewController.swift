@@ -8,211 +8,210 @@
 
 import UIKit
 
-class clientMaintenanceViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, myCommunicationDelegate, UIPopoverPresentationControllerDelegate, UITextViewDelegate
+public class clientMaintenanceViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, myCommunicationDelegate, UIPopoverPresentationControllerDelegate, UITextViewDelegate
 {
     @IBOutlet weak var txtName: UITextField!
     @IBOutlet weak var txtNotes: UITextView!
     @IBOutlet weak var tblContracts: UITableView!
     @IBOutlet weak var btnAddContract: UIButton!
     @IBOutlet weak var btnContact: UIButton!
-    @IBOutlet weak var tblClients: UITableView!
     @IBOutlet weak var lblContracts: UILabel!
     @IBOutlet weak var lblContact: UILabel!
     @IBOutlet weak var lblNote: UILabel!
     @IBOutlet weak var lblName: UILabel!
-    @IBOutlet weak var tblRates: UITableView!
     @IBOutlet weak var btnAdd: UIButton!
-    @IBOutlet weak var lblRates: UILabel!
-    @IBOutlet weak var lblRateName: UILabel!
-    @IBOutlet weak var lblStart: UILabel!
-    @IBOutlet weak var lblStaff: UILabel!
-    @IBOutlet weak var lblClient: UILabel!
-    @IBOutlet weak var lblGP: UILabel!
-    @IBOutlet weak var btnBack: UIBarButtonItem!
-    @IBOutlet weak var btnAddClient: UIBarButtonItem!
+    @IBOutlet weak var btnAddComms: UIButton!
+    @IBOutlet weak var lblActive: UILabel!
+    @IBOutlet weak var switchActive: UISwitch!
+    @IBOutlet weak var btnAddEvent: UIButton!
+    @IBOutlet weak var btnShowComms: UIButton!
+    @IBOutlet weak var switchArchived: UISwitch!
     
-    var communicationDelegate: myCommunicationDelegate?
+    public  var communicationDelegate: myCommunicationDelegate?
     
-    fileprivate var clientList: clients!
     fileprivate var contractsList: projects!
-    var selectedClient: client!
+    public var selectedClient: client!
     fileprivate var selectedContract: project!
-    fileprivate var ratesList: rates!
     
-    override func viewDidLoad()
+    override public func viewDidLoad()
     {
         txtNotes.layer.borderColor = UIColor.lightGray.cgColor
         txtNotes.layer.borderWidth = 0.5
         txtNotes.layer.cornerRadius = 5.0
         txtNotes.layer.masksToBounds = true
         txtNotes.delegate = self
+
+        switchActive.isOn = false
         
         hideFields()
-        refreshScreen()
+        
+        if selectedClient != nil
+        {
+            refreshScreen()
+        }
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
         switch tableView
         {
-            case tblClients:
-                if clientList == nil
-                {
-                    return 0
-                }
-                else
-                {
-                    return clientList.clients.count
-                }
-            
             case tblContracts:
                 if contractsList == nil
                 {
+                    tblContracts.isHidden = true
                     return 0
                 }
                 else
                 {
+                    tblContracts.isHidden = false
                     return contractsList.projects.count
                 }
-            
-            case tblRates:
-                if ratesList == nil
-                {
-                    return 0
-                }
-                else
-                {
-                    return ratesList.rates.count
-                }
-            
+
             default:
                 return 0
         }
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
         switch tableView
         {
-            case tblClients:
-                let cell = tableView.dequeueReusableCell(withIdentifier:"cellClients", for: indexPath) as! oneLabelTable
-        
-                cell.lbl1.text = clientList.clients[indexPath.row].name
-                
-                return cell
-                
             case tblContracts:
-                let cell = tableView.dequeueReusableCell(withIdentifier:"cellContract", for: indexPath) as! oneLabelTable
+                let cell = tableView.dequeueReusableCell(withIdentifier:"cellContract", for: indexPath) as! twoLabelTable
                 
-                cell.lbl1.text = contractsList.projects[indexPath.row].projectName
-            
+                if contractsList.projects[indexPath.row].projectStatus == archivedProjectStatus
+                {
+                    cell.lbl1.text = "Archived -  \(contractsList.projects[indexPath.row].projectName)"
+                }
+                else
+                {
+                    cell.lbl1.text = contractsList.projects[indexPath.row].projectName
+                }
+                cell.lbl2.text = contractsList.projects[indexPath.row].type
+                
                 return cell
-            
-            case tblRates:
-                // if rate has a shift them do not allow iot to be removed, unenable button
-                
-                let cell = tableView.dequeueReusableCell(withIdentifier:"cellRates", for: indexPath) as! ratesListItem
-                
-                cell.lblName.text = ratesList.rates[indexPath.row].rateName
-                cell.lblClient.text = ratesList.rates[indexPath.row].chargeAmount.formatCurrency
-                cell.lblStaff.text = ratesList.rates[indexPath.row].rateAmount.formatCurrency
-                cell.lblStart.text = ratesList.rates[indexPath.row].displayStartDate
-                
-                // Calculate GP%
-                
-                let GP = ((ratesList.rates[indexPath.row].chargeAmount - ratesList.rates[indexPath.row].rateAmount) / ratesList.rates[indexPath.row].chargeAmount) * 100
-                
-                cell.lblGP.text = String(format: "%.1f", GP)
-                
-            return cell
 
             default:
                 return UITableViewCell()
         }
     }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+    
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
         switch tableView
         {
-            case tblClients:
-                selectedClient = clientList.clients[indexPath.row]
-                refreshScreen()
-                
             case tblContracts:
-                selectedContract = contractsList.projects[indexPath.row]
-                let contractEditViewControl = projectsStoryboard.instantiateViewController(withIdentifier: "contractMaintenance") as! contractMaintenanceViewController
-                contractEditViewControl.communicationDelegate = self
-                contractEditViewControl.workingContract = selectedContract
-                self.present(contractEditViewControl, animated: true, completion: nil)
+                let myOptions: UIAlertController = UIAlertController(title: "Select Action", message: "Select action to take", preferredStyle: .actionSheet)
+                
+                if contractsList.projects[indexPath.row].projectStatus != archivedProjectStatus
+                {
+                    let myOption2a = UIAlertAction(title: "Archive", style: .default, handler: { (action: UIAlertAction) -> () in
+                        self.contractsList.projects[indexPath.row].projectStatus = archivedProjectStatus
+                    })
+                    myOptions.addAction(myOption2a)
+                    
+//                    let myOption2b = UIAlertAction(title: "Edit", style: .default, handler: { (action: UIAlertAction) -> () in
+//                        
+//                        let contractEditViewControl = projectsStoryboard.instantiateViewController(withIdentifier: "contractMaintenance") as! contractMaintenanceViewController
+//                        contractEditViewControl.communicationDelegate = self
+//                        contractEditViewControl.workingContract = self.contractsList.projects[indexPath.row]
+//                        contractEditViewControl.displayBackButton = true
+//                        self.present(contractEditViewControl, animated: true, completion: nil)
+//                    })
+//                    myOptions.addAction(myOption2b)
+                }
+                else
+                {
+                    let myOption2a = UIAlertAction(title: "Re-Activate", style: .default, handler: { (action: UIAlertAction) -> () in
+                        self.contractsList.projects[indexPath.row].projectStatus = "Initiation"
+                    })
+                    myOptions.addAction(myOption2a)
+                }
+                
+                myOptions.popoverPresentationController!.sourceView = tblContracts
+                
+                self.present(myOptions, animated: true, completion: nil)
             
-            case tblRates:
-                let rateMaintenanceEditViewControl = projectsStoryboard.instantiateViewController(withIdentifier: "rateMaintenance") as! rateMaintenanceViewController
-                rateMaintenanceEditViewControl.communicationDelegate = self
-                rateMaintenanceEditViewControl.workingRate = ratesList.rates[indexPath.row]
-                rateMaintenanceEditViewControl.modalPresentationStyle = .popover
-                
-                let popover = rateMaintenanceEditViewControl.popoverPresentationController!
-                popover.delegate = self
-                popover.sourceView = tableView
-                popover.sourceRect = tableView.bounds
-                popover.permittedArrowDirections = .any
-                
-                rateMaintenanceEditViewControl.preferredContentSize = CGSize(width: 500,height: 200)
-                
-                self.present(rateMaintenanceEditViewControl, animated: true, completion: nil)
-
             default:
                 let _ = 1
         }
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath)
-    {
-        if editingStyle == .delete
-        {
-            if tableView == tblRates
-            {
-                ratesList.rates[indexPath.row].delete()
-                ratesList = rates(clientID: selectedClient.clientID, teamID: currentUser.currentTeam!.teamID)
-                tblRates.reloadData()
-            }
-            else if tableView == tblClients
-            {
-                clientList.clients[indexPath.row].delete()
-                refreshScreen()
-            }
-            else if tableView == tblContracts
-            {
-                contractsList.projects[indexPath.row].delete()
-                contractsList = projects(clientID: selectedClient.clientID, teamID: currentUser.currentTeam!.teamID)
-                tblContracts.reloadData()
-            }
-        }
+    @IBAction func btnShowComms(_ sender: UIButton) {
+        let commsView = settingsStoryboard.instantiateViewController(withIdentifier: "commsList") as! commsListViewController
+        commsView.modalPresentationStyle = .popover
+        
+        let popover = commsView.popoverPresentationController!
+        popover.delegate = self
+        popover.sourceView = sender
+        popover.sourceRect = sender.bounds
+        popover.permittedArrowDirections = .any
+        
+        commsView.preferredContentSize = CGSize(width: 800,height: 800)
+        commsView.passedClient = selectedClient
+        self.present(commsView, animated: true, completion: nil)
     }
-
-    @IBAction func btnBack(_ sender: UIBarButtonItem)
-    {
-        if txtName.isFirstResponder
-        {
-            if txtName.text != ""
+    
+    @IBAction func btnAddEvent(_ sender: UIButton) {
+        var newProject : project? = nil
+        
+        let alert = UIAlertController(title: "Event Name", message: "What is the name of your event", preferredStyle: UIAlertController.Style.alert)
+        
+        let action = UIAlertAction(title: "Save", style: .default) { (alertAction) in
+            let textField = alert.textFields![0] as UITextField
+            
+            if textField.text! != ""
             {
-                selectedClient.name = txtName.text!
+                newProject = project(teamID: currentUser.currentTeam!.teamID, clientID: self.selectedClient.clientID, projectType: eventProjectType, projectName: textField.text!)
+                
+                self.contractsList.append(newProject!)
+                
+                self.tblContracts.reloadData()
             }
         }
         
-        if txtNotes.isFirstResponder
-        {
-            selectedClient.note = txtNotes.text!
+        alert.addTextField { (textField) in
+            textField.placeholder = ""
         }
-
-        self.dismiss(animated: true, completion: nil)
-        communicationDelegate?.refreshScreen!()
+        
+        alert.addAction(action)
+        
+        
+        let cancelOption = UIAlertAction(title: "Cancel", style: .default, handler: { (action: UIAlertAction) -> () in
+            let _ = 1
+        })
+        
+        alert.addAction(cancelOption)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    @IBAction func switchArchived(_ sender: UISwitch) {
+        refreshScreen()
+    }
+    
+    @IBAction func btnAddComms(_ sender: UIButton)
+    {
+//        let newComm = commsLogEntry(teamID: (currentUser.currentTeam?.teamID)!)
+//        newComm.clientID = selectedClient.clientID
+//
+//        let commsView = settingsStoryboard.instantiateViewController(withIdentifier: "commsLogView") as! commsLogView
+//        commsView.modalPresentationStyle = .popover
+//
+//        let popover = commsView.popoverPresentationController!
+//        popover.delegate = self
+//        popover.sourceView = sender
+//        popover.sourceRect = sender.bounds
+//        popover.permittedArrowDirections = .any
+//
+//        commsView.preferredContentSize = CGSize(width: 500,height: 800)
+//        commsView.workingEntry = newComm
+//        self.present(commsView, animated: true, completion: nil)
     }
     
     @IBAction func btnContact(_ sender: UIButton)
@@ -224,41 +223,54 @@ class clientMaintenanceViewController: UIViewController, UITableViewDataSource, 
     
     @IBAction func btnAddContract(_ sender: UIButton)
     {
-        let newProject = project(teamID: currentUser.currentTeam!.teamID)
-        newProject.clientID = selectedClient.clientID
-        newProject.save()
+        var newProject : project? = nil
         
-        let contractEditViewControl = projectsStoryboard.instantiateViewController(withIdentifier: "contractMaintenance") as! contractMaintenanceViewController
-        contractEditViewControl.communicationDelegate = self
-        contractEditViewControl.workingContract = newProject
-        self.present(contractEditViewControl, animated: true, completion: nil)
-    }
-    
-    @IBAction func btnAddClient(_ sender: UIBarButtonItem)
-    {
-        selectedClient = client(teamID: currentUser.currentTeam!.teamID)
-        showFields()
-        refreshScreen()
+        let alert = UIAlertController(title: "Project Name", message: "What is the name of your project", preferredStyle: UIAlertController.Style.alert)
+        
+        let action = UIAlertAction(title: "Save", style: .default) { (alertAction) in
+            let textField = alert.textFields![0] as UITextField
+            
+            if textField.text! != ""
+            {
+                newProject = project(teamID: currentUser.currentTeam!.teamID, clientID: self.selectedClient.clientID, projectType: regularProjectType, projectName: textField.text!)
+                
+                self.contractsList.append(newProject!)
+                
+                self.tblContracts.reloadData()
+            }
+        }
+        
+        alert.addTextField { (textField) in
+            textField.placeholder = ""
+        }
+        
+        alert.addAction(action)
+        
+        
+        let cancelOption = UIAlertAction(title: "Cancel", style: .default, handler: { (action: UIAlertAction) -> () in
+            let _ = 1
+        })
+        
+        alert.addAction(cancelOption)
+        
+        self.present(alert, animated: true, completion: nil)
     }
     
     @IBAction func btnAdd(_ sender: UIButton)
     {
-        let tempRate = rate(clientID: selectedClient.clientID, teamID: currentUser.currentTeam!.teamID)
-        
-        let rateMaintenanceEditViewControl = projectsStoryboard.instantiateViewController(withIdentifier: "rateMaintenance") as! rateMaintenanceViewController
-        rateMaintenanceEditViewControl.communicationDelegate = self
-        rateMaintenanceEditViewControl.workingRate = tempRate
-        rateMaintenanceEditViewControl.modalPresentationStyle = .popover
-        
-        let popover = rateMaintenanceEditViewControl.popoverPresentationController!
-        popover.delegate = self
-        popover.sourceView = sender
-        popover.sourceRect = sender.bounds
-        popover.permittedArrowDirections = .any
-        
-        rateMaintenanceEditViewControl.preferredContentSize = CGSize(width: 500,height: 200)
-        
-        self.present(rateMaintenanceEditViewControl, animated: true, completion: nil)
+//        let rateMaintenanceEditViewControl = clientsStoryboard.instantiateViewController(withIdentifier: "ratesView") as! ratesViewController
+//        rateMaintenanceEditViewControl.passedClient = selectedClient
+//        rateMaintenanceEditViewControl.modalPresentationStyle = .popover
+//        
+//        let popover = rateMaintenanceEditViewControl.popoverPresentationController!
+//        popover.delegate = self
+//        popover.sourceView = sender
+//        popover.sourceRect = sender.bounds
+//        popover.permittedArrowDirections = .any
+//        
+//        rateMaintenanceEditViewControl.preferredContentSize = CGSize(width: 800,height: 800)
+//        
+//        self.present(rateMaintenanceEditViewControl, animated: true, completion: nil)
     }
     
     @IBAction func txtName(_ sender: UITextField)
@@ -266,10 +278,12 @@ class clientMaintenanceViewController: UIViewController, UITableViewDataSource, 
         if txtName.text != ""
         {
             selectedClient.name = txtName.text!
+            
+            currentUser.currentTeam?.clients = nil
         }
     }
     
-    func textViewDidEndEditing(_ textView: UITextView)
+    public func textViewDidEndEditing(_ textView: UITextView)
     {
         if textView == txtNotes
         {
@@ -277,35 +291,33 @@ class clientMaintenanceViewController: UIViewController, UITableViewDataSource, 
         }
     }
     
+    @IBAction func switchActive(_ sender: UISwitch) {
+        selectedClient.isActive = sender.isOn
+    }
+    
     func hideFields()
     {
         txtName.isHidden = true
         txtNotes.isHidden = true
-        tblContracts.isHidden = true
         btnAddContract.isHidden = true
         btnContact.isHidden = true
         lblContracts.isHidden = true
         lblContact.isHidden = true
         lblNote.isHidden = true
         lblName.isHidden = true
-        tblRates.isHidden = true
         btnAdd.isHidden = true
-        lblRates.isHidden = true
-        lblRateName.isHidden = true
-        lblStart.isHidden = true
-        lblStaff.isHidden = true
-        lblClient.isHidden = true
-        lblGP.isHidden = true
-        if currentUser.checkPermission(pmRoleType) == writePermission || currentUser.checkPermission(salesRoleType) == writePermission
+        btnAddComms.isHidden = true
+        switchActive.isHidden = true
+        lblActive.isHidden = true
+        
+        if currentUser.checkWritePermission(pmRoleType) || currentUser.checkWritePermission(salesRoleType)
         {
             btnAdd.isEnabled = true
-            btnAddClient.isEnabled = true
             btnAddContract.isEnabled = true
         }
         else
         {
             btnAdd.isEnabled = false
-            btnAddClient.isEnabled = false
             btnAddContract.isEnabled = false
         }
     }
@@ -314,105 +326,59 @@ class clientMaintenanceViewController: UIViewController, UITableViewDataSource, 
     {
         txtName.isHidden = false
         txtNotes.isHidden = false
-        tblContracts.isHidden = false
         btnAddContract.isHidden = false
-        btnContact.isHidden = false
+ //       btnContact.isHidden = false
         lblContracts.isHidden = false
-        lblContact.isHidden = false
+ //       lblContact.isHidden = false
         lblNote.isHidden = false
         lblName.isHidden = false
-        tblRates.isHidden = false
         btnAdd.isHidden = false
-        lblRates.isHidden = false
-        lblRateName.isHidden = false
-        lblStart.isHidden = false
-        lblStaff.isHidden = false
-        lblClient.isHidden = false
-        lblGP.isHidden = false
-        if currentUser.checkPermission(pmRoleType) == writePermission || currentUser.checkPermission(salesRoleType) == writePermission
+        btnAddComms.isHidden = false
+        switchActive.isHidden = false
+        lblActive.isHidden = false
+        
+        if currentUser.checkWritePermission(salesRoleType)
         {
             btnAdd.isEnabled = true
-            btnAddClient.isEnabled = true
             btnAddContract.isEnabled = true
+            btnAddEvent.isEnabled = true
         }
         else
         {
             btnAdd.isEnabled = false
-            btnAddClient.isEnabled = false
             btnAddContract.isEnabled = false
+            btnAddEvent.isEnabled = false
         }
     }
     
-    func refreshScreen()
+    public func refreshScreen()
     {
-        clientList = clients(teamID: currentUser.currentTeam!.teamID)
-        tblClients.reloadData()
-
         if selectedClient == nil
         {
             txtName.text = ""
             txtNotes.text = ""
-            tblRates.isHidden = true
-            lblRates.isHidden = true
-            lblRateName.isHidden = true
-            lblStart.isHidden = true
-            lblStaff.isHidden = true
-            lblClient.isHidden = true
-            lblGP.isHidden = true
             btnAdd.isHidden = true
+            switchActive.isHidden = true
         }
         else
         {
-            contractsList = projects(clientID: selectedClient.clientID, teamID: currentUser.currentTeam!.teamID)
+            contractsList = projects(clientID: selectedClient.clientID, teamID: currentUser.currentTeam!.teamID, isActive: !switchArchived.isOn)
             tblContracts.reloadData()
 
             txtName.text = selectedClient.name
             txtNotes.text = selectedClient.note
-            
-            ratesList = rates(clientID: selectedClient.clientID, teamID: currentUser.currentTeam!.teamID)
+            switchActive.isOn = selectedClient.isActive
             
             showFields()
             
             if selectedClient.name == ""
             {
-                tblRates.isHidden = true
-                lblRates.isHidden = true
-                lblRateName.isHidden = true
-                lblStart.isHidden = true
-                lblStaff.isHidden = true
-                lblClient.isHidden = true
-                lblGP.isHidden = true
                 btnAdd.isHidden = true
             }
             else
             {
-                tblRates.isHidden = false
-                lblRates.isHidden = false
-                lblRateName.isHidden = false
-                lblStart.isHidden = false
-                lblStaff.isHidden = false
-                lblClient.isHidden = false
-                lblGP.isHidden = false
                 btnAdd.isHidden = false
-                
-                tblRates.reloadData()
             }
         }
     }
 }
-
-class ratesListItem: UITableViewCell
-{
-    @IBOutlet weak var lblName: UILabel!
-    @IBOutlet weak var lblStart: UILabel!
-    @IBOutlet weak var lblStaff: UILabel!
-    @IBOutlet weak var lblClient: UILabel!
-    @IBOutlet weak var lblGP: UILabel!
-    
-    override func layoutSubviews()
-    {
-        contentView.frame = bounds
-        super.layoutSubviews()
-    }
-}
-

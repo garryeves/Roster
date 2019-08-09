@@ -8,7 +8,7 @@
 
 import UIKit
 
-class newInstanceViewController: UIViewController, UIPopoverPresentationControllerDelegate
+public class newInstanceViewController: UIViewController, UIPopoverPresentationControllerDelegate
 {
     @IBOutlet weak var btnNew: UIButton!
     @IBOutlet weak var btnExisting: UIButton!
@@ -18,13 +18,13 @@ class newInstanceViewController: UIViewController, UIPopoverPresentationControll
     @IBOutlet weak var newButtonVerticalConstraint: NSLayoutConstraint!
     @IBOutlet weak var newTextVerticalConstraint: NSLayoutConstraint!
     @IBOutlet weak var ExistingHeightConstraint: NSLayoutConstraint!
-    
-    var communicationDelegate: myCommunicationDelegate?
+//gre
+    public var communicationDelegate: myCommunicationDelegate?
     
     private var keyboardDisplayed: Bool = false
     private var originalTextHeight: CGFloat = 0.0
     
-    override func viewDidLoad()
+    override public func viewDidLoad()
     {
         btnExisting.isEnabled = false
      
@@ -44,18 +44,18 @@ class newInstanceViewController: UIViewController, UIPopoverPresentationControll
             txtCode.isEnabled = false
         }
         
-        notificationCenter.addObserver(self, selector: #selector(self.keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(self.keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(self.keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(self.keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    override func viewDidAppear(_ animated: Bool)
+    override public func viewDidAppear(_ animated: Bool)
     {
         let myReachability = Reachability()
         if !myReachability.isConnectedToNetwork()
         {
             let alert = UIAlertController(title: "Team Maintenance", message: "You must be connected to the Internet to create or edit teams", preferredStyle: .actionSheet)
             
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
             
             alert.isModalInPopover = true
             let popover = alert.popoverPresentationController
@@ -67,7 +67,7 @@ class newInstanceViewController: UIViewController, UIPopoverPresentationControll
         }
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
@@ -86,7 +86,7 @@ class newInstanceViewController: UIViewController, UIPopoverPresentationControll
         {
             let alert = UIAlertController(title: "Join a team", message: "You must provide both your email address, and the code provided by your Administrator", preferredStyle: .actionSheet)
             
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
             
             alert.isModalInPopover = true
             let popover = alert.popoverPresentationController
@@ -101,64 +101,39 @@ class newInstanceViewController: UIViewController, UIPopoverPresentationControll
             btnExisting.isEnabled = false
             btnNew.isEnabled = false
             btnExisting.setTitle("Processing.  Please wait", for: .normal)
+            
+            let userList = myCloudDB.validateUser(email: txtEmail.text!, passPhrase: txtCode.text!)
 
-            notificationCenter.addObserver(self, selector: #selector(self.userValidated), name: NotificationValidateUser, object: nil)
-            
-            myCloudDB.validateUser(email: txtEmail.text!, passPhrase: txtCode.text!)
-        }
-    }
-    
-    @objc func userValidated()
-    {
-        notificationCenter.removeObserver(NotificationValidateUser)
-        
-        sleep(2)
-        
-        let userList = myCloudDB.retrieveUserList()
-        if userList.count > 0
-        {
-
-            currentUser = userItem(userID: userList[0].userID)
-            writeDefaultInt(userDefaultName, value: currentUser.userID)
-            
-            myCloudDB.replaceUserTeamsInCoreData()
-            
-            sleep(2)
-            myCloudDB.replaceTeamInCoreData()
-            
-            sleep(2)
-            
-//            myCloudDB.updatePublicDecodesInCoreData()
-            
-//            sleep(2)
-            
-//            currentUser.loadTeams()
-            
-//            currentUser.addInitialUserRoles()
-            
-            communicationDelegate!.callLoadMainScreen!()
-            self.dismiss(animated: true, completion: nil)
-        }
-        else
-        {
-            let alert = UIAlertController(title: "Join a team", message: "Your details do not match.  Please try again or contact your Administrator for a new code", preferredStyle: .actionSheet)
-            
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-            
-            alert.isModalInPopover = true
-            let popover = alert.popoverPresentationController
-            popover!.delegate = self
-            popover!.sourceView = self.view
-            popover!.sourceRect = CGRect(x: (self.view.bounds.width / 2) - 850,y: (self.view.bounds.height / 2) - 350,width: 700 ,height: 700)
-            
-            self.present(alert, animated: false, completion: nil)
-            
-            DispatchQueue.main.async
+            if userList.count > 0
             {
-                self.btnExisting.setTitle("Join an existing Organisation", for: .normal)
-                self.btnExisting.isEnabled = true
-                self.btnNew.isEnabled = true
+                currentUser = userItem(userID: userList[0].userID)
+                writeDefaultInt(userDefaultName, value:Int(currentUser!.userID))
+                
+                communicationDelegate!.callLoadMainScreen!()
+                self.dismiss(animated: true, completion: nil)
             }
+            else
+            {
+                let alert = UIAlertController(title: "Join a team", message: "Your details do not match.  Please try again or contact your Administrator for a new code", preferredStyle: .actionSheet)
+                
+                alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
+                
+                alert.isModalInPopover = true
+                let popover = alert.popoverPresentationController
+                popover!.delegate = self
+                popover!.sourceView = self.view
+                popover!.sourceRect = CGRect(x: (self.view.bounds.width / 2) - 850,y: (self.view.bounds.height / 2) - 350,width: 700 ,height: 700)
+                
+                self.present(alert, animated: false, completion: nil)
+                
+                DispatchQueue.main.async
+                    {
+                        self.btnExisting.setTitle("Join an existing Organisation", for: .normal)
+                        self.btnExisting.isEnabled = true
+                        self.btnNew.isEnabled = true
+                }
+            }
+
         }
     }
     

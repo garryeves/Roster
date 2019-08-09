@@ -8,7 +8,7 @@
 
 import UIKit
 
-class reportMaintenanceViewController: UIViewController, MyPickerDelegate, UIPopoverPresentationControllerDelegate, UITableViewDataSource, UITableViewDelegate
+public class reportMaintenanceViewController: UIViewController, MyPickerDelegate, UIPopoverPresentationControllerDelegate, UITableViewDataSource, UITableViewDelegate
 {
     @IBOutlet weak var tblReports: UITableView!
     @IBOutlet weak var lblType: UILabel!
@@ -29,13 +29,13 @@ class reportMaintenanceViewController: UIViewController, MyPickerDelegate, UIPop
     @IBOutlet weak var btnCriteria1: UIButton!
     @IBOutlet weak var btnCriteria2: UIButton!
     
-    var communicationDelegate: myCommunicationDelegate?
+    public var communicationDelegate: myCommunicationDelegate?
     fileprivate var currentReport: report!
     fileprivate var reportList: reports!
     fileprivate var displayList: [String] = Array()
     fileprivate var addInfo: personAdditionalInfos!
     
-    override func viewDidLoad()
+    override public func viewDidLoad()
     {
         btnType.setTitle("Select", for: .normal)
         hideFields()
@@ -43,12 +43,12 @@ class reportMaintenanceViewController: UIViewController, MyPickerDelegate, UIPop
         refreshScreen()
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
         switch tableView
         {
@@ -77,7 +77,7 @@ class reportMaintenanceViewController: UIViewController, MyPickerDelegate, UIPop
         }
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
         switch tableView
         {
@@ -102,7 +102,7 @@ class reportMaintenanceViewController: UIViewController, MyPickerDelegate, UIPop
             }
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
         switch tableView
         {
@@ -125,7 +125,7 @@ class reportMaintenanceViewController: UIViewController, MyPickerDelegate, UIPop
         }
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath)
+    public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath)
     {
         if tableView == tblReports
         {
@@ -156,12 +156,12 @@ class reportMaintenanceViewController: UIViewController, MyPickerDelegate, UIPop
     {
         displayList.removeAll()
         
-        if currentUser.checkPermission(financialsRoleType) != noPermission
+        if currentUser.checkReadPermission(financialsRoleType)
         {
             displayList.append(financialReportType)
         }
         
-        if currentUser.checkPermission(hrRoleType) != noPermission
+        if currentUser.checkReadPermission(hrRoleType)
         {
             displayList.append(peopleReportType)
         }
@@ -363,7 +363,7 @@ class reportMaintenanceViewController: UIViewController, MyPickerDelegate, UIPop
         }
     }
     
-    func refreshScreen()
+    public func refreshScreen()
     {
         reportList = reports(teamID: currentUser.currentTeam!.teamID)
         
@@ -551,7 +551,7 @@ class reportMaintenanceViewController: UIViewController, MyPickerDelegate, UIPop
         btnCriteria2.isHidden = true
     }
     
-    func myPickerDidFinish(_ source: String, selectedItem:Int)
+    public func myPickerDidFinish(_ source: String, selectedItem:Int)
     {
         var workingItem = selectedItem
         

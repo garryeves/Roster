@@ -8,20 +8,20 @@
 
 import UIKit
 
-class validatePasswordViewController: UIViewController, UIPopoverPresentationControllerDelegate
+public class validatePasswordViewController: UIViewController, UIPopoverPresentationControllerDelegate
 {
     @IBOutlet weak var btnLogin: UIButton!
     @IBOutlet weak var btnHint: UIButton!
     @IBOutlet weak var btnBack: UIButton!
     @IBOutlet weak var txtPassword: UITextField!
 
-    var communicationDelegate: myCommunicationDelegate?
+    public var communicationDelegate: myCommunicationDelegate?
     
-    override func viewDidLoad()
+    override public func viewDidLoad()
     {
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
@@ -37,9 +37,11 @@ class validatePasswordViewController: UIViewController, UIPopoverPresentationCon
         {
             let alert = UIAlertController(title: "Password", message: "Incorrect password, please try again", preferredStyle: .actionSheet)
             
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: { (action: UIAlertAction) -> () in
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: { (action: UIAlertAction) -> () in
                 self.txtPassword.text = ""
-                self.txtPassword.becomeFirstResponder } ))
+             //   self.txtPassword.becomeFirstResponder
+                
+            } ))
             
             let popover = alert.popoverPresentationController
             popover!.delegate = self
@@ -55,7 +57,7 @@ class validatePasswordViewController: UIViewController, UIPopoverPresentationCon
     {
         let alert = UIAlertController(title: "Password", message: "Your hint = \(readDefaultString(userDefaultPasswordHint))", preferredStyle: .actionSheet)
         
-        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
         
         let popover = alert.popoverPresentationController
         popover!.delegate = self

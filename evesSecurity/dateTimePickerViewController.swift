@@ -9,21 +9,21 @@
 import Foundation
 import UIKit
 
-class dateTimePickerView: UIViewController
+public class dateTimePickerView: UIViewController
 {
     @IBOutlet weak var datePicker: UIDatePicker!
     
-    var currentDate: Date!
-    var source: String?
-    var delegate: MyPickerDelegate?
-    var showTimes: Bool = true
-    var showDates: Bool = true
-    var minutesInterval: Int = 1
-    var minimumDate: Date!
-    var maximumDate: Date!
-    var display24Hour: Bool = false
+    public var currentDate: Date!
+    public var source: String?
+    public var delegate: MyPickerDelegate?
+    public var showTimes: Bool = true
+    public var showDates: Bool = true
+    public var minutesInterval: Int = 1
+    public var minimumDate: Date!
+    public var maximumDate: Date!
+    public var display24Hour: Bool = false
     
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
@@ -74,13 +74,13 @@ class dateTimePickerView: UIViewController
    //     btnSelect.isEnabled = false
     }
     
-    override func viewWillDisappear(_ animated: Bool)
+    override public func viewWillDisappear(_ animated: Bool)
     {
         super.viewWillDisappear(animated)
         delegate!.myPickerDidFinish!(source!, selectedDate: datePicker.date)
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }

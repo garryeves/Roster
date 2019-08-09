@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import evesSecurity
+//@testable import evesSecurity
 
 class evesSecurityTests: XCTestCase {
     

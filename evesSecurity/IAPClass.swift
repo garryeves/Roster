@@ -87,7 +87,7 @@ public struct Session {
     public var receiptData: Data
     public var parsedReceipt: [String: Any]
     
-    init(receiptData: Data, parsedReceipt: [String: Any]) {
+    public init(receiptData: Data, parsedReceipt: [String: Any]) {
         id = UUID().uuidString
         self.receiptData = receiptData
         self.parsedReceipt = parsedReceipt
@@ -116,32 +116,32 @@ extension Session: Equatable {
     }
 }
 
-class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObserver
+public class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObserver
 {
     fileprivate let sharedSecret = "638828c8d37a483abf0c7207e8908183"
     fileprivate let IAPConsumableID = "TestIAP"
-    fileprivate let IAPSubscriptionID1m5 = "com.garryeves.1m5"
+    fileprivate let IAPSubscriptionID1m05 = "com.garryeves.1m05"
     fileprivate let IAPSubscriptionID1m10 = "com.garryeves.1m10"
     fileprivate let IAPSubscriptionID1m20 = "com.garryeves.1m20"
-    fileprivate let IAPSubscriptionID1y5 = "com.garryeves.1y5"
+    fileprivate let IAPSubscriptionID1y05 = "com.garryeves.1y05"
     fileprivate let IAPSubscriptionID1y10 = "com.garryeves.1y10"
     fileprivate let IAPSubscriptionID1y20 = "com.garryeves.1y20"
     fileprivate let IAPSubscriptionIDtest = "com.garryeves.test"
     
     fileprivate var productID = ""
-    var productRequest = SKProductsRequest()
+    public var productRequest = SKProductsRequest()
     fileprivate var iapProducts = [SKProduct]()
     fileprivate var myPuchasedExpiryDate: Date = Date()
-    fileprivate var myPurchasedUsers: Int = 1
+    fileprivate var myPurchasedUsers: Int64 = 1
 
     private var sessions = [SessionId: Session]()
     
-    var hasReceiptData: Bool
+    public var hasReceiptData: Bool
     {
         return loadReceipt() != nil
     }
     
-    var currentSessionId: String?
+    public var currentSessionId: String?
     {
         didSet
         {
@@ -149,36 +149,58 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
         }
     }
     
-    var currentSubscription: PaidSubscription?
+    public var currentSubscription: PaidSubscription?
     
-    var productsCount: Int
+    public var productsCount: Int
     {
         return iapProducts.count
     }
     
-    var productNames: [String]
+    public var productNames: [String]
     {
         var returnArray: [String] = Array()
         
         for IAPItem in iapProducts
         {
-            returnArray.append(IAPItem.localizedDescription)
+            switch IAPItem.productIdentifier
+            {
+                case IAPSubscriptionID1m05:
+                    returnArray.append("5 Users for 1 month")
+                
+                case IAPSubscriptionID1m10:
+                    returnArray.append("10 Users for 1 month")
+                
+                case IAPSubscriptionID1m20:
+                    returnArray.append("20 Users for 1 month")
+                
+                case IAPSubscriptionID1y05:
+                    returnArray.append("5 Users for 1 year")
+                
+                case IAPSubscriptionID1y10:
+                    returnArray.append("10 Users for 1 year")
+                
+                case IAPSubscriptionID1y20:
+                    returnArray.append("20 Users for 1 year")
+                
+                default:
+                    returnArray.append("Unknown Item")
+            }
         }
         
         return returnArray
     }
     
-    var purchasedExpiryDate: Date
+    public var purchasedExpiryDate: Date
     {
         return myPuchasedExpiryDate
     }
     
-    var purchasedUsers: Int
+    public var purchasedUsers: Int64
     {
         return myPurchasedUsers
     }
     
-    var productCost: [String]
+    public var productCost: [String]
     {
         var returnArray: [String] = Array()
         
@@ -196,16 +218,15 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
         return returnArray
     }
     
-    func listPurchases()
+    public func listPurchases()
     {
         let productIdentifiers = Set([IAPConsumableID,
-                                        IAPSubscriptionID1m5,
+                                        IAPSubscriptionID1m05,
                                         IAPSubscriptionID1m10,
                                         IAPSubscriptionID1m20,
-                                        IAPSubscriptionID1y5,
+                                        IAPSubscriptionID1y05,
                                         IAPSubscriptionID1y10,
-                                        IAPSubscriptionID1y20,
-                                        IAPSubscriptionIDtest
+                                        IAPSubscriptionID1y20
             ]
         )
         
@@ -214,12 +235,12 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
         productRequest.start()
     }
     
-    var canMakePurchases: Bool
+    public var canMakePurchases: Bool
     {
         return SKPaymentQueue.canMakePayments()
     }
     
-    func purchaseProduct(_ indexItem: Int)
+    public func purchaseProduct(_ indexItem: Int)
     {
         let product = iapProducts[indexItem]
         let payment = SKPayment(product: product)
@@ -229,7 +250,7 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
         productID = product.productIdentifier
     }
     
-    func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse)
+    public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse)
     {
         if response.products.count > 0
         {
@@ -239,14 +260,14 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
         notificationCenter.post(name: NotificationIAPSListed, object: nil)
     }
     
-    func request(_ request: SKRequest, didFailWithError error: Error)
+    public func request(_ request: SKRequest, didFailWithError error: Error)
     {
         print("Failed to load list of products.")
         print("Error: \(error.localizedDescription)")
 //        productsRequestCompletionHandler?(false, nil)
     }
     
-    func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction])
+    public func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction])
     {
         for transaction in transactions
         {
@@ -289,7 +310,7 @@ class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObser
         }
     }
     
-    func processSuccess()
+    public func processSuccess()
     {
         if currentSubscription != nil
         {
@@ -301,7 +322,7 @@ print("product = \(currentSubscription!.productId) purchase date = \(currentSubs
                     myPuchasedExpiryDate = currentSubscription!.expiresDate
                     myPurchasedUsers = 15
                     
-                case IAPSubscriptionID1m5:
+                case IAPSubscriptionID1m05:
                     myPuchasedExpiryDate = currentSubscription!.expiresDate
                     myPurchasedUsers = 5
                     
@@ -313,7 +334,7 @@ print("product = \(currentSubscription!.productId) purchase date = \(currentSubs
                     myPuchasedExpiryDate = currentSubscription!.expiresDate
                     myPurchasedUsers = 20
                     
-                case IAPSubscriptionID1y5:
+                case IAPSubscriptionID1y05:
                     myPuchasedExpiryDate = currentSubscription!.expiresDate
                     myPurchasedUsers = 5
                     
@@ -341,7 +362,7 @@ print("product = \(currentSubscription!.productId) purchase date = \(currentSubs
         }
     }
     
-    func checkReceipt()
+    public func checkReceipt()
     {
         uploadReceipt { (success) in
             DispatchQueue.main.async
@@ -351,7 +372,7 @@ print("product = \(currentSubscription!.productId) purchase date = \(currentSubs
         }
     }
     
-    func uploadReceipt(completion: ((_ success: Bool) -> Void)? = nil)
+    public func uploadReceipt(completion: ((_ success: Bool) -> Void)? = nil)
     {
         if let receiptData = loadReceipt()
         {

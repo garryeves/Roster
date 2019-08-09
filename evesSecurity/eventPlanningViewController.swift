@@ -8,12 +8,16 @@
 
 import UIKit
 
-class eventPlanningViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, myCommunicationDelegate, MyPickerDelegate, UIPopoverPresentationControllerDelegate
+public protocol updateProgressBarProtocol
+{
+    func updatebar()
+}
+
+public class eventPlanningViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, myCommunicationDelegate, MyPickerDelegate, UIPopoverPresentationControllerDelegate, updateProgressBarProtocol
 {
     @IBOutlet weak var btnTemplate: UIButton!
     @IBOutlet weak var btnCreatePlan: UIButton!
     @IBOutlet weak var btnMaintainTemplates: UIButton!
-    @IBOutlet weak var tblEvents: UITableView!
     @IBOutlet weak var tblRoles: UITableView!
     @IBOutlet weak var lblAddToRole: UILabel!
     @IBOutlet weak var btnSelect: UIButton!
@@ -28,14 +32,16 @@ class eventPlanningViewController: UIViewController, UITableViewDataSource, UITa
     @IBOutlet weak var lblDateHead: UILabel!
     @IBOutlet weak var lblStarHead: UILabel!
     @IBOutlet weak var lblEndHead: UILabel!
-    @IBOutlet weak var btnBack: UIBarButtonItem!
     @IBOutlet weak var btnShare: UIBarButtonItem!
     @IBOutlet weak var btnStatus: UIButton!
+    @IBOutlet weak var progressbar: UIProgressView!
+    @IBOutlet weak var btnSignIn: UIButton!
+    @IBOutlet weak var btnResetPlan: UIButton!
     
-    var communicationDelegate: myCommunicationDelegate?
+  //  public var communicationDelegate: myCommunicationDelegate?
+  //  public var delegate: mainScreenProtocol!
     
-    fileprivate var eventList: projects!
-    var currentEvent: project!
+    public var currentEvent: project!
     fileprivate var displayList: [String] = Array()
     fileprivate var currentTemplate: eventTemplateHead!
     fileprivate var templateList: eventTemplateHeads!
@@ -44,33 +50,69 @@ class eventPlanningViewController: UIViewController, UITableViewDataSource, UITa
     fileprivate var peopleList: people!
     fileprivate var rateList: rates!
     fileprivate var shiftList: [shift] = Array()
+    fileprivate var barProgress: Int = 0
+    fileprivate var maxBar: Int = 0
     
-    override func viewDidLoad()
+    override public func viewDidLoad()
     {
-        peopleList = people(teamID: currentUser.currentTeam!.teamID)
+        peopleList = people(teamID: currentUser.currentTeam!.teamID, isActive: true)
         btnStatus.setTitle("Select", for: .normal)
-        refreshScreen()
+        
+        progressbar.isHidden = true
+        if currentEvent != nil
+        {
+            eventDays.removeAll()
+            
+            // Here we are going to build up the list of possible days
+            
+            if currentEvent.projectStartDate == currentEvent.projectEndDate
+            {
+                eventDays.append(currentEvent.projectStartDate.startOfDay)
+            }
+            else
+            {
+                var tempDate = currentEvent.projectStartDate
+                
+                while tempDate <= currentEvent.projectEndDate
+                {
+                    eventDays.append(tempDate.startOfDay)
+                    tempDate = tempDate.add(.day, amount: 1)
+                }
+                
+            }
+            
+            btnDate.setTitle(currentEvent.projectStartDate.formatDateToString, for: .normal)
+            if currentEvent.projectStatus != ""
+            {
+                btnStatus.setTitle(currentEvent.projectStatus, for: .normal)
+            }
+            else
+            {
+                btnStatus.setTitle("Select", for: .normal)
+            }
+            newRoleDate = currentEvent.projectStartDate.startOfDay
+            
+            refreshScreen()
+        }
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if mainDelegate != nil
+        {
+            mainDelegate.loadShifts()
+        }
+    }
+    
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
         switch tableView
         {
-            case tblEvents:
-                if eventList == nil
-                {
-                    return 0
-                }
-                else
-                {
-                    return eventList.projects.count
-                }
-                
             case tblRoles:
                 return shiftList.count
                 
@@ -79,18 +121,10 @@ class eventPlanningViewController: UIViewController, UITableViewDataSource, UITa
         }
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
         switch tableView
         {
-            case tblEvents:
-                let cell = tableView.dequeueReusableCell(withIdentifier:"cellEventName", for: indexPath) as! eventSummaryItem
-                
-                cell.lblName.text = eventList.projects[indexPath.row].projectName
-                cell.lblDate.text = eventList.projects[indexPath.row].displayProjectStartDate
-                
-                return cell
-                
             case tblRoles:
                 let cell = tableView.dequeueReusableCell(withIdentifier:"cellEvent", for: indexPath) as! eventRoleItem
                 
@@ -107,6 +141,18 @@ class eventPlanningViewController: UIViewController, UITableViewDataSource, UITa
                 cell.peopleList = peopleList
                 cell.rateList = rateList
                 
+                if shiftList[indexPath.row].personInvoiceNumber != 0 || shiftList[indexPath.row].clientInvoiceNumber != 0
+                {
+                    cell.btnRate.setTitleColor(.gray, for: .normal)
+                    cell.btnPerson.setTitleColor(.gray, for: .normal)
+                    cell.btnStart.setTitleColor(.gray, for: .normal)
+                    cell.btnEnd.setTitleColor(.gray, for: .normal)
+                    cell.btnRate.isEnabled = false
+                    cell.btnPerson.isEnabled = false
+                    cell.btnStart.isEnabled = false
+                    cell.btnEnd.isEnabled = false
+                }
+                
                 return cell
                 
             default:
@@ -114,125 +160,218 @@ class eventPlanningViewController: UIViewController, UITableViewDataSource, UITa
         }
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
         switch tableView
         {
-            case tblEvents:
-                currentEvent = eventList.projects[indexPath.row]
-                
-                eventDays.removeAll()
-                
-                // Here we are going to build up the list of possible days
-                
-                
-                
-                if currentEvent.projectStartDate == currentEvent.projectEndDate
-                {
-                    eventDays.append(currentEvent.projectStartDate.startOfDay)
-                }
-                else
-                {
-                    var tempDate = currentEvent.projectStartDate
-                    
-                    while tempDate <= currentEvent.projectEndDate
-                    {
-                        eventDays.append(tempDate.startOfDay)
-                        tempDate = tempDate.add(.day, amount: 1)
-                    }
-                    
-                }
-            
-                btnDate.setTitle(currentEvent.projectStartDate.formatDateToString, for: .normal)
-                if currentEvent.projectStatus != ""
-                {
-                    btnStatus.setTitle(currentEvent.projectStatus, for: .normal)
-                }
-                else
-                {
-                    btnStatus.setTitle("Select", for: .normal)
-                }
-                newRoleDate = currentEvent.projectStartDate.startOfDay
-                                
-                refreshScreen()
-            
             case tblRoles:
                 let _ = 1
-                
-                
+            
             default:
                 let _ = 1
         }
     }
     
-    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle
+    public func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle
     {
         if tableView == tblRoles
         {
-            return UITableViewCellEditingStyle.delete
+            return UITableViewCell.EditingStyle.delete
         }
-        return UITableViewCellEditingStyle.none
+        return UITableViewCell.EditingStyle.none
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath)
+    public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath)
     {
         if tableView == tblRoles
         {
             if editingStyle == .delete
             {
                 shiftList[indexPath.row].delete()
+                currentEvent.staff!.remove(indexPath.row)
                 
                 refreshScreen()
             }
         }
     }
     
-    @IBAction func btnBack(_ sender: UIBarButtonItem)
-    {
-        communicationDelegate?.refreshScreen!()
-        self.dismiss(animated: true, completion: nil)
+//    @IBAction func btnBack(_ sender: UIBarButtonItem)
+//    {
+//        currentUser.currentTeam?.shifts = nil
+//        
+//        DispatchQueue.global().async
+//        {
+//            currentUser.currentTeam?.shifts = myCloudDB.getShifts(teamID: (currentUser.currentTeam?.teamID)!)
+//        }
+//        
+//        currentUser.currentTeam?.eventTemplates = nil
+//        
+//        communicationDelegate?.refreshScreen!()
+//        self.dismiss(animated: true, completion: nil)
+//    }
+
+    @IBAction func btnSignIn(_ sender: UIButton) {
+        let viewControl = shiftsStoryboard.instantiateViewController(withIdentifier: "eventSignInView") as! eventSignInViewController
+        viewControl.modalPresentationStyle = .popover
+        
+        let popover = viewControl.popoverPresentationController!
+        popover.delegate = self
+        popover.sourceView = btnSignIn
+        popover.sourceRect = btnSignIn.bounds
+        popover.permittedArrowDirections = .any
+        
+        viewControl.preferredContentSize = CGSize(width: 500,height: 800)
+        viewControl.eventItem = currentEvent
+        self.present(viewControl, animated: true, completion: nil)
     }
     
-    @IBAction func btnMaintainTemplates(_ sender: UIButton)
+    public func updatebar()
     {
-        let templatesViewControl = shiftsStoryboard.instantiateViewController(withIdentifier: "eventTemplateForm") as! eventTemplateVoewController
-        templatesViewControl.communicationDelegate = self
-        self.present(templatesViewControl, animated: true, completion: nil)
+        barProgress += 1
+        let currentProgress = Float(barProgress) / Float(maxBar)
+        DispatchQueue.main.async
+        {
+            self.progressbar.setProgress(currentProgress, animated: true)
+            self.progressbar.isHidden = false
+        }
+    }
+    
+    @IBAction func btnResetPlan(_ sender: UIButton) {
+        let myOptions: UIAlertController = UIAlertController(title: "Delete All Plan Entries", message: "This will delte all Plan entries.  Are you sure you wish to do this.  The entries will be permanently deleted and can not be undone and", preferredStyle: .actionSheet)
+        
+        let myOptionYes = UIAlertAction(title: "Yes. Permanently Delete The Plan.", style: .default, handler: { (action: UIAlertAction) -> () in
+
+//            self.progressbar.setProgress(0.0,animated: true)
+//            self.progressbar.isHidden = false
+            self.tblRoles.isHidden = true
+
+            DispatchQueue.global().async
+            {
+//                let totalRecords = Float(self.currentEvent.staff!.shifts.count)
+//                
+//                var processedCount: Int = 0
+//                
+//                for item in self.currentEvent.staff!.shifts
+//                {
+//                    DispatchQueue.main.async
+//                    {
+//                        let prog = Float(processedCount)/totalRecords
+//                        self.progressbar.setProgress(prog, animated: true)
+//                    }
+//                    item.delete()
+//                    
+//                    processedCount += 1
+//                }
+            
+                DispatchQueue.main.async
+                {
+                    self.currentEvent.staff!.removeAll(projectID: self.currentEvent.projectID, teamID: currentUser.currentTeam!.teamID)
+                    self.refreshScreen()
+                }
+            }
+        })
+        myOptions.addAction(myOptionYes)
+
+        let myOptionNo = UIAlertAction(title: "No.  Do Not Delete.", style: .default, handler: { (action: UIAlertAction) -> () in
+            let _ = 1
+        })
+        myOptions.addAction(myOptionNo)
+        
+        myOptions.popoverPresentationController!.sourceView = btnResetPlan
+        
+        self.present(myOptions, animated: true, completion: nil)
     }
     
     @IBAction func btnCreatePlan(_ sender: UIButton)
     {
+        
         currentTemplate.loadRoles()
         let roles = currentTemplate.roles!.roles!
         
-        for myItem in roles
+        // get the muber of roles to create
+        
+        var roleCount: Int64 = 0
+        var processedCount: Int64 = 0
+        
+        for item in roles
         {
-            let workDay: Date!
-            if myItem.dateModifier == 0
-            {
-                workDay = currentEvent.projectStartDate.startOfDay
-            }
-            else
-            {
-                workDay = currentEvent.projectStartDate.add(.day, amount: myItem.dateModifier).startOfDay
-            }
-            
-            var roleCount: Int = 0
-            
-            while roleCount < myItem.numRequired
-            {
-                createShiftEntry(teamID: currentUser.currentTeam!.teamID, projectID: currentEvent.projectID, shiftDescription: myItem.role, workDay: workDay, startTime: myItem.startTime, endTime: myItem.endTime, saveToCloud: false)
-                roleCount += 1
-            }
-            
-            myDatabaseConnection.saveDecodeToCloud()
+            roleCount += item.numRequired
         }
         
-        refreshScreen()
+        progressbar.setProgress(0.0,animated: true)
+        progressbar.isHidden = false
         
-        showFields()
-    }
+        myCloudDB.resetSaveArray()
+        
+        var nextID = myCloudDB.getNextID("shiftLineID", teamID: currentUser.currentTeam!.teamID)
+        
+        DispatchQueue.global().async
+        {
+            myCloudDB.setNextID("shiftLineID", teamID: currentUser.currentTeam!.teamID, newValue: (nextID + roleCount + 1))
+        }
+        
+        DispatchQueue.global().async
+        {
+            for myItem in roles
+            {
+                let workDay: Date!
+                if myItem.dateModifier == 0
+                {
+                    workDay = self.currentEvent.projectStartDate.startOfDay
+                }
+                else
+                {
+                    workDay = self.currentEvent.projectStartDate.add(.day, amount: Int(myItem.dateModifier)).startOfDay
+                }
+                
+                let WEDate = workDay.getWeekEndingDate
+                
+                var itemCount: Int64 = 0
+                
+                while itemCount < myItem.numRequired
+                {
+                    let newShift = shift(projectID: self.currentEvent.projectID,
+                                         workDate: workDay,
+                                         weekEndDate: WEDate,
+                                         teamID: currentUser.currentTeam!.teamID,
+                                         shiftLineID: nextID,
+                                         type: eventShiftType,
+                                         shiftDescription: myItem.role,
+                                         startTime: myItem.startTime,
+                                         endTime: myItem.endTime)
+                    newShift.save(bulkSave: true)
+                    
+                    self.currentEvent.staff!.append(newShift)
+                    
+                    DispatchQueue.main.async
+                    {
+                        let prog = Float(processedCount)/Float(roleCount)
+                        self.progressbar.setProgress(prog, animated: true)
+                    }
+                    processedCount += 1
+                    
+                    nextID += 1
+                    
+                    itemCount += 1
+                }
+            }
+            
+            self.currentEvent.staff!.sortArray()
 
+            self.barProgress = 0
+            self.maxBar = Int(processedCount)
+            
+            myCloudDB.performBulkPublicSave()
+
+            DispatchQueue.main.async
+            {
+                self.refreshScreen()
+                self.progressbar.isHidden = true
+                self.showFields()
+            }
+        }
+    }
+    
     @IBAction func btnDate(_ sender: UIButton)
     {
         displayList.removeAll()
@@ -266,6 +405,8 @@ class eventPlanningViewController: UIViewController, UITableViewDataSource, UITa
     {
         displayList.removeAll()
         
+        displayList.append(""
+        )
         templateList = eventTemplateHeads(teamID: currentUser.currentTeam!.teamID)
         for myItem in templateList.templates
         {
@@ -325,7 +466,6 @@ class eventPlanningViewController: UIViewController, UITableViewDataSource, UITa
     {
         createShiftEntry(teamID: currentUser.currentTeam!.teamID, projectID: currentEvent.projectID, shiftDescription: btnSelect.currentTitle!, workDay: newRoleDate, startTime: getDefaultDate(), endTime: getDefaultDate())
         
-        sleep(2)
         refreshScreen()
     }
     
@@ -446,12 +586,12 @@ class eventPlanningViewController: UIViewController, UITableViewDataSource, UITa
         }
     }
     
-    func myPickerDidFinish(_ source: String, selectedItem:Int)
+    public func myPickerDidFinish(_ source: String, selectedItem:Int)
     {
         switch source
         {
         case "template":
-            if selectedItem >= 0
+            if selectedItem > 0
             {
                 if displayList[selectedItem] == ""
                 {
@@ -461,40 +601,15 @@ class eventPlanningViewController: UIViewController, UITableViewDataSource, UITa
                 }
                 else
                 {
-                    btnTemplate.setTitle(displayList[selectedItem], for: .normal)
+                    btnTemplate.setTitle(templateList.templates[selectedItem - 1].templateName, for: .normal)
+                    currentTemplate = templateList.templates[selectedItem - 1]
+                    btnCreatePlan.isHidden = false
                 }
-                currentTemplate = templateList.templates[selectedItem]
-                btnCreatePlan.isHidden = false
             }
             else
             {
                 btnTemplate.setTitle("Select Template", for: .normal)
                 currentTemplate = nil
-                if source == "template"
-                {
-                    if selectedItem > 1
-                    {
-                        if displayList[selectedItem] == ""
-                        {
-                            btnTemplate.setTitle("Select Template", for: .normal)
-                            currentTemplate = nil
-                            btnCreatePlan.isHidden = true
-                        }
-                        else
-                        {
-                            btnTemplate.setTitle(displayList[selectedItem], for: .normal)
-                        }
-                        currentTemplate = templateList.templates[selectedItem]
-                        btnCreatePlan.isHidden = false
-                    }
-                    else
-                    {
-                        btnTemplate.setTitle("Select Template", for: .normal)
-                        currentTemplate = nil
-                        btnCreatePlan.isHidden = true
-                    }
-                }
-                
             }
         
         case "role" :
@@ -539,17 +654,19 @@ class eventPlanningViewController: UIViewController, UITableViewDataSource, UITa
         }
     }
     
-    func createShiftEntry(teamID: Int, projectID: Int, shiftDescription: String, workDay: Date, startTime: Date, endTime: Date, saveToCloud: Bool = true)
+    func createShiftEntry(teamID: Int64, projectID: Int64, shiftDescription: String, workDay: Date, startTime: Date, endTime: Date)
     {
         let WEDate = workDay.getWeekEndingDate
         
-        let shiftLineID = myDatabaseConnection.getNextID("shiftLineID", teamID: teamID, saveToCloud: false)
+        let shiftLineID = myCloudDB.getNextID("shiftLineID", teamID: teamID)
         
-        let newShift = shift(projectID: projectID, workDate: workDay, weekEndDate: WEDate, teamID: teamID, shiftLineID: shiftLineID, type: eventShiftType, saveToCloud: saveToCloud)
-        newShift.shiftDescription = shiftDescription
-        newShift.startTime = startTime
-        newShift.endTime = endTime
+        let newShift = shift(projectID: projectID, workDate: workDay, weekEndDate: WEDate, teamID: teamID, shiftLineID: shiftLineID, type: eventShiftType, shiftDescription: shiftDescription, startTime: startTime, endTime: endTime)
+//        newShift.shiftDescription = shiftDescription
+//        newShift.startTime = startTime
+//        newShift.endTime = endTime
         newShift.save()
+        
+        currentEvent.staff!.append(newShift)
     }
     
     func hideFields()
@@ -558,6 +675,7 @@ class eventPlanningViewController: UIViewController, UITableViewDataSource, UITa
         btnTemplate.setTitle("Select Template", for: .normal)
         lblContractName.isHidden = false
         btnCreatePlan.isHidden = true
+        btnResetPlan.isHidden = true
         lblEventTemplate.isHidden = false
         tblRoles.isHidden = true
         lblAddToRole.isHidden = true
@@ -600,6 +718,7 @@ class eventPlanningViewController: UIViewController, UITableViewDataSource, UITa
         btnTemplate.isHidden = true
         btnCreatePlan.isHidden = true
         lblEventTemplate.isHidden = true
+        btnResetPlan.isHidden = true
         tblRoles.isHidden = true
         lblAddToRole.isHidden = true
         btnSelect.isHidden = true
@@ -616,11 +735,8 @@ class eventPlanningViewController: UIViewController, UITableViewDataSource, UITa
         btnStatus.isHidden = true
     }
     
-    func refreshScreen()
+    public func refreshScreen()
     {
-        eventList = projects(teamID: currentUser.currentTeam!.teamID, includeEvents: true, type: eventProjectType)
-        tblEvents.reloadData()
-        
         if currentEvent != nil
         {
             rateList = rates(clientID: currentEvent.clientID, teamID: currentUser.currentTeam!.teamID)
@@ -629,10 +745,14 @@ class eventPlanningViewController: UIViewController, UITableViewDataSource, UITa
             if shiftList.count == 0
             {
                 hideFields()
+                btnSignIn.isEnabled = false
+                btnResetPlan.isHidden = true
             }
             else
             {
                 tblRoles.isHidden = false
+                btnSignIn.isEnabled = true
+                btnResetPlan.isHidden = false
                 showFields()
             }
             
@@ -804,7 +924,7 @@ class eventRoleItem: UITableViewCell, UIPopoverPresentationControllerDelegate, M
         }
     }
     
-    func myPickerDidFinish(_ source: String, selectedItem:Int)
+    public func myPickerDidFinish(_ source: String, selectedItem:Int)
     {
         if selectedItem >= 0
         {
@@ -828,7 +948,7 @@ class eventRoleItem: UITableViewCell, UIPopoverPresentationControllerDelegate, M
         }
     }
     
-    func myPickerDidFinish(_ source: String, selectedDate:Date)
+    public func myPickerDidFinish(_ source: String, selectedDate:Date)
     {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm"

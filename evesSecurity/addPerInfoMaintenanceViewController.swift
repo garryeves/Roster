@@ -8,11 +8,7 @@
 
 import UIKit
 
-let perInfoText = "Text/Number"
-let perInfoDate = "Date"
-let perInfoYesNo = "Yes/No"
-
-class addPerInfoMaintenanceViewController: UIViewController, UIPopoverPresentationControllerDelegate, MyPickerDelegate, UITableViewDataSource, UITableViewDelegate
+public class addPerInfoMaintenanceViewController: UIViewController, UIPopoverPresentationControllerDelegate, MyPickerDelegate, UITableViewDataSource, UITableViewDelegate
 {
     @IBOutlet weak var txtDescription: UITextField!
     @IBOutlet weak var btnType: UIButton!
@@ -24,7 +20,7 @@ class addPerInfoMaintenanceViewController: UIViewController, UIPopoverPresentati
     
     fileprivate var displayList: [String] = Array()
     
-    override func viewDidLoad()
+    override public func viewDidLoad()
     {
         addInfoRecords = personAdditionalInfos(teamID: currentUser!.currentTeam!.teamID)
         btnType.setTitle("Select", for: .normal)
@@ -32,19 +28,19 @@ class addPerInfoMaintenanceViewController: UIViewController, UIPopoverPresentati
         btnSave.isHidden = true
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
  //   addInfoCell
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
         return addInfoRecords.personAdditionalInfos.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
         let cell = tableView.dequeueReusableCell(withIdentifier:"addInfoCell", for: indexPath) as! personAddInfoItem
         
@@ -55,16 +51,16 @@ class addPerInfoMaintenanceViewController: UIViewController, UIPopoverPresentati
         return cell
     }
     
-    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle
+    public func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle
     {
         if tableView == tblInfo
         {
-            return UITableViewCellEditingStyle.delete
+            return UITableViewCell.EditingStyle.delete
         }
-        return UITableViewCellEditingStyle.none
+        return UITableViewCell.EditingStyle.none
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath)
+    public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath)
     {
         if tableView == tblInfo
         {
@@ -77,7 +73,7 @@ class addPerInfoMaintenanceViewController: UIViewController, UIPopoverPresentati
         }
     }
     
-    func myPickerDidFinish(_ source: String, selectedItem:Int)
+    public func myPickerDidFinish(_ source: String, selectedItem:Int)
     {
         if source == "choices"
         {
@@ -152,7 +148,7 @@ class personAddInfoItem: UITableViewCell
     @IBOutlet weak var lblDescription: UILabel!
     @IBOutlet weak var lblType: UILabel!
     
-    var addInfoID: Int!
+    var addInfoID: Int64!
     
     override func layoutSubviews()
     {

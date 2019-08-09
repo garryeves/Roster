@@ -13,9 +13,9 @@ private let clientType = "Client"
 private let peopleType = "People"
 private let ratesType = "Rates"
 
-let NotificationItemDeleted = Notification.Name("NotificationItemDeleted")
+public let NotificationItemDeleted = Notification.Name("NotificationItemDeleted")
 
-class securityDeletedItemsViewController: UIViewController, UIPopoverPresentationControllerDelegate, UITableViewDataSource, UITableViewDelegate, MyPickerDelegate
+public class securityDeletedItemsViewController: UIViewController, UIPopoverPresentationControllerDelegate, UITableViewDataSource, UITableViewDelegate, MyPickerDelegate
 {
     @IBOutlet weak var lblSource: UILabel!
     @IBOutlet weak var lblItems: UILabel!
@@ -31,7 +31,7 @@ class securityDeletedItemsViewController: UIViewController, UIPopoverPresentatio
     private var peopleRecords: [Person] = Array()
     private var ratesRecords: [Rates] = Array()
 
-    override func viewDidLoad()
+    override public func viewDidLoad()
     {
         hideFields()
         
@@ -40,12 +40,12 @@ class securityDeletedItemsViewController: UIViewController, UIPopoverPresentatio
         notificationCenter.addObserver(self, selector: #selector(self.refreshScreen), name: NotificationItemDeleted, object: nil)
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
         switch tableView
         {
@@ -73,7 +73,7 @@ class securityDeletedItemsViewController: UIViewController, UIPopoverPresentatio
        }
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
         switch tableView
         {
@@ -85,25 +85,21 @@ class securityDeletedItemsViewController: UIViewController, UIPopoverPresentatio
                 {
                     case projectType:
                         cell.lblName.text = projectRecords[indexPath.row].projectName
-                        cell.lblDate.text = formatDate(projectRecords[indexPath.row].updateTime! as Date)
                         cell.source = projectType
                         cell.recordID = Int(projectRecords[indexPath.row].projectID)
                     
                     case clientType:
                         cell.lblName.text = clientRecords[indexPath.row].clientName
-                        cell.lblDate.text = formatDate(clientRecords[indexPath.row].updateTime! as Date)
                         cell.source = clientType
                         cell.recordID = Int(clientRecords[indexPath.row].clientID)
                     
                     case peopleType:
                         cell.lblName.text = peopleRecords[indexPath.row].name
-                        cell.lblDate.text = formatDate(peopleRecords[indexPath.row].updateTime! as Date)
                         cell.source = peopleType
                         cell.recordID = Int(peopleRecords[indexPath.row].personID)
                     
                     case ratesType:
                         cell.lblName.text = ratesRecords[indexPath.row].rateName
-                        cell.lblDate.text = formatDate(ratesRecords[indexPath.row].updateTime! as Date)
                         cell.source = ratesType
                         cell.recordID = Int(ratesRecords[indexPath.row].rateID)
                     
@@ -162,7 +158,7 @@ class securityDeletedItemsViewController: UIViewController, UIPopoverPresentatio
         self.dismiss(animated: true, completion: nil)
     }
         
-    func myPickerDidFinish(_ source: String, selectedItem:Int)
+    public func myPickerDidFinish(_ source: String, selectedItem:Int)
     {
         if source == "source"
         {
@@ -188,7 +184,7 @@ class securityDeletedItemsViewController: UIViewController, UIPopoverPresentatio
         lblDate.isHidden = false
     }
         
-    @objc func refreshScreen()
+    @objc public func refreshScreen()
     {
       //  notificationCenter.removeObserver(NotificationItemDeleted)
         if selectedType == ""
@@ -201,16 +197,16 @@ class securityDeletedItemsViewController: UIViewController, UIPopoverPresentatio
             switch selectedType
             {
                 case projectType:
-                    projectRecords = myDatabaseConnection.getDeletedProjects(currentUser.currentTeam!.teamID)
+                    projectRecords = myCloudDB.getDeletedProjects(currentUser.currentTeam!.teamID)
                 
                 case clientType:
-                    clientRecords = myDatabaseConnection.getDeletedClients(currentUser.currentTeam!.teamID)
+                    clientRecords = myCloudDB.getDeletedClients(currentUser.currentTeam!.teamID)
                 
                 case peopleType:
-                    peopleRecords = myDatabaseConnection.getDeletedPeople(currentUser.currentTeam!.teamID)
+                    peopleRecords = myCloudDB.getDeletedPeople(currentUser.currentTeam!.teamID)
                 
                 case ratesType:
-                    ratesRecords = myDatabaseConnection.getDeletedRates(currentUser.currentTeam!.teamID)
+                    ratesRecords = myCloudDB.getDeletedRates(currentUser.currentTeam!.teamID)
                 
                 default:
                     print("refreshScreen unknown type - \(selectedType)")
@@ -231,24 +227,24 @@ class deletedItem: UITableViewCell
     
     @IBAction func btnRestore(_ sender: UIButton)
     {
-        switch source
-        {
-            case projectType:
-                myDatabaseConnection.restoreProject(recordID, teamID: currentUser.currentTeam!.teamID)
-            
-            case clientType:
-                myDatabaseConnection.restoreClient(recordID, teamID: currentUser.currentTeam!.teamID)
-            
-            case peopleType:
-                myDatabaseConnection.restorePerson(recordID, teamID: currentUser.currentTeam!.teamID)
-            
-            case ratesType:
-                myDatabaseConnection.restoreRate(recordID, teamID: currentUser.currentTeam!.teamID)
-            
-            default:
-                print("deletedItem unknown type - \(source)")
-        }
-        
+//        switch source
+//        {
+//            case projectType:
+//                myDatabaseConnection.restoreProject(recordID, teamID: currentUser.currentTeam!.teamID)
+//            
+//            case clientType:
+//                myDatabaseConnection.restoreClient(recordID, teamID: currentUser.currentTeam!.teamID)
+//            
+//            case peopleType:
+//                myDatabaseConnection.restorePerson(recordID, teamID: currentUser.currentTeam!.teamID)
+//            
+//            case ratesType:
+//                myDatabaseConnection.restoreRate(recordID, teamID: currentUser.currentTeam!.teamID)
+//            
+//            default:
+//                print("deletedItem unknown type - \(source)")
+//        }
+//        
         notificationCenter.post(name: NotificationItemDeleted, object: nil)
     }
 }

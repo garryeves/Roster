@@ -80,6 +80,14 @@ class meetingAttendee
         }
     }
     
+    init(meetingID: Int64, name: String, personID: Int64, teamID: Int64)
+    {
+        super.init()
+        myMeetingID = meetingID
+        myName = name
+        myTeamID = teamID
+    }
+    
     func load(_ meetingID: String, name: String, teamID: Int)
     {
         let myAttendees = myDatabaseConnection.checkMeetingsForAttendee(name, meetingID: meetingID, teamID: teamID)
@@ -124,6 +132,7 @@ class meetingAttendee
     }
 }
 
+/*
 extension coreDatabase
 {
     func loadAttendees(_ meetingID: String, teamID: Int)->[MeetingAttendees]
@@ -400,7 +409,7 @@ extension coreDatabase
         saveContext()
     }
 }
-
+*/
 extension CloudKitInteraction
 {
     func saveMeetingAttendeesToCloudKit()

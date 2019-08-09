@@ -8,7 +8,7 @@
 
 import UIKit
 
-class contactsViewController: UIViewController, MyPickerDelegate, UIPopoverPresentationControllerDelegate
+public class contactsViewController: UIViewController, MyPickerDelegate, UIPopoverPresentationControllerDelegate
 {
     @IBOutlet weak var lblContactType: UILabel!
     @IBOutlet weak var lblDetails: UILabel!
@@ -23,7 +23,7 @@ class contactsViewController: UIViewController, MyPickerDelegate, UIPopoverPrese
     private var displayList: [String] = Array()
     var workingContact: contactItem!
     
-    override func viewDidLoad()
+    override public func viewDidLoad()
     {
         if workingPerson.contacts.count > 0
         {
@@ -40,7 +40,7 @@ class contactsViewController: UIViewController, MyPickerDelegate, UIPopoverPrese
         }
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
@@ -83,7 +83,7 @@ class contactsViewController: UIViewController, MyPickerDelegate, UIPopoverPrese
         workingPerson.loadContacts()
     }
     
-    func myPickerDidFinish(_ source: String, selectedItem:Int)
+    public func myPickerDidFinish(_ source: String, selectedItem:Int)
     {
         if source == "Contacts"
         {
@@ -102,20 +102,24 @@ class contactsViewController: UIViewController, MyPickerDelegate, UIPopoverPrese
             
             if !itemFound
             {
-                workingContact = contactItem(teamID: currentUser.currentTeam!.teamID)
+                var tempPerson: Int64 = 0
+                var tempClient: Int64 = 0
+                var tempProject: Int64 = 0
+                
                 if workingPerson != nil
                 {
-                    workingContact.personID = workingPerson.personID
+                    tempPerson = workingPerson.personID
                 }
                 if workingClient != nil
                 {
-                    workingContact.clientID = workingClient.clientID
+                    tempClient = workingClient.clientID
                 }
                 if workingProject != nil
                 {
-                    workingContact.projectID = workingProject.projectID
+                    tempProject = workingProject.projectID
                 }
-                workingContact.contactType = displayList[selectedItem]
+                
+                workingContact = contactItem(teamID: currentUser.currentTeam!.teamID, contactType: displayList[selectedItem], personID: tempPerson, clientID: tempClient, projectID: tempProject)
             }
             
             displayItem()

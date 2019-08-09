@@ -9,14 +9,14 @@
 import UIKit
 
 
-let eventDayArray = [  [ "Event Day - 2", -2],
+public let eventDayArray = [  [ "Event Day - 2", -2],
                        [ "Event Day - 1", -1],
                        [ "Event Day", 0],
                        [ "Event Day + 1", 1],
                        [ "Event Day + 2", 2]
                     ]
 
-class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITableViewDelegate, myCommunicationDelegate, UIPopoverPresentationControllerDelegate, MyPickerDelegate
+public class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITableViewDelegate, myCommunicationDelegate, UIPopoverPresentationControllerDelegate, MyPickerDelegate
 {
     @IBOutlet weak var tblTemplates: UITableView!
     @IBOutlet weak var tblRoles: UITableView!
@@ -33,7 +33,6 @@ class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITa
     @IBOutlet weak var lblOn: UILabel!
     @IBOutlet weak var lblStart: UILabel!
     @IBOutlet weak var lblEnd: UILabel!
-    @IBOutlet weak var btnBack: UIBarButtonItem!
     @IBOutlet weak var btnNewTemplates: UIBarButtonItem!
     
     @IBOutlet weak var lblTblRole: UILabel!
@@ -44,38 +43,32 @@ class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITa
     
     var communicationDelegate: myCommunicationDelegate?
 
-    fileprivate var templates: eventTemplateHeads!
-    fileprivate var currentTemplate: eventTemplateHead!
+    var currentTemplate: eventTemplateHead!
     fileprivate var displayList: [String] = Array()
     fileprivate var startTime: Date = getDefaultDate()
     fileprivate var endTime: Date = getDefaultDate()
     fileprivate var dateModifier: Int!
     
-    override func viewDidLoad()
+    override public func viewDidLoad()
     {
         hideFields()
-        refreshScreen()
+        
+        if currentTemplate != nil
+        {
+            showFields()
+            refreshScreen()
+        }
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
         switch tableView
         {
-            case tblTemplates:
-                if templates == nil
-                {
-                    return 0
-                }
-                else
-                {
-                    return templates.templates.count
-                }
-                
             case tblRoles:
                 if currentTemplate == nil
                 {
@@ -98,17 +91,10 @@ class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITa
             }
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
         switch tableView
         {
-            case tblTemplates:
-                let cell = tableView.dequeueReusableCell(withIdentifier:"templateCell", for: indexPath) as! oneLabelTable
-                
-                cell.lbl1.text = templates.templates[indexPath.row].templateName
-                
-                return cell
-                
             case tblRoles:
                 let cell = tableView.dequeueReusableCell(withIdentifier:"roleCell", for: indexPath) as! templateRoleItem
                 
@@ -136,16 +122,10 @@ class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITa
         }
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
         switch tableView
         {
-            case tblTemplates:
-                currentTemplate = templates.templates[indexPath.row]
-
-                showFields()
-                refreshScreen()
-            
             case tblRoles:
                 let _ = 1
 
@@ -155,7 +135,7 @@ class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITa
         }
     }
 
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath)
+    public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath)
     {
         if editingStyle == .delete
         {
@@ -163,20 +143,17 @@ class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITa
             {
                 currentTemplate.roles!.roles![indexPath.row].delete()
             }
-            else if tableView == tblTemplates
-            {
-                templates.templates[indexPath.row].delete()
-            }
         
             refreshScreen()
         }
     }
     
-    @IBAction func btnBack(_ sender: UIBarButtonItem)
-    {
-        communicationDelegate?.refreshScreen!()
-        self.dismiss(animated: true, completion: nil)
-    }
+//    @IBAction func btnBack(_ sender: UIBarButtonItem)
+//    {
+//        currentUser.currentTeam?.eventTemplateHeads = nil
+//        communicationDelegate?.refreshScreen!()
+//        self.dismiss(animated: true, completion: nil)
+//    }
     
     @IBAction func txtName(_ sender: UITextField)
     {
@@ -253,7 +230,10 @@ class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITa
         btnOn.setTitle("Select", for: .normal)
         btnEndTime.setTitle("Select", for: .normal)
         btnStartTime.setTitle("Select", for: .normal)
+
+        showFields()
         
+        tblRoles.reloadData()
         txtName.becomeFirstResponder()
     }
     
@@ -263,7 +243,7 @@ class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITa
         {
             let alert = UIAlertController(title: "Template Maintenance", message: "You must provide the number of people required", preferredStyle: .actionSheet)
             
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default,
                                           handler: { (action: UIAlertAction) -> () in
                                             self.dismiss(animated: true, completion: nil)
             }))
@@ -280,7 +260,7 @@ class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITa
         {
             let alert = UIAlertController(title: "Template Maintenance", message: "You must provide an Integer value", preferredStyle: .actionSheet)
             
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default,
                                           handler: { (action: UIAlertAction) -> () in
                                             self.dismiss(animated: true, completion: nil)
             }))
@@ -297,7 +277,7 @@ class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITa
         {
             let alert = UIAlertController(title: "Template Maintenance", message: "You must provide an Integer greater than 0", preferredStyle: .actionSheet)
             
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default,
                                           handler: { (action: UIAlertAction) -> () in
                                             self.dismiss(animated: true, completion: nil)
             }))
@@ -314,10 +294,14 @@ class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITa
         {
             // after all that we know we have a valid number, so lets go and create the record
             let _ = currentTemplate.addRole(role: btnRole.currentTitle!,
-                                            numRequired: Int(txtNumRequired.text!)!,
-                                            dateModifier: dateModifier,
+                                            numRequired: Int64(txtNumRequired.text!)!,
+                                            dateModifier: Int64(dateModifier),
                                             startTime: startTime,
                                             endTime: endTime)
+            
+            
+            sleep(2)
+            
             refreshScreen()
         }
     }
@@ -386,7 +370,7 @@ class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITa
         }
     }
     
-    func myPickerDidFinish(_ source: String, selectedItem:Int)
+    public func myPickerDidFinish(_ source: String, selectedItem:Int)
     {
         if source == "role"
         {
@@ -405,7 +389,7 @@ class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITa
             if selectedItem >= 0
             {
                 btnOn.setTitle(eventDayArray[selectedItem][0] as? String, for: .normal)
-                dateModifier = eventDayArray[selectedItem][1] as! Int
+                dateModifier = eventDayArray[selectedItem][1] as? Int
             }
             else
             {
@@ -416,7 +400,7 @@ class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITa
         checkCanAdd()
     }
     
-    func myPickerDidFinish(_ source: String, selectedDate:Date)
+    public func myPickerDidFinish(_ source: String, selectedDate:Date)
     {
         if source == "startTime"
         {
@@ -492,11 +476,8 @@ class eventTemplateVoewController: UIViewController, UITableViewDataSource, UITa
         txtName.isHidden = false
     }
     
-    func refreshScreen()
+    public func refreshScreen()
     {
-        templates = eventTemplateHeads(teamID: currentUser.currentTeam!.teamID)
-        tblTemplates.reloadData()
-        
         if currentTemplate != nil
         {
             txtName.text = currentTemplate.templateName
@@ -537,7 +518,7 @@ class templateRoleItem: UITableViewCell, UIPopoverPresentationControllerDelegate
         {
             if sender.text!.isNumber
             {
-                templateRoleItem.numRequired = Int(sender.text!)!
+                templateRoleItem.numRequired = Int64(sender.text!)!
             }
         }
         
@@ -578,7 +559,7 @@ class templateRoleItem: UITableViewCell, UIPopoverPresentationControllerDelegate
         mainView.present(pickerView, animated: true, completion: nil)
     }
     
-    func myPickerDidFinish(_ source: String, selectedDate:Date)
+    public func myPickerDidFinish(_ source: String, selectedDate:Date)
     {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm"

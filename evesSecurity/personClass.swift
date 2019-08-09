@@ -7,10 +7,11 @@
 //
 
 import Foundation
-import CoreData
+//import CoreData
 import CloudKit
+import SwiftUI
 
-struct monthlyPersonFinancialsStruct
+public struct monthlyPersonFinancialsStruct
 {
     var month: String
     var year: String
@@ -18,103 +19,307 @@ struct monthlyPersonFinancialsStruct
     var hours: Double
 }
 
-class people: NSObject
+public let genderList = [ "Undeclared", "Male", "Female"]
+
+public class people: NSObject, Identifiable
 {
-    var myPeople:[person] = Array()
+    public let id = UUID()
+    public var myPeople:[person] = Array()
     
-    init(teamID: Int)
+    public init(teamID: Int64, isActive: Bool)
     {
         super.init()
         
-        for myItem in myDatabaseConnection.getPeople(teamID: teamID)
+        if currentUser.currentTeam?.peopleList == nil
         {
-            let dob: Date = myItem.dob! as Date
-            
-            let myObject = person(personID: Int(myItem.personID),
-                                  name: myItem.name!,
-                                  dob: dob,
-                                  teamID: Int(myItem.teamID),
-                                  gender: myItem.gender!,
-                                  note: myItem.note!,
-                                  clientID: Int(myItem.clientID),
-                                  projectID: Int(myItem.projectID),
-                                  canRoster: myItem.canRoster!
-                                   )
-            myPeople.append(myObject)
+            currentUser.currentTeam?.peopleList = myCloudDB.getPeople(teamID: teamID, isActive: isActive)
         }
-        sortArray()
-    }
-    
-    init(teamID: Int, canRoster: Bool)
-    {
-        super.init()
         
-        for myItem in myDatabaseConnection.getPeople(teamID: teamID, canRoster: canRoster)
+        for myItem in (currentUser.currentTeam?.peopleList)!
         {
             let dob: Date = myItem.dob! as Date
             
-            let myObject = person(personID: Int(myItem.personID),
+            var tempFirstName: String = ""
+            var tempTitle: String = ""
+            if myItem.firstName == nil
+            {
+                tempFirstName = ""
+            }
+            else
+            {
+                tempFirstName = myItem.firstName!
+            }
+            if myItem.title == nil
+            {
+                tempTitle = ""
+            }
+            else
+            {
+                tempTitle = myItem.title!
+            }
+            
+            let myObject = person(personID: myItem.personID,
                                   name: myItem.name!,
                                   dob: dob,
-                                  teamID: Int(myItem.teamID),
+                                  teamID: myItem.teamID,
                                   gender: myItem.gender!,
                                   note: myItem.note!,
-                                  clientID: Int(myItem.clientID),
-                                  projectID: Int(myItem.projectID),
-                                  canRoster: myItem.canRoster!
+                                  clientID: myItem.clientID,
+                                  projectID: myItem.projectID,
+                                  canRoster: myItem.canRoster!,
+                                  firstName: tempFirstName,
+                                  title: tempTitle,
+                                  emailOptIn: myItem.emailOptIn,
+                                  isActive: myItem.isActive!,
+                                  useAllowanceHours: myItem.useAllowanceHours!
             )
             myPeople.append(myObject)
         }
         sortArray()
     }
     
-    init(clientID: Int, teamID: Int)
+    //    public init(teamID: Int64, useAllowanceHours: Bool)
+    //    {
+    //        super.init()
+    //
+    //        let workingArray = myCloudDB.getPeople(teamID: teamID, useAllowanceHours: true)
+    //
+    //        for myItem in workingArray
+    //        {
+    //            let dob: Date = myItem.dob! as Date
+    //
+    //            var tempFirstName: String = ""
+    //            var tempTitle: String = ""
+    //            if myItem.firstName == nil
+    //            {
+    //                tempFirstName = ""
+    //            }
+    //            else
+    //            {
+    //                tempFirstName = myItem.firstName!
+    //            }
+    //            if myItem.title == nil
+    //            {
+    //                tempTitle = ""
+    //            }
+    //            else
+    //            {
+    //                tempTitle = myItem.title!
+    //            }
+    //            let myObject = person(personID: myItem.personID,
+    //                                  name: myItem.name!,
+    //                                  dob: dob,
+    //                                  teamID: myItem.teamID,
+    //                                  gender: myItem.gender!,
+    //                                  note: myItem.note!,
+    //                                  clientID: myItem.clientID,
+    //                                  projectID: myItem.projectID,
+    //                                  canRoster: myItem.canRoster!,
+    //                                  firstName: tempFirstName,
+    //                                  title: tempTitle,
+    //                                  emailOptIn: myItem.emailOptIn,
+    //                                  isActive: true,
+    //                                  useAllowanceHours: myItem.useAllowanceHours!
+    //            )
+    //            myPeople.append(myObject)
+    //        }
+    //        sortArray()
+    //    }
+    
+    
+    public init(teamID: Int64, canRoster: Bool)
     {
         super.init()
         
-        for myItem in myDatabaseConnection.getPeopleForClient(clientID: clientID, teamID: teamID)
+        if currentUser.currentTeam?.peopleList == nil
+        {
+            currentUser.currentTeam?.peopleList = myCloudDB.getPeople(teamID: teamID, isActive: true)
+        }
+        
+        var workingArray: [Person] = Array()
+        
+        for item in (currentUser.currentTeam?.peopleList)!
+        {
+            if canRoster
+            {
+                if (item.canRoster!)
+                {
+                    workingArray.append(item)
+                }
+            }
+            else
+            {
+                workingArray.append(item)
+            }
+        }
+        
+        for myItem in workingArray
         {
             let dob: Date = myItem.dob! as Date
             
-            let myObject = person(personID: Int(myItem.personID),
+            var tempFirstName: String = ""
+            var tempTitle: String = ""
+            if myItem.firstName == nil
+            {
+                tempFirstName = ""
+            }
+            else
+            {
+                tempFirstName = myItem.firstName!
+            }
+            if myItem.title == nil
+            {
+                tempTitle = ""
+            }
+            else
+            {
+                tempTitle = myItem.title!
+            }
+            let myObject = person(personID: myItem.personID,
                                   name: myItem.name!,
                                   dob: dob,
-                                  teamID: Int(myItem.teamID),
+                                  teamID: myItem.teamID,
                                   gender: myItem.gender!,
                                   note: myItem.note!,
-                                  clientID: Int(myItem.clientID),
-                                  projectID: Int(myItem.projectID),
-                                  canRoster: myItem.canRoster!
+                                  clientID: myItem.clientID,
+                                  projectID: myItem.projectID,
+                                  canRoster: myItem.canRoster!,
+                                  firstName: tempFirstName,
+                                  title: tempTitle,
+                                  emailOptIn: myItem.emailOptIn,
+                                  isActive: true,
+                                  useAllowanceHours: myItem.useAllowanceHours!
             )
             myPeople.append(myObject)
         }
         sortArray()
     }
     
-    init(projectID: Int, teamID: Int)
+    public init(clientID: Int64, teamID: Int64, onlyActive: Bool)
     {
         super.init()
         
-        for myItem in myDatabaseConnection.getPeopleForProject(projectID: projectID, teamID: teamID)
+        if currentUser.currentTeam?.peopleList == nil
+        {
+            currentUser.currentTeam?.peopleList = myCloudDB.getPeople(teamID: teamID, isActive: onlyActive)
+        }
+        
+        var workingArray: [Person] = Array()
+        
+        for item in (currentUser.currentTeam?.peopleList)!
+        {
+            if item.clientID == clientID
+            {
+                workingArray.append(item)
+            }
+        }
+        
+        for myItem in workingArray
         {
             let dob: Date = myItem.dob! as Date
             
-            let myObject = person(personID: Int(myItem.personID),
+            var tempFirstName: String = ""
+            var tempTitle: String = ""
+            if myItem.firstName == nil
+            {
+                tempFirstName = ""
+            }
+            else
+            {
+                tempFirstName = myItem.firstName!
+            }
+            if myItem.title == nil
+            {
+                tempTitle = ""
+            }
+            else
+            {
+                tempTitle = myItem.title!
+            }
+            
+            let myObject = person(personID: myItem.personID,
                                   name: myItem.name!,
                                   dob: dob,
-                                  teamID: Int(myItem.teamID),
+                                  teamID: myItem.teamID,
                                   gender: myItem.gender!,
                                   note: myItem.note!,
-                                  clientID: Int(myItem.clientID),
-                                  projectID: Int(myItem.projectID),
-                                  canRoster: myItem.canRoster!
+                                  clientID: myItem.clientID,
+                                  projectID: myItem.projectID,
+                                  canRoster: myItem.canRoster!,
+                                  firstName: tempFirstName,
+                                  title: tempTitle,
+                                  emailOptIn: myItem.emailOptIn,
+                                  isActive: myItem.isActive!,
+                                  useAllowanceHours: myItem.useAllowanceHours!
             )
             myPeople.append(myObject)
         }
         sortArray()
     }
     
-    func sortArray()
+    public init(projectID: Int64, teamID: Int64, onlyActive: Bool)
+    {
+        super.init()
+        
+        if currentUser.currentTeam?.peopleList == nil
+        {
+            currentUser.currentTeam?.peopleList = myCloudDB.getPeople(teamID: teamID, isActive: onlyActive)
+        }
+        
+        var workingArray: [Person] = Array()
+        
+        for item in (currentUser.currentTeam?.peopleList)!
+        {
+            if item.projectID == projectID
+            {
+                workingArray.append(item)
+            }
+        }
+        
+        for myItem in workingArray
+        {
+            let dob: Date = myItem.dob! as Date
+            
+            var tempFirstName: String = ""
+            var tempTitle: String = ""
+            if myItem.firstName == nil
+            {
+                tempFirstName = ""
+            }
+            else
+            {
+                tempFirstName = myItem.firstName!
+            }
+            if myItem.title == nil
+            {
+                tempTitle = ""
+            }
+            else
+            {
+                tempTitle = myItem.title!
+            }
+            
+            let myObject = person(personID: myItem.personID,
+                                  name: myItem.name!,
+                                  dob: dob,
+                                  teamID: myItem.teamID,
+                                  gender: myItem.gender!,
+                                  note: myItem.note!,
+                                  clientID: myItem.clientID,
+                                  projectID: myItem.projectID,
+                                  canRoster: myItem.canRoster!,
+                                  firstName: tempFirstName,
+                                  title: tempTitle,
+                                  emailOptIn: myItem.emailOptIn,
+                                  isActive: myItem.isActive!,
+                                  useAllowanceHours: myItem.useAllowanceHours!
+            )
+            myPeople.append(myObject)
+        }
+        sortArray()
+    }
+    
+    public func sortArray()
     {
         if myPeople.count > 0
         {
@@ -134,7 +339,28 @@ class people: NSObject
         }
     }
     
-    var people: [person]
+    public func append( _ newItem: person)
+    {
+        myPeople.append(newItem)
+        sortArray()
+    }
+    
+    public func remove(_ personID: Int64)
+    {
+        var recordCount = 0
+        
+        for item in myPeople
+        {
+            if item.personID == personID
+            {
+                break
+            }
+            recordCount += 1
+        }
+        myPeople.remove(at: recordCount)
+    }
+    
+    public var people: [person]
     {
         get
         {
@@ -143,23 +369,33 @@ class people: NSObject
     }
 }
 
-class person: NSObject
+public class person: NSObject, Identifiable
 {
-    fileprivate var myPersonID: Int = 0
-    fileprivate var myClientID: Int = 0
-    fileprivate var myProjectID: Int = 0
-    fileprivate var myName: String = "Name"
+    public let id = UUID()
+    fileprivate var myPersonID: Int64 = 0
+    fileprivate var myClientID: Int64 = 0
+    fileprivate var myProjectID: Int64 = 0
+    fileprivate var myName: String = ""
     fileprivate var myGender: String = ""
     fileprivate var myNote: String = ""
     fileprivate var myDob: Date = getDefaultDate()
     fileprivate var myAddresses: personAddresses!
     fileprivate var myContacts: personContacts!
     fileprivate var myAddInfo: personAddInfoEntries!
-    var myTeamID: Int = 0
-    fileprivate var myCanRoster: String = ""
-    var tempArray: [Any] = Array()
+    fileprivate var myTeamID: Int64 = 0
+    fileprivate var myCanRoster: Bool = true
+    public var tempArray: [Any] = Array()
+    fileprivate var myFirstName: String = ""
+    fileprivate var myTitle: String = ""
+    fileprivate var myEmailOptIn: Bool = false
+    fileprivate var myIsActive: Bool = true
+    fileprivate var mySessions: sessionNotes!
+    fileprivate var myuseAllowanceHours: Bool = false
+    fileprivate var myMonthlyAllow: [allowanceUnitsitem] = Array()
+    fileprivate var myMonthYear: String = ""
+    fileprivate var myInvoices: clientInvoices!
     
-    var personID: Int
+    public var personID: Int64
     {
         get
         {
@@ -167,7 +403,15 @@ class person: NSObject
         }
     }
     
-    var clientID: Int
+    public var teamID: Int64
+    {
+        get
+        {
+            return myTeamID
+        }
+    }
+    
+    public var clientID: Int64
     {
         get
         {
@@ -180,7 +424,7 @@ class person: NSObject
         }
     }
     
-    var projectID: Int
+    public var projectID: Int64
     {
         get
         {
@@ -193,7 +437,7 @@ class person: NSObject
         }
     }
     
-    var name: String
+    public var lastName: String
     {
         get
         {
@@ -202,11 +446,86 @@ class person: NSObject
         set
         {
             myName = newValue
+            currentUser.currentTeam?.peopleList = nil
             save()
         }
     }
     
-    var gender: String
+    public var firstName: String
+    {
+        get
+        {
+            return myFirstName
+        }
+        set
+        {
+            myFirstName = newValue
+            currentUser.currentTeam?.peopleList = nil
+            save()
+        }
+    }
+    
+    public var name: String
+    {
+        get
+        {
+            if (myFirstName == "") && (myName == "")
+            {
+                return("No name entered")
+            }
+            
+            if (myFirstName == "")
+            {
+                return(myName)
+            }
+            
+            if (myName == "")
+            {
+                return(myFirstName)
+            }
+            
+            return "\(myFirstName) \(myName)"
+        }
+    }
+    
+    
+    public var title: String
+    {
+        get
+        {
+            return myTitle
+        }
+        set
+        {
+            myTitle = newValue
+            save()
+        }
+    }
+    
+    public var genderItem: Int
+    {
+        get
+        {
+            var indexCount = 0
+            for item in genderList
+            {
+                if item == myGender
+                {
+                    return indexCount
+                }
+                indexCount += 1
+            }
+            
+            return 0
+        }
+        set
+        {
+            myGender = genderList[newValue]
+            save()
+        }
+    }
+    
+    public var gender: String
     {
         get
         {
@@ -226,7 +545,7 @@ class person: NSObject
         }
     }
     
-    var note: String
+    public var note: String
     {
         get
         {
@@ -239,20 +558,25 @@ class person: NSObject
         }
     }
     
-    var dob: Date
+    public var dob: Date
     {
         get
         {
+            if myDob == getDefaultDate()
+            {
+                return Date()
+            }
             return myDob
         }
         set
         {
             myDob = newValue
+            currentUser.currentTeam?.peopleList = nil
             save()
         }
     }
     
-    var addresses: [address]
+    public var addresses: [address]
     {
         get
         {
@@ -267,7 +591,7 @@ class person: NSObject
         }
     }
     
-    var contacts: [contactItem]
+    public var contacts: [contactItem]
     {
         get
         {
@@ -282,7 +606,7 @@ class person: NSObject
         }
     }
     
-    var addInfo: [personAddInfoEntry]
+    public var addInfo: [personAddInfoEntry]
     {
         get
         {
@@ -297,7 +621,7 @@ class person: NSObject
         }
     }
     
-    var dobText: String
+    public var dobText: String
     {
         get
         {
@@ -315,7 +639,7 @@ class person: NSObject
         }
     }
     
-    var canRoster: String
+    public var canRoster: Bool
     {
         get
         {
@@ -328,64 +652,295 @@ class person: NSObject
         }
     }
     
-    init(teamID: Int)
+    public var emailOptIn: Bool
+    {
+        get
+        {
+            return myEmailOptIn
+        }
+        set
+        {
+            myEmailOptIn = newValue
+            save()
+        }
+    }
+    
+    public var isActive: Bool
+    {
+        get
+        {
+            return myIsActive
+        }
+        set
+        {
+            myIsActive = newValue
+            currentUser.currentTeam?.peopleList = nil
+            save()
+        }
+    }
+    
+    public var useAllowanceHours: Bool
+    {
+        get
+        {
+            return myuseAllowanceHours
+        }
+        set
+        {
+            myuseAllowanceHours = newValue
+            save()
+        }
+    }
+    
+    public var sessions: [sessionNote]
+    {
+        get
+        {
+            return mySessions!.notes
+        }
+    }
+    
+    public var invoices: clientInvoices?
+    {
+        get
+        {
+            return myInvoices
+        }
+    }
+    
+    public init(teamID: Int64)
     {
         super.init()
         
-        myPersonID = myDatabaseConnection.getNextID("Person", teamID: teamID)
+        createPerson(teamID: teamID)
+    }
+    
+    public init(teamID: Int64, taskOwner: String)
+    {
+        super.init()
+        
+        createPerson(teamID: teamID, personName: taskOwner)
+    }
+    
+    public init(teamID: Int64, newName: String)
+    {
+        super.init()
+        
+        createPerson(teamID: teamID, personName: newName)
+    }
+    
+    public init(personID: Int64, teamID: Int64)
+    {
+        super.init()
+        
+        loadPerson(personID: personID, teamID: teamID)
+
+    }
+    
+    public func createPerson(teamID: Int64, personName: String = "")
+    {
+        myPersonID = myCloudDB.getNextID("Person", teamID: teamID)
         myTeamID = teamID
+        myName = personName
+            
+        currentUser.currentTeam?.peopleList = nil
+        
+        
+        myDob = getDefaultDate()
+        myGender = ""
+        myNote = ""
+        myClientID = 0
+        myProjectID = 0
+        myCanRoster = true
+        myFirstName = ""
+        myTitle = ""
+        myEmailOptIn = false
+        myIsActive = true
+        myuseAllowanceHours = false
+        
+        myAddresses = nil
+        myContacts = nil
+        myAddInfo = nil
+        
+        tempArray.removeAll()
+        mySessions = nil
+        myMonthlyAllow.removeAll()
+        myMonthYear = ""
+        myInvoices = nil
+        
+        
+        
         
         save()
     }
     
-    init(personID: Int, teamID: Int)
+    public func loadPerson(personID: Int64, teamID: Int64)
     {
-        super.init()
-        let myReturn = myDatabaseConnection.getPersonDetails(personID: personID, teamID: teamID)
-        
-        for myItem in myReturn
+        if currentUser.currentTeam?.peopleList == nil
         {
-            myPersonID = Int(myItem.personID)
-            myName = myItem.name!
+            currentUser.currentTeam?.peopleList = myCloudDB.getPeople(teamID: teamID, isActive: true)
+        }
+        
+        var myItem: Person!
+        
+        for item in (currentUser.currentTeam?.peopleList)!
+        {
+            if item.personID == personID
+            {
+                myItem = item
+                break
+            }
+        }
+        // Gaza update thes to wrap all text with nil check
+        if myItem != nil
+        {
+            myPersonID = myItem.personID
+            if myItem.name == nil
+            {
+                myName = ""
+            }
+            else
+            {
+                myName = myItem.name!
+            }
+            
             myDob = myItem.dob! as Date
-            myTeamID = Int(myItem.teamID)
-            myGender = myItem.gender!
-            myNote = myItem.note!
-            myClientID = Int(myItem.clientID)
-            myProjectID = Int(myItem.projectID)
-            myCanRoster = myItem.canRoster!
+            myTeamID = myItem.teamID
+            if myItem.gender == nil
+            {
+                myGender = ""
+            }
+            else
+            {
+                myGender = myItem.gender!
+            }
+            
+            if myItem.note == nil
+            {
+                myNote = ""
+            }
+            else
+            {
+                myNote = myItem.note!
+            }
+            
+            myClientID = myItem.clientID
+            myProjectID = myItem.projectID
+            if myItem.canRoster == nil
+            {
+                myCanRoster = true
+            }
+            else
+            {
+                myCanRoster = myItem.canRoster!
+            }
+            
+            if myItem.firstName == nil
+            {
+                myFirstName = ""
+            }
+            else
+            {
+                myFirstName = myItem.firstName!
+            }
+            if myItem.title == nil
+            {
+                myTitle = ""
+            }
+            else
+            {
+                myTitle = myItem.title!
+            }
+            myEmailOptIn = myItem.emailOptIn
+            myIsActive = myItem.isActive!
+            myuseAllowanceHours = myItem.useAllowanceHours!
+            
+            myAddresses = nil
+            myContacts = nil
+            myAddInfo = nil
+            
+            tempArray.removeAll()
+            mySessions = nil
+            myMonthlyAllow.removeAll()
+            myMonthYear = ""
+            myInvoices = nil
         }
     }
     
-    init(name: String, teamID: Int)
+    override init()
+    {
+        
+    }
+    
+    public init(name: String, teamID: Int64)
     {
         super.init()
-        let myReturn = myDatabaseConnection.getPersonDetails(name: name, teamID: teamID)
         
-        for myItem in myReturn
+        var myItem: Person!
+        
+        if currentUser.currentTeam?.peopleList == nil
         {
-            myPersonID = Int(myItem.personID)
+            currentUser.currentTeam?.peopleList = myCloudDB.getPeople(teamID: teamID, isActive: true)
+        }
+        
+        for item in (currentUser.currentTeam?.peopleList)!
+        {
+            if item.name == name
+            {
+                myItem = item
+                break
+            }
+        }
+        
+        if myItem != nil
+        {
+            myPersonID = myItem.personID
             myName = myItem.name!
             myDob = myItem.dob! as Date
-            myTeamID = Int(myItem.teamID)
+            myTeamID = myItem.teamID
             myGender = myItem.gender!
             myNote = myItem.note!
-            myClientID = Int(myItem.clientID)
-            myProjectID = Int(myItem.projectID)
+            myClientID = myItem.clientID
+            myProjectID = myItem.projectID
             myCanRoster = myItem.canRoster!
+            myIsActive = myItem.isActive!
+            myuseAllowanceHours = myItem.useAllowanceHours!
+            
+            if myItem.firstName == nil
+            {
+                myFirstName = ""
+            }
+            else
+            {
+                myFirstName = myItem.firstName!
+            }
+            if myItem.title == nil
+            {
+                myTitle = ""
+            }
+            else
+            {
+                myTitle = myItem.title!
+            }
+            myEmailOptIn = myItem.emailOptIn
         }
     }
     
-    init(personID: Int,
-         name: String,
-         dob: Date,
-         teamID: Int,
-         gender: String,
-         note: String,
-         clientID: Int,
-         projectID: Int,
-         canRoster: String
-         )
+    public init(personID: Int64,
+                name: String,
+                dob: Date,
+                teamID: Int64,
+                gender: String,
+                note: String,
+                clientID: Int64,
+                projectID: Int64,
+                canRoster: Bool,
+                firstName: String,
+                title: String,
+                emailOptIn: Bool,
+                isActive: Bool,
+                useAllowanceHours: Bool
+        )
     {
         super.init()
         
@@ -398,34 +953,36 @@ class person: NSObject
         myClientID = clientID
         myProjectID = projectID
         myCanRoster = canRoster
+        myFirstName = firstName
+        myTitle = title
+        myEmailOptIn = emailOptIn
+        myIsActive = isActive
+        myuseAllowanceHours = useAllowanceHours
     }
     
-    func save()
+    public func save()
     {
-        if currentUser.checkPermission(hrRoleType) == writePermission
+        //     if currentUser.checkPermission(hrRoleType) == writePermission
+        //     {
+        let temp = Person(canRoster: myCanRoster, clientID: myClientID, dob: dob, gender: myGender, name: myName, note: myNote, personID: myPersonID, projectID: myProjectID, teamID: myTeamID,
+                          firstName: myFirstName,
+                          title: myTitle,
+                          emailOptIn: myEmailOptIn, isActive: myIsActive, useAllowanceHours: myuseAllowanceHours)
+        
+        myCloudDB.savePersonRecordToCloudKit(temp)
+        //    }
+    }
+    
+    public func delete()
+    {
+        if currentUser.checkWritePermission(hrRoleType)
         {
-            myDatabaseConnection.savePerson(myPersonID,
-                                             name: name,
-                                             dob: dob,
-                                             teamID: myTeamID,
-                                             gender: myGender,
-                                             note: myNote,
-                                             clientID: myClientID,
-                                             projectID: myProjectID,
-                                             canRoster: myCanRoster
-                                             )
+            myCloudDB.deletePerson(myPersonID, teamID: myTeamID)
+            currentUser.currentTeam?.peopleList = nil
         }
     }
     
-    func delete()
-    {
-        if currentUser.checkPermission(hrRoleType) == writePermission
-        {
-            myDatabaseConnection.deletePerson(myPersonID, teamID: myTeamID)
-        }
-    }
-    
-    func deleteAddress(addressType: String)
+    public func deleteAddress(addressType: String)
     {
         for myItem in myAddresses.addresses
         {
@@ -439,12 +996,12 @@ class person: NSObject
         loadAddresses()
     }
     
-    func loadAddresses()
+    public func loadAddresses()
     {
         myAddresses = personAddresses(personID: myPersonID, teamID: myTeamID)
     }
     
-    func removeContact(contactType: String)
+    public func removeContact(contactType: String)
     {
         for myItem in myContacts.contacts
         {
@@ -458,12 +1015,12 @@ class person: NSObject
         loadContacts()
     }
     
-    func loadContacts()
+    public func loadContacts()
     {
         myContacts = personContacts(personID: myPersonID, teamID: myTeamID)
     }
     
-    func removeAddInfo(addInfoType: String)
+    public func removeAddInfo(addInfoType: String)
     {
         for myItem in myAddInfo.personAddEntries
         {
@@ -477,428 +1034,37 @@ class person: NSObject
         loadAddInfo()
     }
     
-    func loadAddInfo()
+    public func loadAddInfo()
     {
         myAddInfo = personAddInfoEntries(personID: myPersonID, teamID: myTeamID)
     }
-}
-
-extension coreDatabase
-{
-    func savePerson(_ personID: Int,
-                    name: String,
-                    dob: Date,
-                    teamID: Int,
-                    gender: String,
-                    note: String,
-                    clientID: Int,
-                    projectID: Int,
-                    canRoster: String,
-                     updateTime: Date =  Date(), updateType: String = "CODE")
+    
+    public func loadSessions()
     {
-        var myItem: Person!
-        
-        let myReturn = getPersonDetails(personID: personID, teamID: teamID)
-        
-        if myReturn.count == 0
-        { // Add
-            myItem = Person(context: objectContext)
-            myItem.personID = Int64(personID)
-            myItem.name = name
-            myItem.dob = dob
-            myItem.teamID = Int64(teamID)
-            myItem.gender = gender
-            myItem.note = note
-            myItem.clientID = Int64(clientID)
-            myItem.projectID = Int64(projectID)
-            myItem.canRoster = canRoster
-            
-            if updateType == "CODE"
-            {
-                myItem.updateTime =  Date()
-                
-                myItem.updateType = "Add"
-            }
-            else
-            {
-                myItem.updateTime = updateTime
-                myItem.updateType = updateType
-            }
+        mySessions = sessionNotes(personID: myPersonID, teamID: myTeamID)
+    }
+    
+    public func allowanceHours(_ monthYear: String) -> [allowanceUnitsitem]
+    {
+        if monthYear == myMonthYear
+        {
+            return myMonthlyAllow
         }
         else
         {
-            myItem = myReturn[0]
-            myItem.name = name
-            myItem.dob = dob
-            myItem.gender = gender
-            myItem.note = note
-            myItem.clientID = Int64(clientID)
-            myItem.projectID = Int64(projectID)
-            myItem.canRoster = canRoster
+            let temp = allowanceUnits(teamID: currentUser.currentTeam!.teamID, monthYear: monthYear, personID: myPersonID)
             
-            if updateType == "CODE"
-            {
-                myItem.updateTime =  Date()
-                if myItem.updateType != "Add"
-                {
-                    myItem.updateType = "Update"
-                }
-            }
-            else
-            {
-                myItem.updateTime = updateTime
-                myItem.updateType = updateType
-            }
-        }
-        
-        saveContext()
-
-        self.recordsProcessed += 1
-    }
-    
-    func deletePerson(_ personID: Int, teamID: Int)
-    {
-        let myReturn = getPersonDetails(personID: personID, teamID: teamID)
-        
-        if myReturn.count > 0
-        {
-            let myItem = myReturn[0]
-            myItem.updateTime =  Date()
-            myItem.updateType = "Delete"
-        }
-        
-        saveContext()
-    }
-    
-    func getPersonDetails(personID: Int, teamID: Int)->[Person]
-    {
-        let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(personID == \(personID)) AND (teamID == \(teamID))")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
- 
-    func getPersonDetails(name: String, teamID: Int)->[Person]
-    {
-        let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(name == \"\(name)\") AND (teamID == \(teamID))")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func getPeople(teamID: Int)->[Person]
-    {
-        let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(updateType != \"Delete\") AND (teamID == \(teamID))")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func getPeople(teamID: Int, canRoster: Bool)->[Person]
-    {
-        let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        var predicate: NSPredicate!
-        
-        if canRoster
-        {
-            predicate = NSPredicate(format: "(updateType != \"Delete\") AND (teamID == \(teamID)) AND (canRoster == \"True\")")
-        }
-        else
-        {
-            predicate = NSPredicate(format: "(updateType != \"Delete\") AND (teamID == \(teamID))")
-        }
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func getPeopleForClient(clientID: Int, teamID: Int)->[Person]
-    {
-        let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(updateType != \"Delete\") AND (teamID == \(teamID)) AND (clientID == \(clientID))")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func getPeopleForProject(projectID: Int, teamID: Int)->[Person]
-    {
-        let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(updateType != \"Delete\") AND (teamID == \(teamID)) AND (projectID == \(projectID))")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func getDeletedPeople(_ teamID: Int)->[Person]
-    {
-        let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(updateType == \"Delete\") AND (teamID == \(teamID))")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        let sortDescriptor = NSSortDescriptor(key: "updateTime", ascending: false)
-        let sortDescriptors = [sortDescriptor]
-        fetchRequest.sortDescriptors = sortDescriptors
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
-        }
-    }
-    
-    func restorePerson(_ personID: Int, teamID: Int)
-    {
-        for myItem in getPersonDetails(personID: personID, teamID: teamID)
-        {
-            myItem.updateType = "Update"
-            myItem.updateTime = Date()
-        }
-        saveContext()
-    }
-    
-    func resetAllPerson()
-    {
-        let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            for myItem in fetchResults
-            {
-                myItem.updateTime =  Date()
-                myItem.updateType = "Delete"
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        
-        saveContext()
-    }
-    
-    func clearDeletedPerson(predicate: NSPredicate)
-    {
-        let fetchRequest2 = NSFetchRequest<Person>(entityName: "Person")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                objectContext.delete(myItem2 as NSManagedObject)
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        saveContext()
-    }
-    
-    func clearSyncedPerson(predicate: NSPredicate)
-    {
-        let fetchRequest2 = NSFetchRequest<Person>(entityName: "Person")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                myItem2.updateType = ""
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        
-        saveContext()
-    }
-    
-    func getPersonForSync(_ syncDate: Date) -> [Person]
-    {
-        let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
-        
-        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
-        
-        // Set the predicate on the fetch request
-        
-        fetchRequest.predicate = predicate
-        // Execute the fetch request, and cast the results to an array of  objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
+            myMonthlyAllow = temp.getRecords(myPersonID)
             
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-            return []
+            myMonthYear = monthYear
+            
+            return myMonthlyAllow
         }
     }
     
-    func deleteAllPerson()
+    func loadInvoices(_ isActive: Bool)
     {
-        let fetchRequest2 = NSFetchRequest<Person>(entityName: "Person")
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                self.objectContext.delete(myItem2 as NSManagedObject)
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
-        
-        saveContext()
-    }
-    
-    func quickFixPerson()
-    {
-        let fetchRequest2 = NSFetchRequest<Person>(entityName: "Person")
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem in fetchResults2
-            {
-                myItem.canRoster = ""
-                
-                myItem.updateTime =  Date()
-                if myItem.updateType != "Add"
-                {
-                    myItem.updateType = "Update"
-                }
-                
-                saveContext()
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: \(error)")
-        }
+        myInvoices = clientInvoices(teamID: currentUser.currentTeam!.teamID, personID: myPersonID, isActive: isActive)
     }
 }
 
@@ -920,49 +1086,276 @@ extension alerts
     }
 }
 
+public struct Person {
+    public var canRoster: Bool?
+    public var clientID: Int64
+    public var dob: Date?
+    public var gender: String?
+    public var name: String?
+    public var note: String?
+    public var personID: Int64
+    public var projectID: Int64
+    public var teamID: Int64
+    public var firstName: String?
+    public var title: String?
+    public var emailOptIn: Bool
+    public var isActive: Bool?
+    public var useAllowanceHours: Bool?
+}
+
 extension CloudKitInteraction
 {
-    func savePersonToCloudKit()
+    private func populatePerson(_ records: [CKRecord]) -> [Person]
     {
-        for myItem in myDatabaseConnection.getPersonForSync(getSyncDateForTable(tableName: "Person"))
+        var tempArray: [Person] = Array()
+        
+        for record in records
         {
-            savePersonRecordToCloudKit(myItem)
+            var personID: Int64 = 0
+            if record.object(forKey: "personID") != nil
+            {
+                personID = record.object(forKey: "personID") as! Int64
+            }
+            
+            var dob = Date()
+            if record.object(forKey: "dob") != nil
+            {
+                dob = record.object(forKey: "dob") as! Date
+            }
+            
+            var teamID: Int64 = 0
+            
+            if record.object(forKey: "teamID") != nil
+            {
+                teamID = record.object(forKey: "teamID") as! Int64
+            }
+            
+            var clientID: Int64 = 0
+            if record.object(forKey: "clientID") != nil
+            {
+                clientID = record.object(forKey: "clientID") as! Int64
+            }
+            
+            var projectID: Int64 = 0
+            if record.object(forKey: "projectID") != nil
+            {
+                projectID = record.object(forKey: "projectID") as! Int64
+            }
+            
+            var emailOptIn: Bool = false
+            if record.object(forKey: "emailOptIn") != nil
+            {
+                if record.object(forKey: "emailOptIn") as? String == "True"
+                {
+                    emailOptIn = true
+                }
+            }
+            
+            var active: Bool = true
+            if record.object(forKey: "isActive") != nil
+            {
+                if record.object(forKey: "isActive") as? String == "false"
+                {
+                    active = false
+                }
+            }
+            
+            var canRoster: Bool = true
+            if record.object(forKey: "canRoster") != nil
+            {
+                if record.object(forKey: "canRoster") as? String == "false"
+                {
+                    canRoster = false
+                }
+            }
+            
+            var useAllowanceHours: Bool = false
+            if record.object(forKey: "useAllowanceHours") != nil
+            {
+                if record.object(forKey: "useAllowanceHours") as? String == "true"
+                {
+                    useAllowanceHours = true
+                }
+            }
+            
+            let tempItem = Person(canRoster: canRoster,
+                                  clientID: clientID,
+                                  dob: dob,
+                                  gender: record.object(forKey: "gender") as? String,
+                                  name: record.object(forKey: "name") as? String,
+                                  note: record.object(forKey: "note") as? String,
+                                  personID: personID,
+                                  projectID: projectID,
+                                  teamID: teamID,
+                                  firstName: record.object(forKey: "firstName") as? String,
+                                  title: record.object(forKey: "title") as? String,
+                                  emailOptIn: emailOptIn,
+                                  isActive: active,
+                                  useAllowanceHours: useAllowanceHours
+            )
+            
+            tempArray.append(tempItem)
         }
+        
+        return tempArray
     }
     
-    func updatePersonInCoreData()
+    func getPeople(teamID: Int64, isActive: Bool)->[Person]
     {
-        let predicate: NSPredicate = NSPredicate(format: "(updateTime >= %@) AND \(buildTeamList(currentUser.userID))", getSyncDateForTable(tableName: "Person") as CVarArg)
-        let query: CKQuery = CKQuery(recordType: "Person", predicate: predicate)
+        var predicate: NSPredicate!
         
-        let operation = CKQueryOperation(query: query)
-
-        operation.recordFetchedBlock = { (record) in
-            self.updatePersonRecord(record)
+        if isActive
+        {
+            predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\") AND (isActive != \"false\")")
         }
-        let operationQueue = OperationQueue()
+        else
+        {
+            predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\")")
+        }
         
-        executePublicQueryOperation(targetTable: "Person", queryOperation: operation, onOperationQueue: operationQueue)
+        let query = CKQuery(recordType: "Person", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Person] = populatePerson(returnArray)
+        
+        return shiftArray
     }
     
-//    func deletePerson(personID: Int)
-//    {
-//        let sem = DispatchSemaphore(value: 0);
-//        
-//        var myRecordList: [CKRecordID] = Array()
-//        let predicate: NSPredicate = NSPredicate(format: "\(buildTeamList(currentUser.userID)) AND (personID == \(personID)) ")
-//        let query: CKQuery = CKQuery(recordType: "Person", predicate: predicate)
-//        publicDB.perform(query, inZoneWith: nil, completionHandler: {(results: [CKRecord]?, error: Error?) in
-//            for record in results!
-//            {
-//                myRecordList.append(record.recordID)
-//            }
-//            self.performPublicDelete(myRecordList)
-//            sem.signal()
-//        })
-//        
-//        sem.wait()
-//    }
+    func getPeople(teamID: Int64, canRoster: Bool)->[Person]
+    {
+        var predicate: NSPredicate!
+        
+        if canRoster
+        {
+            predicate = NSPredicate(format: "(updateType != \"Delete\") AND (teamID == \(teamID)) AND (canRoster == \"True\") AND (isActive != \"false\")")
+        }
+        else
+        {
+            predicate = NSPredicate(format: "(updateType != \"Delete\") AND (teamID == \(teamID)) AND (isActive != \"false\")")
+        }
+        
+        let query = CKQuery(recordType: "Person", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Person] = populatePerson(returnArray)
+        
+        return shiftArray
+    }
+    
+    func getPeople(teamID: Int64, useAllowanceHours: Bool)->[Person]
+    {
+        let predicate = NSPredicate(format: "(updateType != \"Delete\") AND (teamID == \(teamID)) AND (useAllowanceHours == \"true\")")
+        
+        let query = CKQuery(recordType: "Person", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Person] = populatePerson(returnArray)
+        
+        return shiftArray
+    }
+    
+    func getPeopleForClient(clientID: Int64, teamID: Int64, onlyActive: Bool)->[Person]
+    {
+        var predicate: NSPredicate!
+        
+        if onlyActive
+        {
+            predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\") AND (clientID == \(clientID)) AND (isActive != \"false\")")
+        }
+        else
+        {
+            predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\") AND (clientID == \(clientID))")
+        }
+        
+        let query = CKQuery(recordType: "Person", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Person] = populatePerson(returnArray)
+        
+        return shiftArray
+    }
+    
+    func getPeopleForProject(projectID: Int64, teamID: Int64, onlyActive: Bool)->[Person]
+    {
+        var predicate: NSPredicate!
+        
+        if onlyActive
+        {
+            predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\") AND (projectID == \(projectID)) AND (isActive != \"false\")")
+        }
+        else
+        {
+            predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\") AND (projectID == \(projectID))")
+        }
+        
+        let query = CKQuery(recordType: "Person", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Person] = populatePerson(returnArray)
+        
+        return shiftArray
+    }
+    
+    func getPersonDetails(personID: Int64, teamID: Int64)->[Person]
+    {
+        let predicate = NSPredicate(format: "(personID == \(personID)) AND (teamID == \(teamID))")
+        
+        let query = CKQuery(recordType: "Person", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Person] = populatePerson(returnArray)
+        
+        return shiftArray
+    }
+    
+    func getPersonDetails(name: String, teamID: Int64)->[Person]
+    {
+        let predicate = NSPredicate(format: "(name == \"\(name)\") AND (teamID == \(teamID))")
+        
+        let query = CKQuery(recordType: "Person", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Person] = populatePerson(returnArray)
+        
+        return shiftArray
+    }
+    
+    func deletePerson(_ personID: Int64, teamID: Int64)
+    {
+        let predicate = NSPredicate(format: "(personID == \(personID)) AND (teamID == \(teamID))")
+        
+        let sem = DispatchSemaphore(value: 0)
+        
+        let query = CKQuery(recordType: "Person", predicate: predicate)
+        publicDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
+            
+            self.performPublicDelete(records!)
+            
+            sem.signal()
+        })
+        sem.wait()
+    }
     
     func savePersonRecordToCloudKit(_ sourceRecord: Person)
     {
@@ -991,13 +1384,44 @@ extension CloudKitInteraction
                     record!.setValue(sourceRecord.note, forKey: "note")
                     record!.setValue(sourceRecord.clientID, forKey: "clientID")
                     record!.setValue(sourceRecord.projectID, forKey: "projectID")
-                    record!.setValue(sourceRecord.canRoster, forKey: "canRoster")
+                    record!.setValue(sourceRecord.firstName, forKey: "firstName")
+                    record!.setValue(sourceRecord.title , forKey: "title")
                     
-                    if sourceRecord.updateTime != nil
+                    if sourceRecord.emailOptIn
                     {
-                        record!.setValue(sourceRecord.updateTime, forKey: "updateTime")
+                        record!.setValue("True", forKey: "emailOptIn")
                     }
-                    record!.setValue(sourceRecord.updateType, forKey: "updateType")
+                    else
+                    {
+                        record!.setValue("False", forKey: "emailOptIn")
+                    }
+                    
+                    if sourceRecord.isActive!
+                    {
+                        record!.setValue("true", forKey: "isActive")
+                    }
+                    else
+                    {
+                        record!.setValue("false", forKey: "isActive")
+                    }
+                    
+                    if sourceRecord.canRoster!
+                    {
+                        record!.setValue("true", forKey: "canRoster")
+                    }
+                    else
+                    {
+                        record!.setValue("false", forKey: "canRoster")
+                    }
+                    
+                    if sourceRecord.useAllowanceHours!
+                    {
+                        record!.setValue("true", forKey: "useAllowanceHours")
+                    }
+                    else
+                    {
+                        record!.setValue("false", forKey: "useAllowanceHours")
+                    }
                     
                     // Save this record again
                     self.publicDB.save(record!, completionHandler: { (savedRecord, saveError) in
@@ -1005,6 +1429,7 @@ extension CloudKitInteraction
                         {
                             NSLog("Error saving record: \(saveError!.localizedDescription)")
                             self.saveOK = false
+                            sem.signal()
                         }
                         else
                         {
@@ -1012,6 +1437,7 @@ extension CloudKitInteraction
                             {
                                 NSLog("Successfully updated record!")
                             }
+                            sem.signal()
                         }
                     })
                 }
@@ -1025,21 +1451,53 @@ extension CloudKitInteraction
                     record.setValue(sourceRecord.note, forKey: "note")
                     record.setValue(sourceRecord.clientID, forKey: "clientID")
                     record.setValue(sourceRecord.projectID, forKey: "projectID")
-                    record.setValue(sourceRecord.canRoster, forKey: "canRoster")
+                    record.setValue(sourceRecord.firstName, forKey: "firstName")
+                    record.setValue(sourceRecord.title , forKey: "title")
+                    
+                    if sourceRecord.canRoster!
+                    {
+                        record.setValue("true", forKey: "canRoster")
+                    }
+                    else
+                    {
+                        record.setValue("false", forKey: "canRoster")
+                    }
+                    
+                    if sourceRecord.emailOptIn
+                    {
+                        record.setValue("True", forKey: "emailOptIn")
+                    }
+                    else
+                    {
+                        record.setValue("False", forKey: "emailOptIn")
+                    }
+                    
+                    if sourceRecord.isActive!
+                    {
+                        record.setValue("true", forKey: "isActive")
+                    }
+                    else
+                    {
+                        record.setValue("false", forKey: "isActive")
+                    }
+                    
+                    if sourceRecord.useAllowanceHours!
+                    {
+                        record.setValue("true", forKey: "useAllowanceHours")
+                    }
+                    else
+                    {
+                        record.setValue("false", forKey: "useAllowanceHours")
+                    }
                     
                     record.setValue(sourceRecord.teamID, forKey: "teamID")
-                    
-                    if sourceRecord.updateTime != nil
-                    {
-                        record.setValue(sourceRecord.updateTime, forKey: "updateTime")
-                    }
-                    record.setValue(sourceRecord.updateType, forKey: "updateType")
                     
                     self.publicDB.save(record, completionHandler: { (savedRecord, saveError) in
                         if saveError != nil
                         {
                             NSLog("Error saving record: \(saveError!.localizedDescription)")
                             self.saveOK = false
+                            sem.signal()
                         }
                         else
                         {
@@ -1047,84 +1505,28 @@ extension CloudKitInteraction
                             {
                                 NSLog("Successfully saved record!")
                             }
+                            sem.signal()
                         }
                     })
                 }
             }
-            sem.signal()
         })
         sem.wait()
     }
     
-    func updatePersonRecord(_ sourceRecord: CKRecord)
+    func getDeletedPeople(_ teamID: Int64)->[Person]
     {
-        let name = sourceRecord.object(forKey: "name") as! String
-        let gender = sourceRecord.object(forKey: "gender") as! String
-        let note = sourceRecord.object(forKey: "note") as! String
-        let canRoster = sourceRecord.object(forKey: "canRoster") as! String
-
-        var personID: Int = 0
-        if sourceRecord.object(forKey: "personID") != nil
-        {
-            personID = sourceRecord.object(forKey: "personID") as! Int
-        }
+        let predicate = NSPredicate(format: "(updateType == \"Delete\") AND (teamID == \(teamID))")
         
-        var dob = Date()
-        if sourceRecord.object(forKey: "dob") != nil
-        {
-            dob = sourceRecord.object(forKey: "dob") as! Date
-        }
+        let query = CKQuery(recordType: "Clients", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
         
-        var updateTime = Date()
-        if sourceRecord.object(forKey: "updateTime") != nil
-        {
-            updateTime = sourceRecord.object(forKey: "updateTime") as! Date
-        }
+        sem.wait()
         
-        var updateType: String = ""
-        if sourceRecord.object(forKey: "updateType") != nil
-        {
-            updateType = sourceRecord.object(forKey: "updateType") as! String
-        }
+        let shiftArray: [Person] = populatePerson(returnArray)
         
-        var teamID: Int = 0
-        
-        if sourceRecord.object(forKey: "teamID") != nil
-        {
-            teamID = sourceRecord.object(forKey: "teamID") as! Int
-        }
-        
-        var clientID: Int = 0
-        if sourceRecord.object(forKey: "clientID") != nil
-        {
-            clientID = sourceRecord.object(forKey: "clientID") as! Int
-        }
-        
-        var projectID: Int = 0
-        if sourceRecord.object(forKey: "projectID") != nil
-        {
-            projectID = sourceRecord.object(forKey: "projectID") as! Int
-        }
-        
-        myDatabaseConnection.recordsToChange += 1
-        
-        while self.recordCount > 0
-        {
-            usleep(self.sleepTime)
-        }
-        
-        self.recordCount += 1
-        
-        myDatabaseConnection.savePerson(personID,
-                                         name: name,
-                                         dob: dob, teamID: teamID,
-                                         gender: gender,
-                                         note: note,
-                                         clientID: clientID,
-                                         projectID: projectID,
-                                         canRoster: canRoster
-                                         , updateTime: updateTime, updateType: updateType)
-        self.recordCount -= 1
+        return shiftArray
     }
 }
 

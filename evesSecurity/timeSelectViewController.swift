@@ -10,7 +10,7 @@ import Foundation
 
 import UIKit
 
-class timeSelectViewController: UIViewController
+public class timeSelectViewController: UIViewController
 {
     @IBOutlet weak var txtMins: UITextField!
     @IBOutlet weak var txtSecs: UITextField!
@@ -22,7 +22,7 @@ class timeSelectViewController: UIViewController
     
     private var selectedRow: Int = -1
     
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
@@ -43,7 +43,7 @@ class timeSelectViewController: UIViewController
   //      btnSelect.isEnabled = false
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }

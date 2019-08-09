@@ -8,9 +8,9 @@
 
 import UIKit
 
-let NotificationIAPSStarted = Notification.Name("NotificationIAPSStarted")
+public let NotificationIAPSStarted = Notification.Name("NotificationIAPSStarted")
 
-class IAPViewController: UIViewController, UITableViewDataSource, UITableViewDelegate
+public class IAPViewController: UIViewController, UITableViewDataSource, UITableViewDelegate
 {
     @IBOutlet weak var tblIAPs: UITableView!
     @IBOutlet weak var lblProgress: UILabel!
@@ -19,7 +19,7 @@ class IAPViewController: UIViewController, UITableViewDataSource, UITableViewDel
 
     var communicationDelegate: myCommunicationDelegate?
     
-    override func viewDidLoad()
+    override public func viewDidLoad()
     {
         notificationCenter.addObserver(self, selector: #selector(self.refreshScreen), name: NotificationIAPSListed, object: nil)
         notificationCenter.addObserver(self, selector: #selector(self.purchaseMade), name: NotificationIAPSPurchased, object: nil)
@@ -30,17 +30,17 @@ class IAPViewController: UIViewController, UITableViewDataSource, UITableViewDel
         iap.listPurchases()
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
         return iap.productsCount
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
         let cell = tableView.dequeueReusableCell(withIdentifier:"cellIAP", for: indexPath) as! IAPItem
             
@@ -67,7 +67,7 @@ class IAPViewController: UIViewController, UITableViewDataSource, UITableViewDel
         self.dismiss(animated: true, completion: nil)
     }
     
-    @objc func refreshScreen()
+    @objc public func refreshScreen()
     {
         notificationCenter.removeObserver(NotificationIAPSListed)
         tblIAPs.reloadData()
@@ -85,7 +85,10 @@ class IAPViewController: UIViewController, UITableViewDataSource, UITableViewDel
         notificationCenter.removeObserver(NotificationIAPSPurchased)
         // Now we need to handle the return.  
         
-        communicationDelegate!.refreshScreen!()
+        if communicationDelegate != nil
+        {
+            communicationDelegate!.refreshScreen!()
+        }
         dismiss(animated: true, completion: nil)
     }
 }

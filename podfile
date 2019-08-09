@@ -3,8 +3,9 @@
 platform :ios, '10.0'
 use_frameworks!
 
-project '/Users/garryeves/Documents/xcode/EvesCRM/evesSecurity/Shift Dashboard.xcodeproj'
+project '/Users/garryeves/Library/Mobile\ Documents/com\~apple\~CloudDocs/xcode/evesShared/evesShared.xcodeproj'
 
 target ‘Shift Dashboard' do
 pod 'DLRadioButton'
+pod 'SwiftyJSON'
 end

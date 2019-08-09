@@ -7,10 +7,11 @@
 //
 
 import Foundation
-import UserNotifications
+//import UserNotifications
 
-let notificationCenter = NotificationCenter.default
-let remoteCenter = UNUserNotificationCenter.current()
+public let notificationCenter = NotificationCenter.default
+//public let remoteCenter = UNUserNotificationCenter.current()
 
-let NotificationDBReplaceDone = Notification.Name("SecurityDBReplaceDone")
-let NotificationAddInfoDone = Notification.Name("NotificationAddInfoDone")
+public let NotificationDBReplaceDone = Notification.Name("SecurityDBReplaceDone")
+public let NotificationAddInfoDone = Notification.Name("NotificationAddInfoDone")
+public let NotificationAlertUpdate = Notification.Name("NotificationAlertUpdate")

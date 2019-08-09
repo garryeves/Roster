@@ -7,6 +7,11 @@
 //
 
 import Foundation
+#if os(iOS)
+import UIKit
+#else
+import AppKit
+#endif
 
 extension String
 {
@@ -28,13 +33,25 @@ extension String
 //        }
 //    }
     
-    var isNumber : Bool {
+    public var isNumber : Bool {
         get{
             return !self.isEmpty && self.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) == nil
         }
     }
     
-    func characterAtIndex(index: Int) -> Character {
+    public func isDouble() -> Bool {
+        
+        if let doubleValue = Double(self) {
+            
+            if doubleValue >= 0 {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    public func characterAtIndex(index: Int) -> Character {
         var cur = 0
         var retVal: Character!
         for char in self {
@@ -46,7 +63,7 @@ extension String
         return retVal
     }
     
-    func stringByChangingChars(oldChar: String, newChar: String) -> String
+    public func stringByChangingChars(oldChar: String, newChar: String) -> String
     {
         let regex = try! NSRegularExpression(pattern:oldChar, options:.caseInsensitive)
         let myString = regex.stringByReplacingMatches(in: self, options:  NSRegularExpression.MatchingOptions(), range: NSMakeRange(0, self.count), withTemplate:newChar)
@@ -54,10 +71,10 @@ extension String
         return myString
     }
     
-    var getFirstPartofString: String
+    public var getFirstPartofString: String
     {
         let start = self.startIndex
-        let end = self.index(of: ":")
+        let end = self.firstIndex(of: ":")
         
         var selectedType: String = ""
         
@@ -73,17 +90,149 @@ extension String
         return selectedType
     }
     
-    var formatStringToDateTime: Date
+    public var formatStringToDateTime: Date
     {
         let myDateFormatter = DateFormatter()
         myDateFormatter.dateFormat = "E dd MMM yy HH:mm"
         return myDateFormatter.date(from: self)!
     }
+    
+    public var formatAirTableStringToDateTime: Date
+    {
+        if self != ""
+        {
+            let myDateFormatter = DateFormatter()
+            myDateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.000ZZZZZ"
+            return myDateFormatter.date(from: self)!
+        }
+        return Date()
+    }
+    
+    public var formatSimplyBookingStringToDateTime: Date
+    {
+        if self != ""
+        {
+            let myDateFormatter = DateFormatter()
+            
+            myDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+           // myDateFormatter.dateFormat = "DDD dd MMM yy HH:mm"
+            return myDateFormatter.date(from: self)!
+        }
+        return Date()
+    }
+    
+    public var monthYearDecoded: String
+    {
+        get
+        {
+            if self == ""
+            {
+                return "Month Not Set"
+            }
+            else
+            {
+                // Split out year and month
+                let indexStartOfText = self.index(self.startIndex, offsetBy: 4)
+                let indexEndOfText = self.index(self.endIndex, offsetBy: -2)
+                
+                let yearString = String(self[..<indexEndOfText])
+                let monthString = String(self[indexStartOfText...])
+                
+                switch monthString
+                {
+                    case "01":
+                        return "January \(yearString)"
+
+                    case "02":
+                        return "February \(yearString)"
+
+                    case "03":
+                        return "March \(yearString)"
+
+                    case "04":
+                        return "April \(yearString)"
+
+                    case "05":
+                        return "May \(yearString)"
+
+                    case "06":
+                        return "June \(yearString)"
+
+                    case "07":
+                        return "July \(yearString)"
+
+                    case "08":
+                        return "August \(yearString)"
+
+                    case "09":
+                        return "September \(yearString)"
+
+                    case "10":
+                        return "October \(yearString)"
+
+                    case "11":
+                        return "November \(yearString)"
+
+                    case "12":
+                        return "December \(yearString)"
+
+                    default:
+                        return "Not a valid value \(monthString)"
+                }
+            }
+        }
+    }
+    
+    public var monthNum: Int
+    {
+        switch self
+        {
+        case "January":
+            return 1
+            
+        case "February":
+            return 2
+            
+        case "March":
+            return 3
+            
+        case "April":
+            return 4
+            
+        case "May":
+            return 5
+            
+        case "June":
+            return 6
+            
+        case "July":
+            return 7
+            
+        case "August":
+            return 8
+            
+        case "September":
+            return 9
+            
+        case "October":
+            return 10
+            
+        case "November":
+            return 11
+            
+        case "December":
+            return 12
+            
+        default:
+            print("String - monthNum - Not a valid value \(self)")
+            return 0
+        }
+    }
 }
 
 extension Double
 {
-    var formatHours: String
+    public var formatHours: String
     {
         // Format the hours display
         
@@ -97,7 +246,7 @@ extension Double
         }
     }
     
-    var formatPercent: String
+    public var formatPercent: String
     {
         // Format the hours display
         
@@ -113,27 +262,39 @@ extension Double
         }
     }
     
-    var formatCurrency: String
+    public var formatCurrency: String
     {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.maximumFractionDigits = 2;
+        formatter.maximumFractionDigits = 2
+        formatter.minimumFractionDigits = 2
         formatter.locale = Locale(identifier: Locale.current.identifier)
         let result = formatter.string(from: self as NSNumber);
         return result!;
     }
     
-    var formatCurrencyNoDecimal: String
+    public var formatCurrencyNoDecimal: String
     {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.maximumFractionDigits = 0;
+        formatter.maximumFractionDigits = 0
         formatter.locale = Locale(identifier: Locale.current.identifier)
         let result = formatter.string(from: self as NSNumber);
         return result!;
     }
     
-    var formatIntString: String
+    public var formatCurrencyNoSign: String
+    {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 2
+        formatter.minimumFractionDigits = 2
+        formatter.locale = Locale(identifier: Locale.current.identifier)
+        let result = formatter.string(from: self as NSNumber);
+        return result!;
+    }
+    
+    public var formatIntString: String
     {
         return "\(Int(self))"
     }
@@ -141,40 +302,47 @@ extension Double
 
 extension Date
 {
-    var formatDateToString: String
+    public var formatDateToString: String
     {
         let myDateFormatter = DateFormatter()
         myDateFormatter.dateFormat = "E dd MMM yy"
         return myDateFormatter.string(from: self)
     }
     
-    var formatTimeString: String
+    public var formatTimeString: String
     {
         let myDateFormatter = DateFormatter()
-        myDateFormatter.dateFormat = "h:mm"
+        myDateFormatter.dateFormat = "HH:mm"
         return myDateFormatter.string(from: self)
     }
     
-    var formatDateAndTimeString: String
+    public var formatDateAndTimeString: String
     {
         let myDateFormatter = DateFormatter()
-        myDateFormatter.dateFormat = "E dd MMM yy h:mm"
+        myDateFormatter.dateFormat = "E dd MMM yy HH:mm"
         return myDateFormatter.string(from: self)
     }
     
-    var formatDateToShortString: String
+    public var formatDateToShortString: String
     {
         let myDateFormatter = DateFormatter()
         myDateFormatter.dateFormat = "E dd/MM"
         return myDateFormatter.string(from: self)
     }
     
-    func dateDifferenceHours(to: Date) -> Int
+    public var formatAirTableDateTimeToString: String
+    {
+        let myDateFormatter = DateFormatter()
+        myDateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.000ZZZZZ"
+        return myDateFormatter.string(from: self)
+    }
+    
+    public func dateDifferenceHours(to: Date) -> Int
     {
         return Calendar.current.dateComponents([.hour], from: self, to: to).hour ?? 0
     }
     
-    func dateDifferenceMinutes(to: Date) -> Int
+    public func dateDifferenceMinutes(to: Date) -> Int
     {
         // Get number of hours
         
@@ -185,14 +353,14 @@ extension Date
         return numMins - (numHours * 60)
     }
     
-    var getDayOfWeek: Int
+    public var getDayOfWeek: Int
     {
         let myCalendar = Calendar(identifier: .gregorian)
         let weekDay = myCalendar.component(.weekday, from: self)
         return weekDay
     }
     
-    func add(_ unit: Calendar.Component, amount: Int) -> Date
+    public func add(_ unit: Calendar.Component, amount: Int) -> Date
     {
         let myCalendar = Calendar(identifier: .gregorian)
         
@@ -202,7 +370,7 @@ extension Date
             to: self)!
     }
     
-    var getWeekEndingDate: Date
+    public var getWeekEndingDate: Date
     {
         let dateModifier = (7 - self.getDayOfWeek) + 1
         
@@ -216,7 +384,7 @@ extension Date
         }
     }
     
-    func calculateDateForWeekDay(dayToFind: Int) -> Date
+    public func calculateDateForWeekDay(dayToFind: Int) -> Date
     {
         var returnDate: Date!
         var daysToAdd: Int = 0
@@ -253,7 +421,7 @@ extension Date
         return returnDate
     }
     
-    func calculateNewDate(dateBase: String, interval: Int16, period: String) -> Date
+    public func calculateNewDate(dateBase: String, interval: Int, period: String) -> Date
     {
         var addCalendarUnit: Calendar.Component!
         var tempInterval = interval
@@ -346,7 +514,7 @@ extension Date
         return returnDate
     }
     
-    var startOfDay: Date
+    public var startOfDay: Date
     {
        // let calendar = Calendar.current
         // get the start of the day of the selected date
@@ -356,10 +524,129 @@ extension Date
         return calendar.startOfDay(for: self)
     }
     
-    var getYear: Int
+    public var year: Int
     {
         let myCalendar = Calendar(identifier: .gregorian)
         let weekDay = myCalendar.component(.year, from: self)
         return weekDay
+    }
+    
+    public var month: Int
+    {
+        let myCalendar = Calendar(identifier: .gregorian)
+        return myCalendar.component(.month, from: self)
+    }
+    
+    public var currentMonthYear: String
+    {
+        let myCalendar = Calendar(identifier: .gregorian)
+        let myYear = myCalendar.component(.year, from: self)
+        let myMonth = myCalendar.component(.month, from: self)
+        
+        return "\(myYear)" + String(format: "%02d", myMonth)
+    }
+    
+    public var weekOfMonth: Int
+    {
+        let myCalendar = Calendar(identifier: .gregorian)
+        return myCalendar.component(.weekOfMonth, from: self)
+    }
+    
+    public var formatMonthString: String
+    {
+        let myDateFormatter = DateFormatter()
+        myDateFormatter.dateFormat = "MMMM"
+        return myDateFormatter.string(from: self)
+    }
+    
+    public var formatYearString: String
+    {
+        let myDateFormatter = DateFormatter()
+        myDateFormatter.dateFormat = "YYYY"
+        return myDateFormatter.string(from: self)
+    }
+}
+
+public func calculateDate(month: String, year: String) -> Date
+{
+    let myDateFormatter = DateFormatter()
+
+    myDateFormatter.dateFormat = "MMMM"
+    
+    let myCalendar = Calendar(identifier: .gregorian)
+    
+    let tempdate = myDateFormatter.date(from: month)
+    let monthInt = myCalendar.component(.month , from: tempdate!)
+    
+    var workingDate = DateComponents()
+    workingDate.day = 15
+    workingDate.month = monthInt
+    workingDate.year = Int(year)
+
+    return myCalendar.date(from: workingDate)!
+}
+
+extension Int
+{
+    public var monthName: String
+    {
+        switch self
+        {
+            case 1:
+                return "January"
+            
+            case 2:
+                return "February"
+            
+            case 3:
+                return "March"
+            
+            case 4:
+                return "April"
+            
+            case 5:
+                return "May"
+            
+            case 6:
+                return "June"
+            
+            case 7:
+                return "July"
+            
+            case 8:
+                return "August"
+            
+            case 9:
+                return "September"
+            
+            case 10:
+                return "October"
+            
+            case 11:
+                return "November"
+            
+            case 12:
+                return "December"
+            
+            default:
+                return "Not a valid value \(self)"
+        }
+    }
+}
+
+extension NSMutableAttributedString {
+    @discardableResult func bold(_ text: String) -> NSMutableAttributedString {
+        let attrs: [NSAttributedString.Key: Any] = [.font: UIFont(name: "AvenirNext-Medium", size: 20)!]
+        let boldString = NSMutableAttributedString(string:text, attributes: attrs)
+        append(boldString)
+        
+        return self
+    }
+    
+    @discardableResult func normal(_ text: String) -> NSMutableAttributedString {
+        let normal = NSAttributedString(string: text)
+        append(normal)
+        
+        return self
     }
 }

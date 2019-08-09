@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 import CloudKit
-
+/*
 extension coreDatabase
 {
     func clearDeletedMeetingSupportingDocs(predicate: NSPredicate)
@@ -124,7 +124,7 @@ extension coreDatabase
         saveContext()
     }
 }
-
+*/
 extension CloudKitInteraction
 {
     func saveMeetingSupportingDocsToCloudKit()

@@ -7,32 +7,135 @@
 //
 
 import Foundation
-import CoreData
+//import CoreData
 import CloudKit
+import SwiftUI
 
-class dropdowns: NSObject
+public class dropdowns: NSObject, Identifiable
 {
+    public let id = UUID()
     fileprivate var myDropdowns:[dropdownItem] = Array()
     fileprivate var myDropdownTypes: [String] = Array()
     
-    init(teamID: Int)
+    public init(teamID: Int64)
     {
-        myDropdownTypes = myDatabaseConnection.getDropdownsTypes(teamID: teamID)
-    }
-    
-    init(dropdownType: String, teamID: Int)
-    {
-        for myItem in myDatabaseConnection.getDropdowns(dropdownType: dropdownType, teamID: teamID)
+        super.init()
+        
+        if currentUser.currentTeam?.dropdowns == nil
+        {
+            currentUser.currentTeam?.dropdowns = myCloudDB.getDropdowns(teamID: teamID)
+        }
+        
+        for myItem in (currentUser.currentTeam?.dropdowns)!
         {
             let myObject = dropdownItem(dropdownType: myItem.dropDownType!,
-                                   dropdownValue: myItem.dropDownValue!,
-                                   teamID: Int(myItem.teamID)
-                                   )
+                                        dropdownValue: myItem.dropDownValue!,
+                                        teamID: myItem.teamID,
+                                        order: myItem.order,
+                                        saveRecord: false
+            )
             myDropdowns.append(myObject)
+            
+            var typeFound: Bool = false
+            
+            for myType in myDropdownTypes
+            {
+                if myItem.dropDownType! == myType
+                {
+                    typeFound = true
+                    break
+                }
+            }
+            
+            if !typeFound
+            {
+                myDropdownTypes.append(myItem.dropDownType!)
+            }
+        }
+        
+        sort()
+    }
+    
+    public init(dropdownType: String, teamID: Int64)
+    {
+        super.init()
+        
+        if currentUser.currentTeam?.dropdowns == nil
+        {
+            currentUser.currentTeam?.dropdowns = myCloudDB.getDropdowns(teamID: teamID)
+        }
+        
+        var workingArray: [Dropdowns] = Array()
+        
+        for item in (currentUser.currentTeam?.dropdowns)!
+        {
+            if (item.dropDownType == dropdownType)
+            {
+                workingArray.append(item)
+            }
+        }
+        
+        for myItem in workingArray
+        {
+            let myObject = dropdownItem(dropdownType: myItem.dropDownType!,
+                                        dropdownValue: myItem.dropDownValue!,
+                                        teamID: myItem.teamID,
+                                        order: myItem.order,
+                                        saveRecord: false
+            )
+            myDropdowns.append(myObject)
+            var typeFound: Bool = false
+            
+            for myType in myDropdownTypes
+            {
+                if myItem.dropDownType! == myType
+                {
+                    typeFound = true
+                    break
+                }
+            }
+            
+            if !typeFound
+            {
+                myDropdownTypes.append(myItem.dropDownType!)
+            }
+        }
+        
+        sort()
+    }
+    
+    public func sort()
+    {
+        if myDropdowns.count > 0
+        {
+            myDropdowns.sort
+                {
+                    // Because workdate has time it throws everything out
+                    
+                    if $0.order == $1.order
+                    {
+                        return $0.dropdownValue < $1.dropdownValue
+                    }
+                    else
+                    {
+                        return $0.order < $1.order
+                    }
+            }
         }
     }
     
-    var dropdowns: [dropdownItem]
+    public func append(_ newItem: dropdownItem)
+    {
+        myDropdowns.append(newItem)
+    }
+    
+    
+    public func remove(_ item: Int)
+    {
+        myDropdowns.remove(at: item)
+    }
+    
+    public var dropdowns: [dropdownItem]
     {
         get
         {
@@ -40,19 +143,22 @@ class dropdowns: NSObject
         }
     }
     
-    var dropDownTypes: [String]
+    public var dropDownTypes: [String]
     {
         return myDropdownTypes
     }
 }
 
-class dropdownItem: NSObject
+public class dropdownItem: NSObject, Identifiable
 {
+    public let id = UUID()
     fileprivate var myDropdownValue: String = ""
     fileprivate var myDropdownType: String = ""
-    fileprivate var myTeamID: Int = 0
+    fileprivate var myTeamID: Int64 = 0
+    fileprivate var myOrder: Int64 = 0
+    fileprivate var myOriginalOrder: Int64 = 0
     
-    var dropdownType: String
+    public var dropdownType: String
     {
         get
         {
@@ -60,7 +166,7 @@ class dropdownItem: NSObject
         }
     }
     
-    var dropdownValue: String
+    public var dropdownValue: String
     {
         get
         {
@@ -73,580 +179,185 @@ class dropdownItem: NSObject
         }
     }
     
-    init(dropdownType: String, teamID: Int)
+    public var order: Int64
     {
-        super.init()
-        
-        myDropdownType = dropdownType
-        myTeamID = teamID
-        save()
+        get
+        {
+            return myOrder
+        }
+        set
+        {
+            if newValue != myOriginalOrder
+            {
+                myOrder = newValue
+                myOriginalOrder = newValue
+                
+                save()
+            }
+        }
     }
     
-    init(dropdownType: String, dropdownValue: String, teamID: Int)
+    public init(dropdownType: String, dropdownValue: String, teamID: Int64, order: Int64, saveRecord: Bool)
     {
         super.init()
         
         myDropdownType = dropdownType
         myDropdownValue = dropdownValue
+        myOrder = order
+        myOriginalOrder = order
         myTeamID = teamID
-        save()
-    }
-    
-    func save()
-    {
-        if currentUser.checkPermission(adminRoleType) == writePermission
+        
+        if saveRecord
         {
-            myDatabaseConnection.saveDropdowns(myDropdownType, dropdownValue: myDropdownValue, teamID: myTeamID)
+            save()
         }
     }
     
-    func delete()
+    private func save()
     {
-        if currentUser.checkPermission(adminRoleType) == writePermission
+        if currentUser.checkWritePermission(adminRoleType)
         {
-            myDatabaseConnection.deleteDropdowns(myDropdownType, dropdownValue: myDropdownValue, teamID: myTeamID)
+            let temp = Dropdowns(dropDownType: myDropdownType, dropDownValue: myDropdownValue, teamID: myTeamID, order: myOrder)
+            
+            DispatchQueue.main.async
+                {
+                    myCloudDB.saveDropdownsRecordToCloudKit(temp)
+            }
+        }
+    }
+    
+    public func delete()
+    {
+        if currentUser.checkWritePermission(adminRoleType)
+        {
+            myCloudDB.deleteDropdowns(myDropdownType, dropdownValue: myDropdownValue, teamID: myTeamID)
+            currentUser.currentTeam?.dropdowns = nil
         }
     }
 }
 
-extension coreDatabase
-{
-    func saveDropdowns(_ dropdownType: String,
-                        dropdownValue: String,
-                        teamID: Int,
-                     updateTime: Date =  Date(), updateType: String = "CODE")
-    {
-        var myItem: Dropdowns!
-        
-        let myReturn = getDropdowns(dropdownType: dropdownType, dropdownValue: dropdownValue, teamID: teamID)
-        
-        if myReturn.count == 0
-        { // Add
-            myItem = Dropdowns(context: objectContext)
-            myItem.dropDownType = dropdownType
-            myItem.dropDownValue = dropdownValue
-            myItem.teamID = Int64(teamID)
-            
-            if updateType == "CODE"
-            {
-                myItem.updateTime =  Date()
-                
-                myItem.updateType = "Add"
-            }
-            else
-            {
-                myItem.updateTime = updateTime
-                myItem.updateType = updateType
-            }
-        }
-        else
-        {
-            myItem = myReturn[0]
-            
-            if updateType == "CODE"
-            {
-                myItem.updateTime =  Date()
-                if myItem.updateType != "Add"
-                {
-                    myItem.updateType = "Update"
-                }
-            }
-            else
-            {
-                myItem.updateTime = updateTime
-                myItem.updateType = updateType
-            }
-        }
-
-        saveContext()
-
-        self.recordsProcessed += 1
-    }
-    
-    func deleteDropdowns(_ dropdownType: String, dropdownValue: String, teamID: Int)
-    {
-        let myReturn = getDropdowns(dropdownType: dropdownType, dropdownValue: dropdownValue, teamID: teamID)
-        
-        if myReturn.count > 0
-        {
-            let myItem = myReturn[0]
-            myItem.updateTime =  Date()
-            myItem.updateType = "Delete"
-        }
-        
-        saveContext()
-    }
-    
-    func getDropdownsTypes(teamID: Int)->[String]
-    {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Dropdowns")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(teamID == \(teamID)) AND (dropDownType != 'Privacy') AND (dropDownType != 'ProjectType') AND (dropDownType != 'Reports') AND (dropDownType != 'RoleAccess') AND (dropDownType != 'RoleType') AND (dropDownType !=  'ShiftType') AND (dropDownType != 'TeamState') AND (updateType != \"Delete\")")
-        
-        // Set the predicate on the fetch request
-        
-        fetchRequest.predicate = predicate
-        fetchRequest.resultType = .dictionaryResultType
-        
-        fetchRequest.propertiesToFetch = ["dropDownType"]
-        fetchRequest.returnsDistinctResults = true
-        
-        let sortDescriptor = NSSortDescriptor(key: "dropDownType", ascending: true)
-        let sortDescriptors = [sortDescriptor]
-        fetchRequest.sortDescriptors = sortDescriptors
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            var returnArray: [String] = Array()
-            
-            let resultsDict = fetchResults as! [[String: String]]
-            
-            for myItem in resultsDict
-            {
-                returnArray.append(myItem["dropDownType"]!)
-            }
-            
- //           returnArray.sorted({$0 < $1})
-            
-            return returnArray
-        }
-        catch
-        {
-            print("Error occurred during execution: D \(error.localizedDescription)")
-            return []
-        }
-    }
-    
-    func getDropdowns(dropdownType: String, teamID: Int)->[Dropdowns]
-    {
-        let fetchRequest = NSFetchRequest<Dropdowns>(entityName: "Dropdowns")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(teamID == \(teamID)) AND (dropDownType == \"\(dropdownType)\") && (updateType != \"Delete\")")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: D \(error.localizedDescription)")
-            return []
-        }
-    }
-    
-    func getDropdowns(dropdownType: String, dropdownValue: String, teamID: Int)->[Dropdowns]
-    {
-        let fetchRequest = NSFetchRequest<Dropdowns>(entityName: "Dropdowns")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(dropDownType == \"\(dropdownType)\") AND (dropDownValue == \"\(dropdownValue)\") AND (teamID == \(teamID)) && (updateType != \"Delete\")")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: E \(error.localizedDescription)")
-            return []
-        }
-    }
-    
-    func resetAllDropdowns(teamID: Int)
-    {
-        let fetchRequest = NSFetchRequest<Dropdowns>(entityName: "Dropdowns")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(teamID == \(teamID))")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            for myItem in fetchResults
-            {
-                myItem.updateTime =  Date()
-                myItem.updateType = "Delete"
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: F \(error.localizedDescription)")
-        }
-        
-        saveContext()
-    }
-    
-    func clearDeletedDropdowns(predicate: NSPredicate)
-    {
-        let fetchRequest2 = NSFetchRequest<Dropdowns>(entityName: "Dropdowns")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                objectContext.delete(myItem2 as NSManagedObject)
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: G \(error.localizedDescription)")
-        }
-        saveContext()
-    }
-    
-    func clearSyncedDropdowns(predicate: NSPredicate)
-    {
-        let fetchRequest2 = NSFetchRequest<Dropdowns>(entityName: "Dropdowns")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                myItem2.updateType = ""
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: H \(error.localizedDescription)")
-        }
-        
-        saveContext()
-    }
-    
-    func getDropdownsForSync(_ syncDate: Date) -> [Dropdowns]
-    {
-        let fetchRequest = NSFetchRequest<Dropdowns>(entityName: "Dropdowns")
-        
-        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
-        
-        // Set the predicate on the fetch request
-        
-        fetchRequest.predicate = predicate
-        // Execute the fetch request, and cast the results to an array of  objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: I \(error.localizedDescription)")
-            return []
-        }
-    }
-    
-    func deleteAllDropdowns(teamID: Int)
-    {
-        let fetchRequest2 = NSFetchRequest<Dropdowns>(entityName: "Dropdowns")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(teamID == \(teamID))")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                self.objectContext.delete(myItem2 as NSManagedObject)
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: J \(error.localizedDescription)")
-        }
-        
-        saveContext()
-    }
-    
-    func deleteDropdowns(_ forType: String, teamID: Int)
-    {
-        let fetchRequest = NSFetchRequest<Dropdowns>(entityName: "Dropdowns")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(teamID == \(teamID)) AND (dropDownType == \"\(forType)\")")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            for myItem in fetchResults
-            {
-                self.objectContext.delete(myItem as NSManagedObject)
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: J \(error.localizedDescription)")
-        }
-        
-        saveContext()
-    }
-    
-    
-    func fixDropDowns()
-    {
-        // first delete the unneeded ones
-        let fetchRequest = NSFetchRequest<Dropdowns>(entityName: "Dropdowns")
-        
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "((dropDownType == 'ProjectType') OR (dropDownType == 'Reports') OR (dropDownType == 'RoleAccess') OR (dropDownType == 'RoleType') OR (dropDownType ==  'ShiftType') OR (dropDownType == 'TeamState')) AND (updateType != \"Delete\")")
-        
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            for myItem in fetchResults
-            {
-                myItem.updateTime = Date()
-                myItem.updateType = "Delete"
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: J \(error.localizedDescription)")
-        }
-        
-        saveContext()
-        
-        // Now we rename
-        
-        let fetchRequest1 = NSFetchRequest<Dropdowns>(entityName: "Dropdowns")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate1 = NSPredicate(format: "updateType != \"Delete\"")
-        
-        // Set the predicate on the fetch request
-        fetchRequest1.predicate = predicate1
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults1 = try objectContext.fetch(fetchRequest1)
-            for myItem in fetchResults1
-            {
-                if myItem.dropDownType == "Event"
-                {
-                    myItem.dropDownType = "Event Project"
-                    myItem.updateTime = Date()
-                }
-                
-                if myItem.dropDownType == "Regular"
-                {
-                    myItem.dropDownType = "Regular Project"
-                    myItem.updateTime = Date()
-                }
-                
-                if myItem.dropDownType == "Sales"
-                {
-                    myItem.dropDownType = "Sales Project"
-                    myItem.updateTime = Date()
-                }
-                
-                if myItem.dropDownType == "Roles"
-                {
-                    myItem.dropDownType = "Project Roles"
-                    myItem.updateTime = Date()
-                }
-                
-                if myItem.dropDownType == "ShowRole"
-                {
-                    myItem.dropDownType = "Event Roles"
-                    myItem.updateTime = Date()
-                }
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: D \(error.localizedDescription)")
-        }
-        saveContext()
-        
-        let fetchRequest2 = NSFetchRequest<Dropdowns>(entityName: "Dropdowns")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate2 = NSPredicate(format: "(dropDownType == \"ProjectType\") AND (updateType != \"Delete\")")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate2
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem in fetchResults2
-            {
-                if myItem.dropDownValue == "Event"
-                {
-                    myItem.dropDownValue = "Event Project"
-                    myItem.updateTime = Date()
-                }
-                
-                if myItem.dropDownValue == "Regular"
-                {
-                    myItem.dropDownValue = "Regular Project"
-                    myItem.updateTime = Date()
-                }
-                
-                if myItem.dropDownValue == "Sales"
-                {
-                    myItem.dropDownValue = "Sales Project"
-                    myItem.updateTime = Date()
-                }
-                
-                if myItem.dropDownValue == "Project"
-                {
-                    myItem.updateType = "Delete"
-                    myItem.updateTime = Date()
-                }
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: D \(error.localizedDescription)")
-        }
-        saveContext()
-        
-        let fetchRequest3 = NSFetchRequest<Projects>(entityName: "Projects")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate3 = NSPredicate(format: "updateType != \"Delete\"")
-        
-        // Set the predicate on the fetch request
-        fetchRequest3.predicate = predicate3
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults3 = try objectContext.fetch(fetchRequest3)
-            for myItem in fetchResults3
-            {
-                if myItem.type == "Event"
-                {
-                    myItem.type = "Event Project"
-                    myItem.updateTime = Date()
-                }
-                
-                if myItem.type == "Regular"
-                {
-                    myItem.type = "Regular Project"
-                    myItem.updateTime = Date()
-                }
-                
-                if myItem.type == "Sales"
-                {
-                    myItem.type = "Sales Project"
-                    myItem.updateTime = Date()
-                }
-                
-                if myItem.type == "Project"
-                {
-                    myItem.type = "Regular Project"
-                    myItem.updateTime = Date()
-                }
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: D \(error.localizedDescription)")
-        }
-        saveContext()
-    }
+public struct Dropdowns {
+    public var dropDownType: String?
+    public var dropDownValue: String?
+    public var teamID: Int64
+    public var order: Int64
 }
 
 extension CloudKitInteraction
 {
-    func saveDropdownsToCloudKit()
+    private func populateDropdowns(_ records: [CKRecord]) -> [Dropdowns]
     {
-        for myItem in myDatabaseConnection.getDropdownsForSync(getSyncDateForTable(tableName: "Dropdowns"))
+        var tempArray: [Dropdowns] = Array()
+        
+        for record in records
         {
-            saveDropdownsRecordToCloudKit(myItem)
+            var teamID: Int64 = 0
+            if record.object(forKey: "teamID") != nil
+            {
+                teamID = record.object(forKey: "teamID") as! Int64
+            }
+            
+            var order: Int64 = 0
+            if record.object(forKey: "order") != nil
+            {
+                order = record.object(forKey: "order") as! Int64
+            }
+            
+            let tempItem = Dropdowns(dropDownType: record.object(forKey: "dropDownType") as? String,
+                                     dropDownValue: record.object(forKey: "dropDownValue") as? String,
+                                     teamID: teamID,
+                                     order: order)
+            
+            tempArray.append(tempItem)
         }
+        
+        return tempArray
     }
     
-    func updateDropdownsInCoreData()
+    func getDropdownsTypes(teamID: Int64)->[String]
     {
-        let predicate: NSPredicate = NSPredicate(format: "(updateTime >= %@) AND \(buildTeamList(currentUser.userID))", getSyncDateForTable(tableName: "Dropdowns") as CVarArg)
-        let query: CKQuery = CKQuery(recordType: "Dropdowns", predicate: predicate)
+        let predicate = NSPredicate(format: "(teamID == \(teamID)) AND (dropDownType != 'Privacy') AND (dropDownType != 'ProjectType') AND (dropDownType != 'Reports') AND (dropDownType != 'RoleAccess') AND (dropDownType != 'RoleType') AND (dropDownType !=  'ShiftType') AND (dropDownType != 'TeamState')")
         
-        let operation = CKQueryOperation(query: query)
+        let query = CKQuery(recordType: "Dropdowns", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
         
-        operation.recordFetchedBlock = { (record) in
-            self.updateDropdownsRecord(record)
+        sem.wait()
+        
+        let shiftArray: [Dropdowns] = populateDropdowns(returnArray)
+        
+        var workingArray: [String] = Array()
+        
+        for myItem in shiftArray
+        {
+            workingArray.append(myItem.dropDownType!)
         }
-        let operationQueue = OperationQueue()
         
-        executePublicQueryOperation(targetTable: "Dropdowns", queryOperation: operation, onOperationQueue: operationQueue)
+        return workingArray
     }
     
-//    func deleteDropdowns(dropdownType: String, dropdownName: String)
-//    {
-//        let sem = DispatchSemaphore(value: 0);
-//
-//        var myRecordList: [CKRecordID] = Array()
-//        let predicate: NSPredicate = NSPredicate(format: "\(buildTeamList(currentUser.userID)) AND (dropDownType == \"\(dropdownType)\") AND (dropdownName == \"\(dropdownName)\")")
-//        let query: CKQuery = CKQuery(recordType: "Dropdowns", predicate: predicate)
-//        publicDB.perform(query, inZoneWith: nil, completionHandler: {(results: [CKRecord]?, error: Error?) in
-//            for record in results!
-//            {
-//                myRecordList.append(record.recordID)
-//            }
-//            self.performPublicDelete(myRecordList)
-//            sem.signal()
-//        })
-//        
-//        sem.wait()
-//    }
+    func getDropdowns(teamID: Int64)->[Dropdowns]
+    {
+        let predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\")")
+        
+        let query = CKQuery(recordType: "Dropdowns", predicate: predicate)
+        query.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Dropdowns] = populateDropdowns(returnArray)
+        
+        return shiftArray
+    }
+    
+    func getDropdowns(dropdownType: String, teamID: Int64)->[Dropdowns]
+    {
+        let predicate = NSPredicate(format: "(teamID == \(teamID)) AND (dropDownType == \"\(dropdownType)\")")
+        
+        let query = CKQuery(recordType: "Dropdowns", predicate: predicate)
+        query.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Dropdowns] = populateDropdowns(returnArray)
+        
+        return shiftArray
+    }
+    
+    func getDropdowns(dropdownType: String, dropdownValue: String, teamID: Int64)->[Dropdowns]
+    {
+        let predicate = NSPredicate(format: "(dropDownType == \"\(dropdownType)\") AND (dropDownValue == \"\(dropdownValue)\") AND (teamID == \(teamID))")
+        
+        let query = CKQuery(recordType: "Dropdowns", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [Dropdowns] = populateDropdowns(returnArray)
+        
+        return shiftArray
+    }
+    
+    func deleteDropdowns(_ dropdownType: String, dropdownValue: String, teamID: Int64)
+    {
+        let predicate = NSPredicate(format: "(dropDownType == \"\(dropdownType)\") AND (dropDownValue == \"\(dropdownValue)\") AND (teamID == \(teamID))")
+        
+        let sem = DispatchSemaphore(value: 0)
+        
+        let query = CKQuery(recordType: "Dropdowns", predicate: predicate)
+        publicDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
+            
+            self.performPublicDelete(records!)
+            
+            sem.signal()
+        })
+        sem.wait()
+    }
     
     func saveDropdownsRecordToCloudKit(_ sourceRecord: Dropdowns)
     {
@@ -670,12 +381,7 @@ extension CloudKitInteraction
                     // Apply whatever changes you want
                     
                     record!.setValue(sourceRecord.dropDownValue, forKey: "dropDownValue")
-                    
-                    if sourceRecord.updateTime != nil
-                    {
-                        record!.setValue(sourceRecord.updateTime, forKey: "updateTime")
-                    }
-                    record!.setValue(sourceRecord.updateType, forKey: "updateType")
+                    record!.setValue(sourceRecord.order, forKey: "order")
                     
                     // Save this record again
                     self.publicDB.save(record!, completionHandler: { (savedRecord, saveError) in
@@ -684,6 +390,7 @@ extension CloudKitInteraction
                             NSLog("Error saving record: B \(saveError!.localizedDescription)")
                             self.saveOK = false
                             print("next level = \(saveError!)")
+                            sem.signal()
                         }
                         else
                         {
@@ -691,6 +398,7 @@ extension CloudKitInteraction
                             {
                                 NSLog("Successfully updated record!")
                             }
+                            sem.signal()
                         }
                     })
                 }
@@ -699,20 +407,15 @@ extension CloudKitInteraction
                     let record = CKRecord(recordType: "Dropdowns")
                     record.setValue(sourceRecord.dropDownType, forKey: "dropDownType")
                     record.setValue(sourceRecord.dropDownValue, forKey: "dropDownValue")
-                    
+                    record.setValue(sourceRecord.order, forKey: "order")
                     record.setValue(sourceRecord.teamID, forKey: "teamID")
-                    
-                    if sourceRecord.updateTime != nil
-                    {
-                        record.setValue(sourceRecord.updateTime, forKey: "updateTime")
-                    }
-                    record.setValue(sourceRecord.updateType, forKey: "updateType")
                     
                     self.publicDB.save(record, completionHandler: { (savedRecord, saveError) in
                         if saveError != nil
                         {
                             NSLog("Error saving record: C \(saveError!.localizedDescription)")
                             self.saveOK = false
+                            sem.signal()
                         }
                         else
                         {
@@ -720,52 +423,13 @@ extension CloudKitInteraction
                             {
                                 NSLog("Successfully saved record!")
                             }
+                            sem.signal()
                         }
                     })
                 }
             }
-            sem.signal()
         })
         sem.wait()
-    }
-    
-    func updateDropdownsRecord(_ sourceRecord: CKRecord)
-    {
-
-        let dropdownType = sourceRecord.object(forKey: "dropDownType") as! String
-        let dropDownValue = sourceRecord.object(forKey: "dropDownValue") as! String
-        var updateTime = Date()
-        if sourceRecord.object(forKey: "updateTime") != nil
-        {
-            updateTime = sourceRecord.object(forKey: "updateTime") as! Date
-        }
-        
-        var updateType: String = ""
-        if sourceRecord.object(forKey: "updateType") != nil
-        {
-            updateType = sourceRecord.object(forKey: "updateType") as! String
-        }
-        
-        var teamID: Int = 0
-        if sourceRecord.object(forKey: "teamID") != nil
-        {
-            teamID = sourceRecord.object(forKey: "teamID") as! Int
-        }
-        
-        myDatabaseConnection.recordsToChange += 1
-        
-        while self.recordCount > 0
-        {
-            usleep(self.sleepTime)
-        }
-
-        self.recordCount += 1
-        
-        myDatabaseConnection.saveDropdowns(dropdownType,
-                                         dropdownValue: dropDownValue,
-                                         teamID: teamID
-                                         , updateTime: updateTime, updateType: updateType)
-        self.recordCount -= 1
     }
 }
 

@@ -8,55 +8,185 @@
 
 import Foundation
 import EventKit
+import SwiftUI
 
-class iOSCalendarList
+public class iOSCalendarList: Identifiable
 {
+    public let id = UUID()
     fileprivate var myList: [iOSCalendarListItem] = Array()
+    fileprivate var eventStore: EKEventStore!
     
-    var list: [iOSCalendarListItem]
+    public var list: [iOSCalendarListItem]
     {
         return myList
     }
     
-    init()
+    public init()
     {
         myList.removeAll()
         
-        for myItem in globalEventStore.calendars(for: .event)
+        eventStore = EKEventStore()
+        
+        let status = EKEventStore.authorizationStatus(for: .event)
+        
+        switch status
         {
-            let name = "\(myItem.source.title) - \(myItem.title)"
-            var state: Bool = false
-            if readDefaultString(name) == "True"
-            {
-                state = true
-            }
+        case EKAuthorizationStatus.notDetermined:
+            // This happens on first-run
+            requestEventAccess()
             
-            let newItem = iOSCalendarListItem(name: name, state: state, calendar: myItem)
-            myList.append(newItem)
+        case EKAuthorizationStatus.authorized:
+            // Things are in line with being able to show the calendars in the table view
+            loadCalendars()
+            
+        case EKAuthorizationStatus.restricted, EKAuthorizationStatus.denied:
+            // We need to help them give us permission
+            requestEventAccess()
+            print("Calendar permissions not given")
+            
+        default:
+            print("IOSCalendarList init() hit default")
+        }
+    }
+    
+    private func requestEventAccess()
+    {
+        eventStore.requestAccess(to: EKEntityType.event, completion: {
+            (accessGranted: Bool, error: Error?) in
+            
+            if accessGranted == true {
+                DispatchQueue.main.async(execute: {
+                    self.loadCalendars()
+                })
+            } else {
+                DispatchQueue.main.async(execute: {
+                    print("Calendar permissions not given")
+                })
+            }
+        })
+    }
+    
+    private func loadCalendars()
+    {
+        for item in eventStore.calendars(for: .event)
+        {
+            if item.allowsContentModifications
+            {
+                if item.type != .birthday
+                {
+                    let name = "\(item.source.title) - \(item.title)"
+                    var state: Bool = false
+                    if readDefaultString(name) == "True"
+                    {
+                        state = true
+                    }
+                    
+                    let newItem = iOSCalendarListItem(name: name, state: state, calendar: item)
+                    myList.append(newItem)
+                }
+            }
         }
         
         if myList.count > 0
         {
             myList.sort
-            {
-                return $0.name < $1.name
+                {
+                    return $0.name < $1.name
             }
+        }
+    }
+    
+    public func searchEvents(startDate: Date,
+                             endDate: Date)  -> [EKEvent]
+    {
+        var selectedCalendar: [EKCalendar] = Array()
+        
+        for myItem in iOSCalendarList().list
+        {
+            if myItem.state
+            {
+                selectedCalendar.append(myItem.calendar)
+            }
+        }
+        
+        var searchPredicate: NSPredicate!
+        
+        if selectedCalendar.count > 0
+        {
+            searchPredicate = eventStore.predicateForEvents(
+                withStart: startDate,
+                end: endDate,
+                calendars: selectedCalendar)
+        }
+        else
+        {
+            searchPredicate = eventStore.predicateForEvents(
+                withStart: startDate,
+                end: endDate,
+                calendars: nil)
+        }
+        
+        if eventStore.sources.count > 0
+        {
+            return eventStore.events(matching: searchPredicate)
+        }
+        else
+        {
+            return []
+        }
+    }
+    
+    public func createEvent(title: String, startDate: Date, endDate: Date)
+    {
+        var eventCalendar: EKCalendar!
+        
+        for item in eventStore.calendars(for: .event)
+        {
+            let name = "\(item.source.title) - \(item.title)"
+            if name == currentUser.defaultCalendar
+            {
+                eventCalendar = item
+                break
+            }
+        }
+        
+        let event = EKEvent(eventStore: eventStore)
+        event.title = title
+        
+        if eventCalendar == nil
+        {
+            event.calendar = eventStore.defaultCalendarForNewEvents // this will return deafult calendar from device calendars
+        }
+        else
+        {
+            event.calendar = eventCalendar
+        }
+        event.startDate = startDate
+        event.endDate = endDate
+        
+        
+        do {
+            try eventStore.save(event, span: .thisEvent)
+            //event created successfullt to default calendar
+        } catch let error as NSError {
+            print("failed to save event with error : \(error)")
         }
     }
 }
 
-class iOSCalendarListItem
+public class iOSCalendarListItem: Identifiable
 {
+    public let id = UUID()
     fileprivate var myName: String = ""
     fileprivate var myState: Bool = false
     fileprivate var myCalendar: EKCalendar!
     
-    var name: String
+    public var name: String
     {
         return myName
     }
     
-    var state: Bool
+    public var state: Bool
     {
         get
         {
@@ -77,12 +207,12 @@ class iOSCalendarListItem
         }
     }
     
-    var calendar: EKCalendar
+    public var calendar: EKCalendar
     {
         return myCalendar
     }
     
-    init(name: String, state: Bool, calendar: EKCalendar)
+    public init(name: String, state: Bool, calendar: EKCalendar)
     {
         myName = name
         myState = state
@@ -90,11 +220,14 @@ class iOSCalendarListItem
     }
 }
 
-class iOSCalendar
+public class iOSCalendar: Identifiable
 {
+    public let id = UUID()
     fileprivate var eventRecords: [mergedCalendarItem] = Array()
     
-    var events: [mergedCalendarItem]
+    fileprivate var calendarSource: iOSCalendarList = iOSCalendarList()
+    
+    public var events: [mergedCalendarItem]
     {
         get
         {
@@ -102,9 +235,9 @@ class iOSCalendar
         }
     }
     
-    init(email: String, teamID: Int, startDate: Date, endDate: Date)
+    public init(email: String, teamID: Int64, startDate: Date, endDate: Date)
     {
-        let events = getEventsForDateRange(startDate: startDate, endDate: endDate)
+        let events = calendarSource.searchEvents(startDate: startDate, endDate: endDate)
         
         if events.count >  0
         {
@@ -137,9 +270,9 @@ class iOSCalendar
         }
     }
     
-    init(projectName: String, teamID: Int, startDate: Date, endDate: Date)
+    public init(projectName: String, teamID: Int64, startDate: Date, endDate: Date)
     {
-        let events = getEventsForDateRange(startDate: startDate, endDate: endDate)
+        let events = calendarSource.searchEvents(startDate: startDate, endDate: endDate)
         
         if events.count >  0
         {
@@ -156,9 +289,9 @@ class iOSCalendar
         }
     }
     
-    init(teamID: Int, startDate: Date, endDate: Date)
+    public init(teamID: Int64, startDate: Date, endDate: Date)
     {
-        let events = getEventsForDateRange(startDate: startDate, endDate: endDate)
+        let events = calendarSource.searchEvents(startDate: startDate, endDate: endDate)
         
         if events.count >  0
         {
@@ -170,9 +303,10 @@ class iOSCalendar
         }
     }
     
-    init(teamID: Int, workingDate: Date)
+    public init(teamID: Int64, workingDate: Date)
     {
-        let events = getEventsForDate(workingDate)
+        let endDate = workingDate.add(.day, amount: 1).startOfDay
+        let events = calendarSource.searchEvents(startDate: workingDate, endDate: endDate)
         
         if events.count >  0
         {
@@ -184,30 +318,30 @@ class iOSCalendar
         }
     }
     
-    init(clientID: Int, projectID: Int, teamID: Int, startDate: Date, endDate: Date)
+    public init(clientID: Int64, projectID: Int64, teamID: Int64, startDate: Date, endDate: Date)
     {
         var meetingList: [MeetingAgenda] = Array()
         
         if clientID > 0 && projectID > 0
         {
-            meetingList = myDatabaseConnection.getAgenda(clientID: clientID, projectID: projectID, startDate: startDate, endDate: endDate, teamID: teamID)
+            meetingList = myCloudDB.getAgenda(clientID: clientID, projectID: projectID, startDate: startDate, endDate: endDate, teamID: teamID)
         }
         else if clientID > 0
         {
-            meetingList = myDatabaseConnection.getAgenda(clientID: clientID, startDate: startDate, endDate: endDate, teamID: teamID)
+            meetingList = myCloudDB.getAgenda(clientID: clientID, startDate: startDate, endDate: endDate, teamID: teamID)
         }
         else if projectID > 0
         {
-            meetingList = myDatabaseConnection.getAgenda(projectID: projectID, startDate: startDate, endDate: endDate, teamID: teamID)
+            meetingList = myCloudDB.getAgenda(projectID: projectID, startDate: startDate, endDate: endDate, teamID: teamID)
         }
         else
         {
-            meetingList = myDatabaseConnection.getAgenda(startDate: startDate, endDate: endDate, teamID: teamID)
+            meetingList = myCloudDB.getAgenda(startDate: startDate, endDate: endDate, teamID: teamID)
         }
         
         // Check through the meetings for ones that match the context
         
-        let myEventList = getEventsForDateRange(startDate: startDate, endDate: endDate)
+        let myEventList = calendarSource.searchEvents(startDate: startDate, endDate: endDate)
         
         for myEvent in myEventList
         {
@@ -240,189 +374,98 @@ class iOSCalendar
         eventRecords.sort(by: {$0.startDate < $1.startDate})
     }
     
-    fileprivate func getEventsForDateRange(startDate: Date, endDate: Date) -> [EKEvent]
-    {
-        /* Create the predicate that we can later pass to the event store in order to fetch the events */
-        
-        // Build the list of calendars to search
-        
-        var selectedCalendar: [EKCalendar] = Array()
-        
-        for myItem in iOSCalendarList().list
-        {
-            if myItem.state
-            {
-                selectedCalendar.append(myItem.calendar)
-            }
-        }
-        
-        var searchPredicate: NSPredicate!
-        
-        if selectedCalendar.count > 0
-        {
-            searchPredicate = globalEventStore.predicateForEvents(
-                withStart: startDate,
-                end: endDate,
-                calendars: selectedCalendar)
-        }
-        else
-        {
-            searchPredicate = globalEventStore.predicateForEvents(
-                withStart: startDate,
-                end: endDate,
-                calendars: nil)
-        }
-        
-        /* Fetch all the events that fall between the starting and the ending dates */
-        
-        if globalEventStore.sources.count > 0
-        {
-            return globalEventStore.events(matching: searchPredicate)
-        }
-        else
-        {
-            return []
-        }
-    }
-    
-    fileprivate func getEventsForDate(_ workingDate: Date) -> [EKEvent]
-    {
-        let startDate = workingDate.startOfDay
-        
-        /* The end date */
-        
-        let endDate = workingDate.add(.day, amount: 1).startOfDay
-        
-        var selectedCalendar: [EKCalendar] = Array()
-        
-        for myItem in iOSCalendarList().list
-        {
-            if myItem.state
-            {
-                selectedCalendar.append(myItem.calendar)
-            }
-        }
-        
-        var searchPredicate: NSPredicate!
-        
-        if selectedCalendar.count > 0
-        {
-            searchPredicate = globalEventStore.predicateForEvents(
-                withStart: startDate,
-                end: endDate,
-                calendars: selectedCalendar)
-        }
-        else
-        {
-            searchPredicate = globalEventStore.predicateForEvents(
-                withStart: startDate,
-                end: endDate,
-                calendars: nil)
-        }
-        
-        /* Fetch all the events that fall between the starting and the ending dates */
-        
-        if globalEventStore.sources.count > 0
-        {
-            return globalEventStore.events(matching: searchPredicate)
-        }
-        else
-        {
-            return []
-        }
-    }
-    
-    fileprivate func storeEvent(_ event: EKEvent, attendee: EKParticipant?, teamID: Int)
+    fileprivate func storeEvent(_ event: EKEvent, attendee: EKParticipant?, teamID: Int64)
     {
         let calendarEntry = calendarItem(event: event, teamID: teamID)
         let newItem = mergedCalendarItem(startDate: event.startDate, databaseItem: calendarEntry, iCalItem: event)
         eventRecords.append(newItem)
     }
     
-//    func displayEvent() -> [TableData]
-//    {
-//        var tableContents: [TableData] = [TableData]()
-//        
-//        // Build up the details we want to show ing the calendar
-//        
-//        for event in eventDetails
-//        {
-//            var myString = "\(event.title)\n"
-//            myString += "\(event.displayScheduledDate)\n"
-//            
-//            if event.recurrence != -1
-//            {
-//                myString += "Occurs every \(event.recurrenceFrequency) \(event.displayRecurrence)\n"
-//            }
-//            
-//            if event.location != ""
-//            {
-//                myString += "At \(event.location)\n"
-//            }
-//            
-//            if event.status != -1
-//            {
-//                myString += "Status = \(event.displayStatus)"
-//            }
-//            
-//            if event.startDate.compare(Date()) == ComparisonResult.orderedAscending
-//            {
-//                // Event is in the past
-//                writeRowToArray(myString, table: &tableContents, targetEvent: event, displayFormat: "Gray")
-//            }
-//            else
-//            {
-//                writeRowToArray(myString, table: &tableContents, targetEvent: event)
-//            }
-//        }
-//        return tableContents
-//    }
+    //    func displayEvent() -> [TableData]
+    //    {
+    //        var tableContents: [TableData] = [TableData]()
+    //
+    //        // Build up the details we want to show ing the calendar
+    //
+    //        for event in eventDetails
+    //        {
+    //            var myString = "\(event.title)\n"
+    //            myString += "\(event.displayScheduledDate)\n"
+    //
+    //            if event.recurrence != -1
+    //            {
+    //                myString += "Occurs every \(event.recurrenceFrequency) \(event.displayRecurrence)\n"
+    //            }
+    //
+    //            if event.location != ""
+    //            {
+    //                myString += "At \(event.location)\n"
+    //            }
+    //
+    //            if event.status != -1
+    //            {
+    //                myString += "Status = \(event.displayStatus)"
+    //            }
+    //
+    //            if event.startDate.compare(Date()) == ComparisonResult.orderedAscending
+    //            {
+    //                // Event is in the past
+    //                writeRowToArray(myString, table: &tableContents, targetEvent: event, displayFormat: "Gray")
+    //            }
+    //            else
+    //            {
+    //                writeRowToArray(myString, table: &tableContents, targetEvent: event)
+    //            }
+    //        }
+    //        return tableContents
+    //    }
     
-//    func getCalendarRecords() -> [TableData]
-//    {
-//        var outputArray: [TableData] = Array()
-//        
-//        let endDate = Calendar.current.date(byAdding: .month, value: 3, to: Date())
-//        
-//        /* Create the predicate that we can later pass to the event store in order to fetch the events */
-//        let searchPredicate = globalEventStore.predicateForEvents(
-//            withStart: Date(),
-//            end: endDate!,
-//            calendars: nil)
-//        
-//        /* Fetch all the events that fall between the starting and the ending dates */
-//        
-//        if globalEventStore.sources.count > 0
-//        {
-//            let dateFormatter = DateFormatter()
-//            dateFormatter.dateStyle = .medium
-//            dateFormatter.timeStyle = .short
-//            
-//            for calItem in globalEventStore.events(matching: searchPredicate)
-//            {
-//                var tempEntry = TableData(displayText: calItem.title)
-//                tempEntry.notes = dateFormatter.string(from: calItem.startDate)
-//                tempEntry.event = calItem
-//                
-//                outputArray.append(tempEntry)
-//            }
-//            
-//            return outputArray
-//        }
-//        else
-//        {
-//            return []
-//        }
-//    }
+    //    func getCalendarRecords() -> [TableData]
+    //    {
+    //        var outputArray: [TableData] = Array()
+    //
+    //        let endDate = Calendar.current.date(byAdding: .month, value: 3, to: Date())
+    //
+    //        /* Create the predicate that we can later pass to the event store in order to fetch the events */
+    //        let searchPredicate = globalEventStore.predicateForEvents(
+    //            withStart: Date(),
+    //            end: endDate!,
+    //            calendars: nil)
+    //
+    //        /* Fetch all the events that fall between the starting and the ending dates */
+    //
+    //        if globalEventStore.sources.count > 0
+    //        {
+    //            let dateFormatter = DateFormatter()
+    //            dateFormatter.dateStyle = .medium
+    //            dateFormatter.timeStyle = .short
+    //
+    //            for calItem in globalEventStore.events(matching: searchPredicate)
+    //            {
+    //                var tempEntry = TableData(displayText: calItem.title)
+    //                tempEntry.notes = dateFormatter.string(from: calItem.startDate)
+    //                tempEntry.event = calItem
+    //
+    //                outputArray.append(tempEntry)
+    //            }
+    //
+    //            return outputArray
+    //        }
+    //        else
+    //        {
+    //            return []
+    //        }
+    //    }
 }
 
-class iOSReminder
+public class iOSReminder: Identifiable
 {
+    public let id = UUID()
     fileprivate var reminderStore: EKEventStore!
     fileprivate var targetReminderCal: EKCalendar!
     fileprivate var reminderRecords: [EKReminder] = Array()
     
-    init()
+    public init()
     {
         reminderStore = EKEventStore()
         reminderStore.requestAccess(to: EKEntityType.reminder,
@@ -433,7 +476,7 @@ class iOSReminder
         })
     }
     
-    var reminders: [EKReminder]
+    public var reminders: [EKReminder]
     {
         get
         {
@@ -441,7 +484,7 @@ class iOSReminder
         }
     }
     
-    func parseReminderDetails (_ search: String)
+    public func parseReminderDetails (_ search: String)
     {
         let cals = reminderStore.calendars(for: EKEntityType.reminder)
         var myCalFound = false
@@ -464,15 +507,15 @@ class iOSReminder
             reminderStore.fetchReminders(matching: predicate, completion: {reminders in
                 for reminder in reminders!
                 {
-//                    let workingString: ReminderData = ReminderData(reminderText: reminder.title, reminderCalendar: reminder.calendar)
-//                    
-//                    if reminder.notes != nil
-//                    {
-//                        workingString.notes = reminder.notes!
-//                    }
-//                    workingString.priority = reminder.priority
-//                    workingString.calendarItemIdentifier = reminder.calendarItemIdentifier
-//                    self.reminderDetails.append(workingString)
+                    //                    let workingString: ReminderData = ReminderData(reminderText: reminder.title, reminderCalendar: reminder.calendar)
+                    //
+                    //                    if reminder.notes != nil
+                    //                    {
+                    //                        workingString.notes = reminder.notes!
+                    //                    }
+                    //                    workingString.priority = reminder.priority
+                    //                    workingString.calendarItemIdentifier = reminder.calendarItemIdentifier
+                    //                    self.reminderDetails.append(workingString)
                     self.reminderRecords.append(reminder)
                 }
                 asyncDone = true
@@ -487,34 +530,34 @@ class iOSReminder
         }
     }
     
-//    func displayReminder() -> [TableData]
-//    {
-//        var tableContents: [TableData] = [TableData]()
-//        
-//        // Build up the details we want to show ing the calendar
-//        
-//        if reminderDetails.count == 0
-//        {
-//            writeRowToArray("No reminders list found", table: &tableContents)
-//        }
-//        else
-//        {
-//            for myReminder in reminderDetails
-//            {
-//                let myString = "\(myReminder.reminderText)"
-//                
-//                switch myReminder.priority
-//                {
-//                case 1: writeRowToArray(myString, table: &tableContents, displayFormat: "Red")  //  High priority
-//                    
-//                case 5: writeRowToArray(myString , table: &tableContents, displayFormat: "Orange") // Medium priority
-//                    
-//                default: writeRowToArray(myString , table: &tableContents)
-//                }
-//            }
-//            
-//        }
-//        return tableContents
-//    }
+    //    func displayReminder() -> [TableData]
+    //    {
+    //        var tableContents: [TableData] = [TableData]()
+    //
+    //        // Build up the details we want to show ing the calendar
+    //
+    //        if reminderDetails.count == 0
+    //        {
+    //            writeRowToArray("No reminders list found", table: &tableContents)
+    //        }
+    //        else
+    //        {
+    //            for myReminder in reminderDetails
+    //            {
+    //                let myString = "\(myReminder.reminderText)"
+    //
+    //                switch myReminder.priority
+    //                {
+    //                case 1: writeRowToArray(myString, table: &tableContents, displayFormat: "Red")  //  High priority
+    //
+    //                case 5: writeRowToArray(myString , table: &tableContents, displayFormat: "Orange") // Medium priority
+    //
+    //                default: writeRowToArray(myString , table: &tableContents)
+    //                }
+    //            }
+    //
+    //        }
+    //        return tableContents
+    //    }
 }
 

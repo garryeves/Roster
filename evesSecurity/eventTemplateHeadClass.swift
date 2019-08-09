@@ -7,26 +7,35 @@
 //
 
 import Foundation
-import CoreData
+//import CoreData
 import CloudKit
+import SwiftUI
 
-class eventTemplateHeads: NSObject
+let newTemplateName = "Template Name"
+
+public class eventTemplateHeads: NSObject, Identifiable
 {
+    public let id = UUID()
     fileprivate var myEventTemplateHead:[eventTemplateHead] = Array()
     
-    init(teamID: Int)
+    public init(teamID: Int64)
     {
-        for myItem in myDatabaseConnection.getEventTemplateHeadItems(teamID: teamID)
+        if currentUser.currentTeam?.eventTemplateHeadsList == nil
         {
-            let myObject = eventTemplateHead(eventID: Int(myItem.eventID),
-                                         eventName: myItem.eventName!,
-                                         teamID: Int(myItem.teamID))
+            currentUser.currentTeam?.eventTemplateHeadsList = myCloudDB.getEventTemplateHeadItems(teamID: teamID)
+        }
+        
+        for myItem in (currentUser.currentTeam?.eventTemplateHeadsList)!
+        {
+            let myObject = eventTemplateHead(eventID: myItem.eventID,
+                                             eventName: myItem.eventName!,
+                                             teamID: myItem.teamID)
             
             myEventTemplateHead.append(myObject)
         }
     }
     
-    var templates: [eventTemplateHead]
+    public var templates: [eventTemplateHead]
     {
         get
         {
@@ -35,14 +44,15 @@ class eventTemplateHeads: NSObject
     }
 }
 
-class eventTemplateHead: NSObject
+public class eventTemplateHead: NSObject, Identifiable
 {
-    fileprivate var myTemplateID: Int = 0
-    fileprivate var myTemplateName: String = ""
-    fileprivate var myTeamID: Int = 0
+    public let id = UUID()
+    fileprivate var myTemplateID: Int64 = 0
+    fileprivate var myTemplateName: String = newTemplateName
+    fileprivate var myTeamID: Int64 = 0
     fileprivate var myRoles: eventTemplates!
     
-    var templateID: Int
+    public var templateID: Int64
     {
         get
         {
@@ -50,7 +60,7 @@ class eventTemplateHead: NSObject
         }
     }
     
-    var templateName: String
+    public var templateName: String
     {
         get
         {
@@ -59,11 +69,11 @@ class eventTemplateHead: NSObject
         set
         {
             myTemplateName = newValue
-            save()
+         //   save()
         }
     }
     
-    var roles: eventTemplates?
+    public var roles: eventTemplates?
     {
         get
         {
@@ -71,31 +81,27 @@ class eventTemplateHead: NSObject
         }
     }
     
-    init(teamID: Int)
+    override init() {
+        super.init()
+    }
+    
+    public init(teamID: Int64)
     {
         super.init()
         
-        myTemplateID = myDatabaseConnection.getNextID("EventTemplateHead", teamID: teamID)
-        myTeamID = teamID
-        save()
+        createTemplate(teamID: teamID)
     }
     
-    init(eventID: Int, teamID: Int)
-    {
-        super.init()
-        let myReturn = myDatabaseConnection.getEventTemplateHead(templateID: eventID, teamID: teamID)
-        
-        for myItem in myReturn
-        {
-            myTemplateID = Int(myItem.eventID)
-            myTemplateName = myItem.eventName!
-            myTeamID = Int(myItem.teamID)
-        }
-    }
+//    public init(eventID: Int64, teamID: Int64)
+//    {
+//        super.init()
+//
+//        loadTemplate(eventID: eventID, teamID: teamID)
+//    }
     
-    init(eventID: Int,
-         eventName: String,
-         teamID: Int)
+    public init(eventID: Int64,
+                eventName: String,
+                teamID: Int64)
     {
         super.init()
         
@@ -104,317 +110,328 @@ class eventTemplateHead: NSObject
         myTeamID = teamID
     }
     
-    func save()
-    {
-        if currentUser.checkPermission(rosteringRoleType) == writePermission
+    public func createTemplate(teamID: Int64) {
+        myTemplateID = myCloudDB.getNextID("EventTemplateHead", teamID: teamID)
+        myTeamID = teamID
+        myTemplateName = newTemplateName
+        save()
+        
+        myRoles = nil
+    
+        currentUser.currentTeam?.eventTemplateHeadsList = nil
+    }
+    
+    public func loadTemplate(templateID: Int64, teamID: Int64) {
+        if currentUser.currentTeam?.eventTemplateHeadsList == nil
         {
-            myDatabaseConnection.saveEventTemplateHead(myTemplateID,
-                                                   templateName: myTemplateName,
-                                                   teamID: myTeamID)
+            currentUser.currentTeam?.eventTemplateHeadsList = myCloudDB.getEventTemplateHeadItems(teamID: teamID)
+        }
+        
+        var myItem: EventTemplateHead!
+        
+        for item in (currentUser.currentTeam?.eventTemplateHeadsList)!
+        {
+            if item.eventID == templateID
+            {
+                myItem = item
+                break
+            }
+        }
+        
+        if myItem != nil
+        {
+            myTemplateID = myItem.eventID
+            myTemplateName = myItem.eventName!
+            myTeamID = myItem.teamID
         }
     }
     
-    func delete()
+    public func save()
     {
-        if currentUser.checkPermission(rosteringRoleType) == writePermission
+        if currentUser.checkWritePermission(rosteringRoleType)
         {
-            myDatabaseConnection.deleteEventTemplateHead(myTemplateID, teamID: myTeamID)
+            let temp = EventTemplateHead(eventID: myTemplateID, eventName: myTemplateName, teamID: myTeamID)
+            
+            myCloudDB.saveEventTemplateHeadRecordToCloudKit(temp)
         }
     }
     
-    func loadRoles()
+    public func delete()
+    {
+        if currentUser.checkWritePermission(rosteringRoleType)
+        {
+            myCloudDB.deleteEventTemplateHead(myTemplateID, teamID: myTeamID)
+            currentUser.currentTeam?.eventTemplateHeadsList = nil
+        }
+    }
+    
+    public func loadRoles()
     {
         myRoles = eventTemplates(eventID: myTemplateID, teamID: myTeamID)
     }
     
-    func addRole(role: String,
-                 numRequired: Int,
-                 dateModifier: Int,
-                 startTime: Date,
-                 endTime: Date)
+    public func addRole(role: String,
+                        numRequired: Int64,
+                        dateModifier: Int64,
+                        startTime: Date,
+                        endTime: Date)
     {
         let newRole = eventTemplate(eventID: myTemplateID, role: role, dateModifier: dateModifier, startTime: startTime, endTime: endTime, teamID: myTeamID)
         newRole.numRequired = numRequired
-        
-        newRole.save()
     }
 }
 
-extension coreDatabase
-{
-    func saveEventTemplateHead(_ templateID: Int,
-                           templateName: String,
-                           teamID: Int,
-                           updateTime: Date =  Date(), updateType: String = "CODE")
-    {
-        var myItem: EventTemplateHead!
-        
-        let myReturn = getEventTemplateHead(templateID: templateID, teamID: teamID)
-        
-        if myReturn.count == 0
-        { // Add
-            myItem = EventTemplateHead(context: objectContext)
-            myItem.eventID = Int64(templateID)
-            myItem.eventName = templateName
-            myItem.teamID = Int64(teamID)
-            
-            if updateType == "CODE"
-            {
-                myItem.updateTime =  Date()
-                
-                myItem.updateType = "Add"
-            }
-            else
-            {
-                myItem.updateTime = updateTime
-                myItem.updateType = updateType
-            }
-        }
-        else
-        {
-            myItem = myReturn[0]
-            myItem.eventName = templateName
-            
-            if updateType == "CODE"
-            {
-                myItem.updateTime =  Date()
-                if myItem.updateType != "Add"
-                {
-                    myItem.updateType = "Update"
-                }
-            }
-            else
-            {
-                myItem.updateTime = updateTime
-                myItem.updateType = updateType
-            }
-        }
-        
-        saveContext()
+//extension coreDatabase
+//{
+//    func saveEventTemplateHead(_ templateID: Int,
+//                           templateName: String,
+//                           teamID: Int,
+//                           updateTime: Date =  Date(), updateType: String = "CODE")
+//    {
+//        var myItem: EventTemplateHead!
+//
+//        let myReturn = getEventTemplateHead(templateID: templateID, teamID: teamID)
+//
+//        if myReturn.count == 0
+//        { // Add
+//            myItem = EventTemplateHead(context: objectContext)
+//            myItem.eventID = Int64(templateID)
+//            myItem.eventName = templateName
+//            myItem.teamID = Int64(teamID)
+//
+//            if updateType == "CODE"
+//            {
+//                myItem.updateTime =  Date()
+//
+//                myItem.updateType = "Add"
+//            }
+//            else
+//            {
+//                myItem.updateTime = updateTime
+//                myItem.updateType = updateType
+//            }
+//        }
+//        else
+//        {
+//            myItem = myReturn[0]
+//            myItem.eventName = templateName
+//
+//            if updateType == "CODE"
+//            {
+//                myItem.updateTime =  Date()
+//                if myItem.updateType != "Add"
+//                {
+//                    myItem.updateType = "Update"
+//                }
+//            }
+//            else
+//            {
+//                myItem.updateTime = updateTime
+//                myItem.updateType = updateType
+//            }
+//        }
+//
+//        saveContext()
+//
+//        self.recordsProcessed += 1
+//    }
+//
+//    func resetAllEventTemplateHead()
+//    {
+//        let fetchRequest = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults = try objectContext.fetch(fetchRequest)
+//            for myItem in fetchResults
+//            {
+//                myItem.updateTime =  Date()
+//                myItem.updateType = "Delete"
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: F \(error.localizedDescription)")
+//        }
+//
+//        saveContext()
+//    }
+//
+//    func clearDeletedEventTemplateHead(predicate: NSPredicate)
+//    {
+//        let fetchRequest2 = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
+//
+//        // Set the predicate on the fetch request
+//        fetchRequest2.predicate = predicate
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                objectContext.delete(myItem2 as NSManagedObject)
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: G \(error.localizedDescription)")
+//        }
+//        saveContext()
+//    }
+//
+//    func clearSyncedEventTemplateHead(predicate: NSPredicate)
+//    {
+//        let fetchRequest2 = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
+//
+//        // Set the predicate on the fetch request
+//        fetchRequest2.predicate = predicate
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                myItem2.updateType = ""
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: H \(error.localizedDescription)")
+//        }
+//
+//        saveContext()
+//    }
+//
+//    func getEventTemplateHeadForSync(_ syncDate: Date) -> [EventTemplateHead]
+//    {
+//        let fetchRequest = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
+//
+//        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
+//
+//        // Set the predicate on the fetch request
+//
+//        fetchRequest.predicate = predicate
+//        // Execute the fetch request, and cast the results to an array of  objects
+//        do
+//        {
+//            let fetchResults = try objectContext.fetch(fetchRequest)
+//
+//            return fetchResults
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: I \(error.localizedDescription)")
+//            return []
+//        }
+//    }
+//
+//    func deleteAllEventTemplateHead()
+//    {
+//        let fetchRequest2 = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                self.objectContext.delete(myItem2 as NSManagedObject)
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: J \(error.localizedDescription)")
+//        }
+//
+//        saveContext()
+//    }
+//}
+//
 
-        self.recordsProcessed += 1
-    }
-    
-    func deleteEventTemplateHead(_ templateID: Int, teamID: Int)
-    {
-        let myReturn = getEventTemplateHead(templateID: templateID, teamID: teamID)
-        
-        if myReturn.count > 0
-        {
-            let myItem = myReturn[0]
-            myItem.updateTime =  Date()
-            myItem.updateType = "Delete"
-        }
-        
-        saveContext()
-    }
-    
-    func getEventTemplateHeadItems(teamID: Int)->[EventTemplateHead]
-    {
-        let fetchRequest = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "teamID == \(teamID) AND (updateType != \"Delete\")")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: E \(error.localizedDescription)")
-            return []
-        }
-    }
-
-    
-    func getEventTemplateHead(templateID: Int, teamID: Int)->[EventTemplateHead]
-    {
-        let fetchRequest = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "eventID == \(templateID) AND (teamID == \(teamID))")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: E \(error.localizedDescription)")
-            return []
-        }
-    }
-    
-    func resetAllEventTemplateHead()
-    {
-        let fetchRequest = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            for myItem in fetchResults
-            {
-                myItem.updateTime =  Date()
-                myItem.updateType = "Delete"
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: F \(error.localizedDescription)")
-        }
-        
-        saveContext()
-    }
-    
-    func clearDeletedEventTemplateHead(predicate: NSPredicate)
-    {
-        let fetchRequest2 = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                objectContext.delete(myItem2 as NSManagedObject)
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: G \(error.localizedDescription)")
-        }
-        saveContext()
-    }
-    
-    func clearSyncedEventTemplateHead(predicate: NSPredicate)
-    {
-        let fetchRequest2 = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                myItem2.updateType = ""
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: H \(error.localizedDescription)")
-        }
-        
-        saveContext()
-    }
-    
-    func getEventTemplateHeadForSync(_ syncDate: Date) -> [EventTemplateHead]
-    {
-        let fetchRequest = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
-        
-        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
-        
-        // Set the predicate on the fetch request
-        
-        fetchRequest.predicate = predicate
-        // Execute the fetch request, and cast the results to an array of  objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: I \(error.localizedDescription)")
-            return []
-        }
-    }
-    
-    func deleteAllEventTemplateHead()
-    {
-        let fetchRequest2 = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                self.objectContext.delete(myItem2 as NSManagedObject)
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: J \(error.localizedDescription)")
-        }
-        
-        saveContext()
-    }
+public struct EventTemplateHead {
+    public var eventID: Int64
+    public var eventName: String?
+    public var teamID: Int64
 }
 
 extension CloudKitInteraction
 {
-    func saveEventTemplateHeadToCloudKit()
+    private func populateEventTemplateHead(_ records: [CKRecord]) -> [EventTemplateHead]
     {
-        for myItem in myDatabaseConnection.getEventTemplateHeadForSync(getSyncDateForTable(tableName: "EventTemplateHead"))
+        var tempArray: [EventTemplateHead] = Array()
+        
+        for record in records
         {
-            saveEventTemplateHeadRecordToCloudKit(myItem)
+            var eventID: Int64 = 0
+            if record.object(forKey: "eventID") != nil
+            {
+                eventID = record.object(forKey: "eventID") as! Int64
+            }
+            
+            var teamID: Int64 = 0
+            if record.object(forKey: "teamID") != nil
+            {
+                teamID = record.object(forKey: "teamID") as! Int64
+            }
+            
+            let tempItem = EventTemplateHead(eventID: eventID,
+                                             eventName: record.object(forKey: "eventName") as? String,
+                                             teamID: teamID)
+            
+            tempArray.append(tempItem)
         }
+        
+        return tempArray
     }
     
-    func updateEventTemplateHeadInCoreData()
+    func getEventTemplateHeadItems(teamID: Int64)->[EventTemplateHead]
     {
-        let predicate: NSPredicate = NSPredicate(format: "(updateTime >= %@) AND \(buildTeamList(currentUser.userID))", getSyncDateForTable(tableName: "EventTemplateHead") as CVarArg)
-        let query: CKQuery = CKQuery(recordType: "EventTemplateHead", predicate: predicate)
+        let predicate = NSPredicate(format: "teamID == \(teamID) AND (updateType != \"Delete\")")
         
-        let operation = CKQueryOperation(query: query)
+        let query = CKQuery(recordType: "EventTemplateHead", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
         
-        operation.recordFetchedBlock = { (record) in
-            self.updateEventTemplateHeadRecord(record)
-        }
-        let operationQueue = OperationQueue()
+        sem.wait()
         
-        executePublicQueryOperation(targetTable: "EventTemplateHead", queryOperation: operation, onOperationQueue: operationQueue)
+        let shiftArray: [EventTemplateHead] = populateEventTemplateHead(returnArray)
+        
+        return shiftArray
     }
     
-//    func deleteEventTemplateHead(eventID: Int)
-//    {
-//        let sem = DispatchSemaphore(value: 0);
-//        
-//        var myRecordList: [CKRecordID] = Array()
-//        let predicate: NSPredicate = NSPredicate(format: "\(buildTeamList(currentUser.userID)) AND (eventID == \(eventID))")
-//        let query: CKQuery = CKQuery(recordType: "EventTemplateHead", predicate: predicate)
-//        publicDB.perform(query, inZoneWith: nil, completionHandler: {(results: [CKRecord]?, error: Error?) in
-//            for record in results!
-//            {
-//                myRecordList.append(record.recordID)
-//            }
-//            self.performPublicDelete(myRecordList)
-//            sem.signal()
-//        })
-//        
-//        sem.wait()
-//    }
+    func getEventTemplateHead(templateID: Int64, teamID: Int64)->[EventTemplateHead]
+    {
+        let predicate = NSPredicate(format: "eventID == \(templateID) AND (teamID == \(teamID))")
+        
+        let query = CKQuery(recordType: "EventTemplateHead", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [EventTemplateHead] = populateEventTemplateHead(returnArray)
+        
+        return shiftArray
+    }
+    
+    func deleteEventTemplateHead(_ templateID: Int64, teamID: Int64)
+    {
+        let predicate = NSPredicate(format: "eventID == \(templateID) AND (teamID == \(teamID))")
+        
+        let sem = DispatchSemaphore(value: 0)
+        
+        let query = CKQuery(recordType: "EventTemplateHead", predicate: predicate)
+        publicDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
+            
+            self.performPublicDelete(records!)
+            
+            sem.signal()
+        })
+        sem.wait()
+    }
     
     func saveEventTemplateHeadRecordToCloudKit(_ sourceRecord: EventTemplateHead)
     {
@@ -439,13 +456,6 @@ extension CloudKitInteraction
                     
                     record!.setValue(sourceRecord.eventName, forKey: "eventName")
                     
-                    
-                    if sourceRecord.updateTime != nil
-                    {
-                        record!.setValue(sourceRecord.updateTime, forKey: "updateTime")
-                    }
-                    record!.setValue(sourceRecord.updateType, forKey: "updateType")
-                    
                     // Save this record again
                     self.publicDB.save(record!, completionHandler: { (savedRecord, saveError) in
                         if saveError != nil
@@ -453,6 +463,7 @@ extension CloudKitInteraction
                             NSLog("Error saving record: B \(saveError!.localizedDescription)")
                             self.saveOK = false
                             print("next level = \(saveError!)")
+                            sem.signal()
                         }
                         else
                         {
@@ -460,6 +471,7 @@ extension CloudKitInteraction
                             {
                                 NSLog("Successfully updated record!")
                             }
+                            sem.signal()
                         }
                     })
                 }
@@ -470,17 +482,12 @@ extension CloudKitInteraction
                     record.setValue(sourceRecord.eventName, forKey: "eventName")
                     record.setValue(sourceRecord.teamID, forKey: "teamID")
                     
-                    if sourceRecord.updateTime != nil
-                    {
-                        record.setValue(sourceRecord.updateTime, forKey: "updateTime")
-                    }
-                    record.setValue(sourceRecord.updateType, forKey: "updateType")
-                    
                     self.publicDB.save(record, completionHandler: { (savedRecord, saveError) in
                         if saveError != nil
                         {
                             NSLog("Error saving record: C \(saveError!.localizedDescription)")
                             self.saveOK = false
+                            sem.signal()
                         }
                         else
                         {
@@ -488,57 +495,13 @@ extension CloudKitInteraction
                             {
                                 NSLog("Successfully saved record!")
                             }
+                            sem.signal()
                         }
                     })
                 }
             }
-            sem.signal()
         })
         sem.wait()
-    }
-    
-    func updateEventTemplateHeadRecord(_ sourceRecord: CKRecord)
-    {
-        let eventName = sourceRecord.object(forKey: "eventName") as! String
-        
-        var eventID: Int = 0
-        if sourceRecord.object(forKey: "eventID") != nil
-        {
-            eventID = sourceRecord.object(forKey: "eventID") as! Int
-        }
-        
-        var updateTime = Date()
-        if sourceRecord.object(forKey: "updateTime") != nil
-        {
-            updateTime = sourceRecord.object(forKey: "updateTime") as! Date
-        }
-        
-        var updateType: String = ""
-        if sourceRecord.object(forKey: "updateType") != nil
-        {
-            updateType = sourceRecord.object(forKey: "updateType") as! String
-        }
-        
-        var teamID: Int = 0
-        if sourceRecord.object(forKey: "teamID") != nil
-        {
-            teamID = sourceRecord.object(forKey: "teamID") as! Int
-        }
-        
-        myDatabaseConnection.recordsToChange += 1
-        
-        while self.recordCount > 0
-        {
-            usleep(self.sleepTime)
-        }
-        
-        self.recordCount += 1
-        
-        myDatabaseConnection.saveEventTemplateHead(eventID,
-                                               templateName: eventName,
-                                               teamID: teamID
-            , updateTime: updateTime, updateType: updateType)
-        self.recordCount -= 1
     }
 }
 

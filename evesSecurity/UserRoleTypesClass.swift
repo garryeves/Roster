@@ -105,6 +105,7 @@ class userRoleType: NSObject
     }
 }
 
+/*
 extension coreDatabase
 {
     func saveUserRoleTypes(_ roleTypeID: Int,
@@ -353,7 +354,7 @@ extension coreDatabase
         saveContext()
     }
 }
-
+*/
 extension CloudKitInteraction
 {
     func saveUserRoleTypesToCloudKit()

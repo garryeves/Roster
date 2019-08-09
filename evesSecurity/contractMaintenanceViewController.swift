@@ -8,7 +8,7 @@
 
 import UIKit
 
-class contractMaintenanceViewController: UIViewController, MyPickerDelegate, UIPopoverPresentationControllerDelegate, myCommunicationDelegate, UITextViewDelegate, UITableViewDataSource, UITableViewDelegate
+public class contractMaintenanceViewController: UIViewController, MyPickerDelegate, UIPopoverPresentationControllerDelegate, myCommunicationDelegate, UITextViewDelegate
 {
     @IBOutlet weak var txtName: UITextField!
     @IBOutlet weak var txtNote: UITextView!
@@ -20,47 +20,95 @@ class contractMaintenanceViewController: UIViewController, MyPickerDelegate, UIP
     @IBOutlet weak var txtInvoicingDay: UITextField!
     @IBOutlet weak var txtDaysToPay: UITextField!
     @IBOutlet weak var btnInvoicingFrequency: UIButton!
-    @IBOutlet weak var btnType: UIButton!
+    @IBOutlet weak var btnShowComms: UIButton!
+    @IBOutlet weak var btnAddComms: UIButton!
+    @IBOutlet weak var btnShowShifts: UIButton!
     @IBOutlet weak var btnBack: UIBarButtonItem!
-    @IBOutlet weak var tblShifts: UITableView!
     
-    var communicationDelegate: myCommunicationDelegate?
-    var workingContract: project!
+    public var delegate: mainScreenProtocol?
+    public var communicationDelegate: myCommunicationDelegate?
+    public var workingContract: project!
+    public var displayBackButton: Bool = false
     
     fileprivate var displayList: [String] = Array()
-    fileprivate var shiftList: shifts!
     
-    override func viewDidLoad()
+    override public func viewDidLoad()
     {
         txtNote.layer.borderColor = UIColor.lightGray.cgColor
         txtNote.layer.borderWidth = 0.5
         txtNote.layer.cornerRadius = 5.0
         txtNote.layer.masksToBounds = true
         txtNote.delegate = self
+        
+        if displayBackButton
+        {
+            btnBack.isEnabled = true
+            btnBack.title = "Back"
+        }
+        else
+        {
+            btnBack.isEnabled = false
+            btnBack.title = ""
+        }
+        
         refreshScreen()
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    @IBAction func btnShowComms(_ sender: UIButton)
     {
-        return shiftList.shifts.count
+        let commsView = settingsStoryboard.instantiateViewController(withIdentifier: "commsList") as! commsListViewController
+        commsView.modalPresentationStyle = .popover
+        
+        let popover = commsView.popoverPresentationController!
+        popover.delegate = self
+        popover.sourceView = sender
+        popover.sourceRect = sender.bounds
+        popover.permittedArrowDirections = .any
+        
+        commsView.preferredContentSize = CGSize(width: 800,height: 800)
+        commsView.passedProject = workingContract
+        self.present(commsView, animated: true, completion: nil)
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+    @IBAction func btnAddComms(_ sender: UIButton)
     {
-        let cell = tableView.dequeueReusableCell(withIdentifier:"cellShift", for: indexPath) as! twoLabelTable
-        
-        let dateString = "\(shiftList.shifts[indexPath.row].workDateString) \(shiftList.shifts[indexPath.row].startTimeString) - \(shiftList.shifts[indexPath.row].endTimeString)"
-        cell.lbl1.text = dateString
-        
-        let tempPerson = person(personID: shiftList.shifts[indexPath.row].personID, teamID: currentUser.currentTeam!.teamID)
-        cell.lbl2.text = tempPerson.name
-        
-        return cell
+//        let newComm = commsLogEntry(teamID: (currentUser.currentTeam?.teamID)!)
+//        newComm.clientID = workingContract.clientID
+//        newComm.projectID = workingContract.projectID
+//        
+//        let commsView = settingsStoryboard.instantiateViewController(withIdentifier: "commsLogView") as! commsLogView
+//        commsView.modalPresentationStyle = .popover
+//        
+//        let popover = commsView.popoverPresentationController!
+//        popover.delegate = self
+//        popover.sourceView = sender
+//        popover.sourceRect = sender.bounds
+//        popover.permittedArrowDirections = .any
+//        
+//        commsView.preferredContentSize = CGSize(width: 500,height: 800)
+//        commsView.workingEntry = newComm
+//        self.present(commsView, animated: true, completion: nil)
+    }
+    
+    @IBAction func btnShowShifts(_ sender: UIButton)
+    {
+//        let commsView = shiftsStoryboard.instantiateViewController(withIdentifier: "personsRoster") as! personsRosterViewController
+//        commsView.modalPresentationStyle = .popover
+//        
+//        let popover = commsView.popoverPresentationController!
+//        popover.delegate = self
+//        popover.sourceView = sender
+//        popover.sourceRect = sender.bounds
+//        popover.permittedArrowDirections = .any
+//        
+//        commsView.preferredContentSize = CGSize(width: 800,height: 800)
+//        commsView.passedProject = workingContract
+//        self.present(commsView, animated: true, completion: nil)
     }
     
     @IBAction func txtName(_ sender: UITextField)
@@ -68,6 +116,11 @@ class contractMaintenanceViewController: UIViewController, MyPickerDelegate, UIP
         if txtName.text! != ""
         {
             workingContract.projectName = txtName.text!
+            if delegate != nil
+            {
+                currentUser.currentTeam?.projects = nil
+                delegate!.reloadMenu()
+            }
         }
     }
     
@@ -82,7 +135,7 @@ class contractMaintenanceViewController: UIViewController, MyPickerDelegate, UIP
         {
             if txtInvoicingDay.text!.isNumber
             {
-                workingContract.invoicingDay = Int(txtInvoicingDay.text!)!
+                workingContract.invoicingDay = Int64(txtInvoicingDay.text!)!
             }
         }
         else
@@ -97,7 +150,7 @@ class contractMaintenanceViewController: UIViewController, MyPickerDelegate, UIP
         {
             if txtDaysToPay.text!.isNumber
             {
-                workingContract.daysToPay = Int(txtDaysToPay.text!)!
+                workingContract.daysToPay = Int64(txtDaysToPay.text!)!
             }
         }
         else
@@ -106,7 +159,7 @@ class contractMaintenanceViewController: UIViewController, MyPickerDelegate, UIP
         }
     }
     
-    func textViewDidEndEditing(_ textView: UITextView)
+    public func textViewDidEndEditing(_ textView: UITextView)
     {
         if textView == txtNote
         {
@@ -114,65 +167,11 @@ class contractMaintenanceViewController: UIViewController, MyPickerDelegate, UIP
         }
     }
     
-    @IBAction func btnBack(_ sender: UIBarButtonItem)
-    {
-        if txtName.isFirstResponder
-        {
-            if txtName.text! != ""
-            {
-                workingContract.projectName = txtName.text!
-            }
-        }
-        
-        if txtDept.isFirstResponder
-        {
-            workingContract.clientDept = txtDept.text!
-        }
-        
-        if txtInvoicingDay.isFirstResponder
-        {
-            if txtInvoicingDay.text! != ""
-            {
-                if txtInvoicingDay.text!.isNumber
-                {
-                    workingContract.invoicingDay = Int(txtInvoicingDay.text!)!
-                }
-            }
-            else
-            {
-                workingContract.invoicingDay = 0
-            }
-        }
-        
-        if txtName.isFirstResponder
-        {
-            if txtDaysToPay.text! != ""
-            {
-                if txtDaysToPay.text!.isNumber
-                {
-                    workingContract.daysToPay = Int(txtDaysToPay.text!)!
-                }
-            }
-            else
-            {
-                workingContract.daysToPay = 0
-            }
-        }
-        
-        if txtNote.isFirstResponder
-        {
-            workingContract.note = txtNote.text!
-        }
-        
-        self.dismiss(animated: true, completion: nil)
-        communicationDelegate?.refreshScreen!()
-    }
-    
     @IBAction func btnStatus(_ sender: UIButton)
     {
         displayList.removeAll()
         
-        for myItem in (currentUser.currentTeam?.getDropDown(dropDownType: btnType.currentTitle!))!
+        for myItem in (currentUser.currentTeam?.getDropDown(dropDownType: workingContract.type))!
         {
             displayList.append(myItem)
         }
@@ -292,36 +291,13 @@ class contractMaintenanceViewController: UIViewController, MyPickerDelegate, UIP
             self.present(pickerView, animated: true, completion: nil)
         }
     }
-
-    @IBAction func btnType(_ sender: UIButton)
-    {
-        displayList.removeAll()
-        
-        displayList.append(eventProjectType)
-        displayList.append(regularProjectType)
-        displayList.append(salesProjectType)
-        
-        if displayList.count > 0
-        {
-            let pickerView = pickerStoryboard.instantiateViewController(withIdentifier: "pickerView") as! PickerViewController
-            pickerView.modalPresentationStyle = .popover
-            
-            let popover = pickerView.popoverPresentationController!
-            popover.delegate = self
-            popover.sourceView = sender
-            popover.sourceRect = sender.bounds
-            popover.permittedArrowDirections = .any
-            
-            pickerView.source = "type"
-            pickerView.delegate = self
-            pickerView.pickerValues = displayList
-            pickerView.preferredContentSize = CGSize(width: 400,height: 400)
-            pickerView.currentValue = btnType.currentTitle!
-            self.present(pickerView, animated: true, completion: nil)
-        }
+    
+    
+    @IBAction func btnBack(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
     }
     
-    func myPickerDidFinish(_ source: String, selectedItem:Int)
+    public func myPickerDidFinish(_ source: String, selectedItem:Int)
     {
         if source == "status"
         {
@@ -347,21 +323,9 @@ class contractMaintenanceViewController: UIViewController, MyPickerDelegate, UIP
                 btnInvoicingFrequency.setTitle(workingContract.invoicingFrequency, for: .normal)
             }
         }
-        else if source == "type"
-        {
-            workingContract.type = displayList[selectedItem]
-            if workingContract.type == ""
-            {
-                btnType.setTitle("Set", for: .normal)
-            }
-            else
-            {
-                btnType.setTitle(workingContract.type, for: .normal)
-            }
-        }
     }
     
-    func myPickerDidFinish(_ source: String, selectedDate:Date)
+    public func myPickerDidFinish(_ source: String, selectedDate:Date)
     {
         Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(processDateChange(timer :)), userInfo: ["source": source, "selectedDate":selectedDate], repeats: false)
     }
@@ -382,7 +346,7 @@ class contractMaintenanceViewController: UIViewController, MyPickerDelegate, UIP
                 {
                     let alert = UIAlertController(title: "Contract Maintenance", message: "Start Date can not be after End Date of \(workingContract.displayProjectEndDate)", preferredStyle: .actionSheet)
                     
-                    alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,
+                    alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default,
                                                   handler: { (action: UIAlertAction) -> () in
                                                     let _ = 1
                     }))
@@ -421,7 +385,7 @@ class contractMaintenanceViewController: UIViewController, MyPickerDelegate, UIP
                 {
                     let alert = UIAlertController(title: "Contract Maintenance", message: "End Date can not be before Start Date of \(workingContract.displayProjectStartDate)", preferredStyle: .actionSheet)
                     
-                    alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,
+                    alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default,
                                                   handler: { (action: UIAlertAction) -> () in
                                                     let _ = 1
                     }))
@@ -452,11 +416,10 @@ class contractMaintenanceViewController: UIViewController, MyPickerDelegate, UIP
         }
     }
     
-    func refreshScreen()
+    public func refreshScreen()
     {
         if workingContract != nil
         {
-            shiftList = shifts(projectID: workingContract.projectID, teamID: currentUser.currentTeam!.teamID)
             txtName.text = workingContract.projectName
             txtNote.text = workingContract.note
             txtDept.text = workingContract.clientDept
@@ -497,17 +460,6 @@ class contractMaintenanceViewController: UIViewController, MyPickerDelegate, UIP
             else
             {
                 btnInvoicingFrequency.setTitle(workingContract.invoicingFrequency, for: .normal)
-            }
-            
-            if workingContract.type == ""
-            {
-                btnType.setTitle("Set", for: .normal)
-                btnStatus.isEnabled = false
-            }
-            else
-            {
-                btnType.setTitle(workingContract.type, for: .normal)
-                btnStatus.isEnabled = true
             }
         }
     }

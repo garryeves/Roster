@@ -295,7 +295,7 @@ class meetingAgendaItem
         loadTasks()
     }
 }
-
+/*
 extension coreDatabase
 {
     func loadAgendaItem(_ meetingID: String, teamID: Int)->[MeetingAgendaItem]
@@ -892,7 +892,7 @@ extension coreDatabase
         saveContext()
     }
 }
-
+*/
 extension CloudKitInteraction
 {
     func saveMeetingAgendaItemToCloudKit()

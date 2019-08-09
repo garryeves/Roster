@@ -8,13 +8,7 @@
 
 import UIKit
 
-struct teamOwnerItem
-{
-    var userID: Int
-    var name: String
-}
-
-class orgEditViewController: UIViewController, MyPickerDelegate, UIPopoverPresentationControllerDelegate, myCommunicationDelegate
+public class orgEditViewController: UIViewController, MyPickerDelegate, UIPopoverPresentationControllerDelegate, myCommunicationDelegate, UITableViewDataSource, UITableViewDelegate
 {
     @IBOutlet weak var txtOrgName: UITextField!
     @IBOutlet weak var txtExternalID: UITextField!
@@ -29,18 +23,22 @@ class orgEditViewController: UIViewController, MyPickerDelegate, UIPopoverPresen
     @IBOutlet weak var btnRenewal: UIButton!
     @IBOutlet weak var lblOwner: UILabel!
     @IBOutlet weak var btnOwner: UIButton!
+    @IBOutlet weak var tblAPI: UITableView!
+    @IBOutlet weak var btnSelectAPI: UIButton!
+    @IBOutlet weak var btnAddAPI: UIButton!
     
     private var newUserCreated: Bool = false
     private var displayList: [String] = Array()
+    private var workingsourceList: [externalSource] = Array()
     
-    var workingOrganisation: team?
-    var communicationDelegate: myCommunicationDelegate?
+    public var workingOrganisation: team?
+    public var communicationDelegate: myCommunicationDelegate?
     
-    var ownerList: [teamOwnerItem] = Array()
+    public var ownerList: [teamOwnerItem] = Array()
     
     @IBOutlet weak var btnStatus: UIButton!
     
-    override func viewDidLoad()
+    override public func viewDidLoad()
     {
         txtNotes.layer.borderColor = UIColor.lightGray.cgColor
         txtNotes.layer.borderWidth = 0.5
@@ -48,6 +46,22 @@ class orgEditViewController: UIViewController, MyPickerDelegate, UIPopoverPresen
         txtNotes.layer.masksToBounds = true
         
         var connected: Bool = false
+        
+        btnAddAPI.isEnabled = false
+        
+        if currentUser != nil
+        {
+            workingsourceList = externalSources(teamID: currentUser.currentTeam!.teamID).apis
+        }
+        
+        if workingsourceList.count == 0
+        {
+            tblAPI.isHidden = true
+        }
+        else
+        {
+            tblAPI.isHidden = false
+        }
         
         let myReachability = Reachability()
         if myReachability.isConnectedToNetwork()
@@ -57,8 +71,6 @@ class orgEditViewController: UIViewController, MyPickerDelegate, UIPopoverPresen
             
         if workingOrganisation == nil && connected
         {
-            notificationCenter.addObserver(self, selector: #selector(self.teamCreated(_:)), name: NotificationTeamCreated, object: nil)
-            
             workingOrganisation = team()
             // Step 1 is to create a new team
             
@@ -66,6 +78,30 @@ class orgEditViewController: UIViewController, MyPickerDelegate, UIPopoverPresen
             btnSave.isEnabled = false
             btnUsers.isEnabled = false
             txtOrgName.isEnabled = false
+            
+            // Now lets go and create an initial user
+            
+            if currentUser == nil
+            {
+                currentUser = userItem(currentTeam: workingOrganisation!, userName: "", userEmail: "")
+                
+                addInitialUserRoles()
+            }
+            else
+            {
+                addInitialUserRoles()
+            }
+            
+            if workingOrganisation != nil
+            {
+                writeDefaultInt("teamID", value: Int(workingOrganisation!.teamID))
+            }
+            
+            DispatchQueue.main.async
+            {
+                self.btnSave.isEnabled = true
+                self.txtOrgName.isEnabled = true
+            }
         }
         else if workingOrganisation == nil
         {
@@ -81,41 +117,43 @@ class orgEditViewController: UIViewController, MyPickerDelegate, UIPopoverPresen
             btnStatus.isEnabled = false
             
             let alert = UIAlertController(title: "Create Team", message:
-                "You need to be connected to the Internet to create a team", preferredStyle: UIAlertControllerStyle.alert)
+                "You need to be connected to the Internet to create a team", preferredStyle: UIAlertController.Style.alert)
             
-            let yesOption = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: nil)
+            let yesOption = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default, handler: nil)
             
             alert.addAction(yesOption)
             self.present(alert, animated: false, completion: nil)
         }
-        else
+        else if connected
         {
             btnOwner.setTitle("Select", for: .normal)
-            if connected
+            
+            var workingString = ""
+            var firstTime: Bool = true
+            
+            for myItem in userTeams(teamID: workingOrganisation!.teamID).UserTeams
             {
-                var workingString = ""
-                var firstTime: Bool = true
-                
-                for myItem in userTeams(teamID: workingOrganisation!.teamID).UserTeams
+                if !firstTime
                 {
-                    if !firstTime
-                    {
-                        workingString += ", "
-                    }
-                    firstTime = false
-                    workingString += "\(myItem.userID)"
+                    workingString += ", "
                 }
-                
-                if workingString != ""
-                {
-                    notificationCenter.addObserver(self, selector: #selector(self.teamQueryDone), name: NotificationTeamOwnerQueryDone, object: nil)
-                    
-                    myCloudDB.getUserList(userList: workingString)
-                }
+                firstTime = false
+                workingString += "\(myItem.userID)"
             }
-            else
+            
+            if workingString != ""
             {
-                btnOwner.isEnabled = false
+                for myItem in myCloudDB.getUserList(userList: workingString)
+                {
+                    if myItem.userID == workingOrganisation!.teamOwner
+                    {
+                        DispatchQueue.main.async
+                            {
+                                self.btnOwner.setTitle(myItem.name, for: .normal)
+                        }
+                        break
+                    }
+                }
             }
             
             txtOrgName.text = workingOrganisation!.name
@@ -130,25 +168,54 @@ class orgEditViewController: UIViewController, MyPickerDelegate, UIPopoverPresen
             btnStatus.isEnabled = true
             btnStatus.setTitle(workingOrganisation!.status, for: .normal)
             
+            let usercount = myCloudDB.getTeamUserCount()
             
-            notificationCenter.addObserver(self, selector: #selector(self.loadSubscriptionData), name: NotificationUserCountQueryDone, object: nil)
+            DispatchQueue.main.async
+            {
+                self.lblSubscription.text = "Using \(usercount) of \(self.workingOrganisation!.subscriptionLevel) users.  Your subscription will renew on \(self.workingOrganisation!.subscriptionDateString)"
+            }
+        }
+        else
+        {
+            txtOrgName.isEnabled = false
+            txtExternalID.isEnabled = false
+            txtNotes.isEditable = false
+            txtCompanyNo.isEnabled = false
+            txtTaxNo.isEnabled = false
             
-            myCloudDB.getUserCount()
-            loadSubscriptionData()
+            btnBack.isEnabled = true
+            btnSave.isEnabled = false
+            btnUsers.isEnabled = false
+            btnStatus.isEnabled = false
+            
+            let alert = UIAlertController(title: "User Login", message: "You are not connected to the Internet.  You must be connected to the Internet to use the app", preferredStyle: .actionSheet)
+            
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default,
+                                          handler: { (action: UIAlertAction) -> () in
+                                            self.dismiss(animated: true, completion: nil)
+            }))
+            
+            alert.isModalInPopover = true
+            let popover = alert.popoverPresentationController
+            popover!.delegate = self
+            popover!.sourceView = self.view
+            popover!.sourceRect = CGRect(x: (self.view.bounds.width / 2) - 850,y: (self.view.bounds.height / 2) - 350,width: 700 ,height: 700)
+            
+            self.present(alert, animated: false, completion: nil)
         }
         
-        notificationCenter.addObserver(self, selector: #selector(self.keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(self.keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(self.keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(self.keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    override func viewDidAppear(_ animated: Bool)
+    override public func viewDidAppear(_ animated: Bool)
     {
         let myReachability = Reachability()
         if !myReachability.isConnectedToNetwork()
         {
             let alert = UIAlertController(title: "Team Maintenance", message: "You must be connected to the Internet to create or edit teams", preferredStyle: .actionSheet)
             
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default,
                                           handler: { (action: UIAlertAction) -> () in
                                             self.dismiss(animated: true, completion: nil)
             }))
@@ -163,6 +230,85 @@ class orgEditViewController: UIViewController, MyPickerDelegate, UIPopoverPresen
         }
     }
     
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    {
+        return workingsourceList.count
+    }
+    
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+    {
+        let cell = tableView.dequeueReusableCell(withIdentifier:"cellAPI", for: indexPath) as! APIViewCell
+        
+        cell.lblService.text = workingsourceList[indexPath.row].externalsource
+        
+        switch workingsourceList[indexPath.row].externalsource
+        {
+        case hubspotType:
+            cell.lblAPIKey.text = "API Key"
+            cell.txtAPIKey.text = workingsourceList[indexPath.row].apikey
+
+            cell.lblSecret1.text = "Client ID"
+            cell.txtSecret1.text = workingsourceList[indexPath.row].secret1
+
+            cell.lblSecret2.text = "Secret"
+            cell.txtSecret2.text = workingsourceList[indexPath.row].secret2
+            
+            cell.lblAPIKey.isHidden = false
+            cell.txtAPIKey.isHidden = false
+            cell.lblSecret1.isHidden = false
+            cell.txtSecret1.isHidden = false
+            cell.lblSecret2.isHidden = false
+            cell.txtSecret2.isHidden = false
+            cell.lblSecret3.isHidden = true
+            cell.txtSecret3.isHidden = true
+            cell.lblSecret4.isHidden = true
+            cell.txtSecret4.isHidden = true
+            
+        case simplybookingType:
+            cell.lblAPIKey.text = "API Key"
+            cell.txtAPIKey.text = workingsourceList[indexPath.row].apikey
+            
+            cell.lblSecret1.text = "Company"
+            cell.txtSecret1.text = workingsourceList[indexPath.row].secret1
+            
+            cell.lblSecret2.text = "User"
+            cell.txtSecret2.text = workingsourceList[indexPath.row].secret2
+            
+            cell.lblSecret3.text = "Password"
+            cell.txtSecret3.text = workingsourceList[indexPath.row].secret3
+            
+            cell.lblSecret4.text = "Secret API Key"
+            cell.txtSecret4.text = workingsourceList[indexPath.row].secret4
+            
+            cell.lblAPIKey.isHidden = false
+            cell.txtAPIKey.isHidden = false
+            cell.lblSecret1.isHidden = false
+            cell.txtSecret1.isHidden = false
+            cell.lblSecret2.isHidden = false
+            cell.txtSecret2.isHidden = false
+            cell.lblSecret3.isHidden = false
+            cell.txtSecret3.isHidden = false
+            cell.lblSecret4.isHidden = false
+            cell.txtSecret4.isHidden = false
+            
+        default:
+            cell.lblAPIKey.text = "API Key"
+            cell.txtAPIKey.text = "NONE"
+            cell.lblAPIKey.isHidden = false
+            cell.txtAPIKey.isHidden = false
+            cell.lblSecret1.isHidden = true
+            cell.txtSecret1.isHidden = true
+            cell.lblSecret2.isHidden = true
+            cell.txtSecret2.isHidden = true
+            cell.lblSecret3.isHidden = true
+            cell.txtSecret3.isHidden = true
+            cell.lblSecret4.isHidden = true
+            cell.txtSecret4.isHidden = true
+        }
+        cell.APIRecord = workingsourceList[indexPath.row]
+        return cell
+    }
+
     @IBAction func btnBack(_ sender: UIBarButtonItem)
     {
         self.dismiss(animated: true, completion: nil)
@@ -180,7 +326,7 @@ class orgEditViewController: UIViewController, MyPickerDelegate, UIPopoverPresen
         self.present(renewViewControl, animated: true, completion: nil)
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
@@ -272,66 +418,57 @@ class orgEditViewController: UIViewController, MyPickerDelegate, UIPopoverPresen
         let userEditViewControl = loginStoryboard.instantiateViewController(withIdentifier: "userForm") as! userFormViewController
         self.present(userEditViewControl, animated: true, completion: nil)
     }
-    
-    @objc func teamQueryDone()
-    {
-        ownerList = myCloudDB.teamOwnerRecords
+  
+    @IBAction func btnSelectAPI(_ sender: UIButton) {
+        displayList.removeAll()
         
-        for myItem in ownerList
+        displayList.append("")
+        
+        for item in sourceList
         {
-            if myItem.userID == workingOrganisation!.teamOwner
-            {
-                DispatchQueue.main.async
-                {
-                    self.btnOwner.setTitle(myItem.name, for: .normal)
-                }
-                break
-            }
+            displayList.append(item)
         }
-    }
-    
-    @objc func teamCreated(_ notification: Notification)
-    {
-        notificationCenter.removeObserver(NotificationTeamCreated)
         
-        // Now lets go and create an initial user
-
-        if currentUser == nil
+        if displayList.count > 1
         {
-            currentUser = userItem(currentTeam: workingOrganisation!, userName: "", userEmail: "")
+            let pickerView = pickerStoryboard.instantiateViewController(withIdentifier: "pickerView") as! PickerViewController
+            pickerView.modalPresentationStyle = .popover
+            //           pickerView.isModalInPopover = true
             
-            notificationCenter.addObserver(self, selector: #selector(self.addTeamToUser), name: NotificationUserCreated, object: nil)
-        }
-        else
-        {
-            addTeamToUser()
-        }
-        
-        writeDefaultInt("teamID", value: workingOrganisation!.teamID)
-        
-        DispatchQueue.main.async
-        {
-            self.btnSave.isEnabled = true
-            self.txtOrgName.isEnabled = true
+            let popover = pickerView.popoverPresentationController!
+            popover.delegate = self
+            popover.sourceView = sender
+            popover.sourceRect = sender.bounds
+            popover.permittedArrowDirections = .any
+            
+            pickerView.source = "API"
+            pickerView.delegate = self
+            pickerView.pickerValues = displayList
+            pickerView.preferredContentSize = CGSize(width: 200,height: 250)
+            pickerView.currentValue = ""
+            self.present(pickerView, animated: true, completion: nil)
         }
     }
     
-    @objc func addTeamToUser()
-    {
-        notificationCenter.removeObserver(NotificationUserCreated)
-   
-        addInitialUserRoles()
+    @IBAction func btnAddAPI(_ sender: UIButton) {
+        let newAPI = externalSource(externalSource: btnSelectAPI.currentTitle!, teamID: currentUser.currentTeam!.teamID)
+        workingsourceList.append(newAPI)
+        
+        btnAddAPI.isEnabled = false
+        btnSelectAPI.setTitle("Select API", for: .normal)
+        tblAPI.isHidden = false
+        tblAPI.reloadData()
     }
     
     func addInitialUserRoles()
     {
-        writeDefaultInt(userDefaultName, value: currentUser.userID)
+        writeDefaultInt(userDefaultName, value: Int(currentUser!.userID))
 
         currentUser.addInitialUserRoles()
         newUserCreated = true
     }
     
-    func myPickerDidFinish(_ source: String, selectedItem:Int)
+    public func myPickerDidFinish(_ source: String, selectedItem:Int)
     {
         if source == "status"
         {
@@ -342,6 +479,14 @@ class orgEditViewController: UIViewController, MyPickerDelegate, UIPopoverPresen
             btnOwner.setTitle(displayList[selectedItem], for: .normal)
             workingOrganisation!.teamOwner = ownerList[selectedItem].userID
         }
+        else if source == "API"
+        {
+            if selectedItem > 0
+            {
+                btnSelectAPI.setTitle(displayList[selectedItem], for: .normal)
+                btnAddAPI.isEnabled = true
+            }
+        }
     }
     
     @objc func keyboardWillShow(_ notification: Notification)
@@ -350,7 +495,7 @@ class orgEditViewController: UIViewController, MyPickerDelegate, UIPopoverPresen
         
         if deviceIdiom == .pad
         {
-            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue
+            if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue
             {
                 bottomContraint.constant = CGFloat(20) + keyboardSize.height
             }
@@ -369,20 +514,17 @@ class orgEditViewController: UIViewController, MyPickerDelegate, UIPopoverPresen
         }
     }
     
-    @objc func loadSubscriptionData()
-    {
-        notificationCenter.removeObserver(NotificationUserCountQueryDone)
-        DispatchQueue.main.async
-        {
-            self.lblSubscription.text = "Using \(myCloudDB.userCount()) of \(self.workingOrganisation!.subscriptionLevel) users.  Your subscription will renew on \(self.workingOrganisation!.subscriptionDateString)"
-        }
-    }
-    
-    func refreshScreen()
+    public func refreshScreen()
     {
         let tempID = workingOrganisation!.teamID
         workingOrganisation = team(teamID: tempID)
-        loadSubscriptionData()
+        
+        let usercount = myCloudDB.getTeamUserCount()
+        
+        DispatchQueue.main.async
+        {
+            self.lblSubscription.text = "Using \(usercount) of \(self.workingOrganisation!.subscriptionLevel) users.  Your subscription will renew on \(self.workingOrganisation!.subscriptionDateString)"
+        }
     }
     
 //    func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
@@ -390,3 +532,46 @@ class orgEditViewController: UIViewController, MyPickerDelegate, UIPopoverPresen
 //    }
 }
 
+public class APIViewCell: UITableViewCell
+{
+    @IBOutlet weak var lblService: UILabel!
+    @IBOutlet weak var lblAPIKey: UILabel!
+    @IBOutlet weak var lblSecret3: UILabel!
+    @IBOutlet weak var txtAPIKey: UITextField!
+    @IBOutlet weak var txtSecret3: UITextField!
+    @IBOutlet weak var lblSecret1: UILabel!
+    @IBOutlet weak var lblSecret2: UILabel!
+    @IBOutlet weak var txtSecret1: UITextField!
+    @IBOutlet weak var txtSecret2: UITextField!
+    @IBOutlet weak var lblSecret4: UILabel!
+    @IBOutlet weak var txtSecret4: UITextField!
+    
+    var APIRecord: externalSource!
+    
+    @IBAction func textChanged(_ sender: UITextField) {
+        if APIRecord != nil
+        {
+            switch sender
+            {
+                case txtAPIKey:
+                    APIRecord.apikey = sender.text!
+                
+                case txtSecret1:
+                    APIRecord.secret1 = sender.text!
+
+                case txtSecret2:
+                    APIRecord.secret2 = sender.text!
+
+                case txtSecret3:
+                    APIRecord.secret3 = sender.text!
+
+                case txtSecret4:
+                    APIRecord.secret4 = sender.text!
+
+                default:
+                    let _ = 1
+            }
+        }
+    }
+    
+}

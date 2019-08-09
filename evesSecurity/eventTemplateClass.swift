@@ -8,30 +8,53 @@
 
 
 import Foundation
-import CoreData
+//import CoreData
 import CloudKit
+import SwiftUI
 
-class eventTemplates: NSObject
+struct eventDayItems {
+    var description: String
+    var dateModifier: Int
+}
+
+public class eventTemplates: NSObject, Identifiable
 {
+    public let id = UUID()
     fileprivate var myEventTemplate:[eventTemplate] = Array()
     
-    init(eventID: Int, teamID: Int)
+    public init(eventID: Int64, teamID: Int64)
     {
-        for myItem in myDatabaseConnection.getEventTemplateItems(eventID: eventID, teamID: teamID)
+        if currentUser.currentTeam?.eventTemplatesList == nil
         {
-            let myObject = eventTemplate(eventID: Int(myItem.eventID),
+            currentUser.currentTeam?.eventTemplatesList = myCloudDB.getEventTemplates(teamID: teamID)
+        }
+        
+        var workingArray: [EventTemplate] = Array()
+        
+        for item in (currentUser.currentTeam?.eventTemplatesList)!
+        {
+            if (item.eventID == eventID)
+            {
+                workingArray.append(item)
+            }
+        }
+        
+        for myItem in workingArray
+        {
+            let myObject = eventTemplate(eventID: myItem.eventID,
                                          role: myItem.role!,
-                                         numRequired: Int(myItem.numRequired),
-                                         dateModifier: Int(myItem.dateModifier),
+                                         numRequired: myItem.numRequired,
+                                         dateModifier: myItem.dateModifier,
                                          startTime: myItem.startTime! as Date,
                                          endTime: myItem.endTime! as Date,
-                                         teamID: Int(myItem.teamID))
+                                         teamID: myItem.teamID)
             
             myEventTemplate.append(myObject)
         }
+        
     }
     
-    var roles: [eventTemplate]?
+    public var roles: [eventTemplate]?
     {
         get
         {
@@ -40,17 +63,21 @@ class eventTemplates: NSObject
     }
 }
 
-class eventTemplate: NSObject
+public class eventTemplate: NSObject, Identifiable
 {
-    fileprivate var myEventID: Int = 0
+    public let id = UUID()
+    fileprivate var myEventID: Int64 = 0
     fileprivate var myRole: String = ""
-    fileprivate var myNumRequired: Int = 0
-    fileprivate var myDateModifier: Int = 0
+    fileprivate var myNumRequired: Int64 = 0
+    fileprivate var myDateModifier: Int64 = 0
     fileprivate var myStartTime: Date = getDefaultDate()
     fileprivate var myEndTime: Date = getDefaultDate()
-    fileprivate var myTeamID: Int = 0
-
-    var eventID: Int
+    fileprivate var myTeamID: Int64 = 0
+//    fileprivate var myEventName: String = ""
+    fileprivate var eventDayArray: [eventDayItems] = Array()
+    fileprivate var dayNameArray: [String] = Array()
+    
+    public var eventID: Int64
     {
         get
         {
@@ -58,15 +85,18 @@ class eventTemplate: NSObject
         }
     }
     
-    var role: String
+    public var role: String
     {
         get
         {
             return myRole
         }
+        set {
+            myRole = newValue
+        }
     }
-
-    var numRequired: Int
+    
+    public var numRequired: Int64
     {
         get
         {
@@ -75,19 +105,54 @@ class eventTemplate: NSObject
         set
         {
             myNumRequired = newValue
-            save()
+     //       save()
         }
     }
     
-    var dateModifier: Int
+    public var dateModifier: Int64
     {
         get
         {
             return myDateModifier
         }
+        set {
+            myDateModifier = newValue
+        }
     }
     
-    var startTime: Date
+    var displayEventDay: String {
+        if eventDayArray.count == 0 {
+            createEventDayList()
+        }
+        
+        var returnString = "Unknown"
+        for item in eventDayArray
+        {
+            if item.dateModifier == myDateModifier {
+                returnString = item.description
+                break
+            }
+        }
+        return returnString
+    }
+    
+    var fullListArray: [eventDayItems] {
+        if eventDayArray.count == 0 {
+            createEventDayList()
+        }
+
+        return eventDayArray
+    }
+    
+    var listArray: [String] {
+        if eventDayArray.count == 0 {
+            createEventDayList()
+        }
+
+        return dayNameArray
+    }
+    
+    public var startTime: Date
     {
         get
         {
@@ -96,11 +161,11 @@ class eventTemplate: NSObject
         set
         {
             myStartTime = newValue
-            save()
+     //       save()
         }
     }
     
-    var endTime: Date
+    public var endTime: Date
     {
         get
         {
@@ -109,16 +174,29 @@ class eventTemplate: NSObject
         set
         {
             myEndTime = newValue
-            save()
+      //      save()
         }
     }
     
-    init(eventID: Int,
-         role: String,
-         dateModifier: Int,
-         startTime: Date,
-         endTime: Date,
-         teamID: Int)
+//    public var eventName: String
+//    {
+//        get
+//        {
+//            return myEventName
+//        }
+//        set
+//        {
+//            myEventName = newValue
+//     //       save)
+//        }
+//    }
+    
+    public init(eventID: Int64,
+                role: String,
+                dateModifier: Int64,
+                startTime: Date,
+                endTime: Date,
+                teamID: Int64)
     {
         super.init()
         
@@ -130,13 +208,13 @@ class eventTemplate: NSObject
         myTeamID = teamID
     }
     
-    init(eventID: Int,
-         role: String,
-         numRequired: Int,
-         dateModifier: Int,
-         startTime: Date,
-         endTime: Date,
-         teamID: Int)
+    public init(eventID: Int64,
+                role: String,
+                numRequired: Int64,
+                dateModifier: Int64,
+                startTime: Date,
+                endTime: Date,
+                teamID: Int64)
     {
         super.init()
         
@@ -149,374 +227,419 @@ class eventTemplate: NSObject
         myTeamID = teamID
     }
     
-    func save()
+    public init(eventID: Int64,
+                teamID: Int64)
     {
-        if currentUser.checkPermission(rosteringRoleType) == writePermission
+        super.init()
+        
+        myEventID = eventID
+        myTeamID = teamID
+    }
+    
+    public func save()
+    {
+        if currentUser.checkWritePermission(rosteringRoleType)
         {
-            myDatabaseConnection.saveEventTemplate(myEventID,
-                                               role: myRole,
-                                               numRequired: myNumRequired,
-                                               dateModifier: myDateModifier,
-                                               startTime: myStartTime,
-                                               endTime: myEndTime,
-                                               teamID: myTeamID)
+            let temp = EventTemplate(dateModifier: myDateModifier, endTime: myEndTime, eventID: myEventID, numRequired: myNumRequired, role: myRole, startTime: myStartTime, teamID: myTeamID)
+            
+            myCloudDB.saveEventTemplateRecordToCloudKit(temp)
+            
+            currentUser.currentTeam?.eventTemplatesList = nil
         }
     }
     
-    func delete()
+    private func createEventDayList() {
+        eventDayArray.removeAll()
+        dayNameArray.removeAll()
+        eventDayArray.append(eventDayItems(description: "Event Day - 3", dateModifier: -3))
+        dayNameArray.append("Event Day - 3")
+        eventDayArray.append(eventDayItems(description: "Event Day - 2", dateModifier: -2))
+        dayNameArray.append("Event Day - 2")
+        eventDayArray.append(eventDayItems(description: "Event Day - 1", dateModifier: -1))
+        dayNameArray.append("Event Day - 1")
+        eventDayArray.append(eventDayItems(description: "Event Day", dateModifier: 0))
+        dayNameArray.append("Event Day")
+        eventDayArray.append(eventDayItems(description: "Event Day + 1", dateModifier: 1))
+        dayNameArray.append("Event Day + 1")
+        eventDayArray.append(eventDayItems(description: "Event Day + 2", dateModifier: 2))
+        dayNameArray.append("Event Day + 2")
+        eventDayArray.append(eventDayItems(description: "Event Day + 3", dateModifier: 3))
+        dayNameArray.append("Event Day + 3")
+    }
+    
+    public func delete()
     {
-        if currentUser.checkPermission(rosteringRoleType) == writePermission
+        if currentUser.checkWritePermission(rosteringRoleType)
         {
-            myDatabaseConnection.deleteEventTemplate(myEventID,
-                                                 role: myRole,
-                                                 dateModifier: myDateModifier,
-                                                 startTime: myStartTime,
-                                                 endTime: myEndTime,
-                                                 teamID: myTeamID)
+            myCloudDB.deleteEventTemplate(myEventID,
+                                          role: myRole,
+                                          dateModifier: myDateModifier,
+                                          startTime: myStartTime,
+                                          endTime: myEndTime,
+                                          teamID: myTeamID)
         }
     }
 }
 
-extension coreDatabase
-{
-    func saveEventTemplate(_ eventID: Int,
-                       role: String,
-                       numRequired: Int,
-                       dateModifier: Int,
-                       startTime: Date,
-                       endTime: Date,
-                       teamID: Int,
-                       updateTime: Date =  Date(), updateType: String = "CODE")
-    {
-        var myItem: EventTemplate!
-        
-        let myReturn = getEventTemplate(eventID: eventID,
-                                        role: role,
-                                        dateModifier: dateModifier,
-                                        startTime: startTime,
-                                        endTime: endTime,
-                                        teamID: teamID)
-        
-        if myReturn.count == 0
-        { // Add
-            myItem = EventTemplate(context: objectContext)
-            myItem.eventID = Int64(eventID)
-            myItem.role = role
-            myItem.numRequired = Int64(numRequired)
-            myItem.dateModifier = Int64(dateModifier)
-            myItem.startTime = startTime
-            myItem.endTime = endTime
-            myItem.teamID = Int64(teamID)
-            
-            if updateType == "CODE"
-            {
-                myItem.updateTime =  Date()
-                
-                myItem.updateType = "Add"
-            }
-            else
-            {
-                myItem.updateTime = updateTime
-                myItem.updateType = updateType
-            }
-        }
-        else
-        {
-            myItem = myReturn[0]
-            myItem.numRequired = Int64(numRequired)
-            
-            if updateType == "CODE"
-            {
-                myItem.updateTime =  Date()
-                if myItem.updateType != "Add"
-                {
-                    myItem.updateType = "Update"
-                }
-            }
-            else
-            {
-                myItem.updateTime = updateTime
-                myItem.updateType = updateType
-            }
-        }
-        
-        saveContext()
+//extension coreDatabase
+//{
+//    func saveEventTemplate(_ eventID: Int,
+//                       role: String,
+//                       numRequired: Int,
+//                       dateModifier: Int,
+//                       startTime: Date,
+//                       endTime: Date,
+//                       teamID: Int,
+//                       updateTime: Date =  Date(), updateType: String = "CODE")
+//    {
+//        var myItem: EventTemplate!
+//
+//        let myReturn = getEventTemplate(eventID: eventID,
+//                                        role: role,
+//                                        dateModifier: dateModifier,
+//                                        startTime: startTime,
+//                                        endTime: endTime,
+//                                        teamID: teamID)
+//
+//        if myReturn.count == 0
+//        { // Add
+//            myItem = EventTemplate(context: objectContext)
+//            myItem.eventID = Int64(eventID)
+//            myItem.role = role
+//            myItem.numRequired = Int64(numRequired)
+//            myItem.dateModifier = Int64(dateModifier)
+//            myItem.startTime = startTime
+//            myItem.endTime = endTime
+//            myItem.teamID = Int64(teamID)
+//
+//            if updateType == "CODE"
+//            {
+//                myItem.updateTime =  Date()
+//
+//                myItem.updateType = "Add"
+//            }
+//            else
+//            {
+//                myItem.updateTime = updateTime
+//                myItem.updateType = updateType
+//            }
+//        }
+//        else
+//        {
+//            myItem = myReturn[0]
+//            myItem.numRequired = Int64(numRequired)
+//
+//            if updateType == "CODE"
+//            {
+//                myItem.updateTime =  Date()
+//                if myItem.updateType != "Add"
+//                {
+//                    myItem.updateType = "Update"
+//                }
+//            }
+//            else
+//            {
+//                myItem.updateTime = updateTime
+//                myItem.updateType = updateType
+//            }
+//        }
+//
+//        saveContext()
+//
+//        self.recordsProcessed += 1
+//    }
+//
+//    func resetAllEventTemplate()
+//    {
+//        let fetchRequest = NSFetchRequest<EventTemplate>(entityName: "EventTemplate")
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults = try objectContext.fetch(fetchRequest)
+//            for myItem in fetchResults
+//            {
+//                myItem.updateTime =  Date()
+//                myItem.updateType = "Delete"
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: F \(error.localizedDescription)")
+//        }
+//
+//        saveContext()
+//    }
+//
+//    func clearDeletedEventTemplate(predicate: NSPredicate)
+//    {
+//        let fetchRequest2 = NSFetchRequest<EventTemplate>(entityName: "EventTemplate")
+//
+//        // Set the predicate on the fetch request
+//        fetchRequest2.predicate = predicate
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                objectContext.delete(myItem2 as NSManagedObject)
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: G \(error.localizedDescription)")
+//        }
+//        saveContext()
+//    }
+//
+//    func clearSyncedEventTemplate(predicate: NSPredicate)
+//    {
+//        let fetchRequest2 = NSFetchRequest<EventTemplate>(entityName: "EventTemplate")
+//
+//        // Set the predicate on the fetch request
+//        fetchRequest2.predicate = predicate
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                myItem2.updateType = ""
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: H \(error.localizedDescription)")
+//        }
+//
+//        saveContext()
+//    }
+//
+//    func getEventTemplateForSync(_ syncDate: Date) -> [EventTemplate]
+//    {
+//        let fetchRequest = NSFetchRequest<EventTemplate>(entityName: "EventTemplate")
+//
+//
+//
+////let workingdate = Date().add(.hour, amount: -2)
+////
+////        let predicate = NSPredicate(format: "(updateTime >= %@)", workingdate as CVarArg)
+//        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
+//
+//        // Set the predicate on the fetch request
+//
+//        fetchRequest.predicate = predicate
+//        // Execute the fetch request, and cast the results to an array of  objects
+//        do
+//        {
+//            let fetchResults = try objectContext.fetch(fetchRequest)
+//
+//            return fetchResults
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: I \(error.localizedDescription)")
+//            return []
+//        }
+//    }
+//
+//    func deleteAllEventTemplate()
+//    {
+//        let fetchRequest2 = NSFetchRequest<EventTemplate>(entityName: "EventTemplate")
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                self.objectContext.delete(myItem2 as NSManagedObject)
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: J \(error.localizedDescription)")
+//        }
+//
+//        saveContext()
+//    }
+//
+//    func quickFixEventTemplate()
+//    {
+//        let fetchRequest2 = NSFetchRequest<EventTemplate>(entityName: "EventTemplate")
+//
+//        // Execute the fetch request, and cast the results to an array of LogItem objects
+//        do
+//        {
+//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
+//            for myItem2 in fetchResults2
+//            {
+//                myItem2.role = "Steward"
+//                myItem2.updateTime = Date()
+//                saveContext()
+//            }
+//        }
+//        catch
+//        {
+//            print("Error occurred during execution: J \(error.localizedDescription)")
+//        }
+//    }
+//}
+//
 
-        self.recordsProcessed += 1
-    }
-    
-    func deleteEventTemplate(_ eventID: Int,
-                         role: String,
-                         dateModifier: Int,
-                         startTime: Date,
-                         endTime: Date,
-                         teamID: Int)
-    {
-        let myReturn = getEventTemplate(eventID: eventID,
-                                        role: role,
-                                        dateModifier: dateModifier,
-                                        startTime: startTime,
-                                        endTime: endTime,
-                                        teamID: teamID)
-        
-        if myReturn.count > 0
-        {
-            let myItem = myReturn[0]
-            myItem.updateTime =  Date()
-            myItem.updateType = "Delete"
-        }
-        
-        saveContext()
-    }
-    
-    
-    func getEventTemplateItems(eventID: Int, teamID: Int)->[EventTemplate]
-    {
-        let fetchRequest = NSFetchRequest<EventTemplate>(entityName: "EventTemplate")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "eventID == \(eventID) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: E \(error.localizedDescription)")
-            return []
-        }
-    }
-
-    func getEventTemplate(eventID: Int,
-                      role: String,
-                      dateModifier: Int,
-                      startTime: Date,
-                      endTime: Date,
-                      teamID: Int)->[EventTemplate]
-    {
-        let fetchRequest = NSFetchRequest<EventTemplate>(entityName: "EventTemplate")
-        
-        // Create a new predicate that filters out any object that
-        // doesn't have a title of "Best Language" exactly.
-        let predicate = NSPredicate(format: "(role == \"\(role)\") AND (eventID == \(eventID)) AND (dateModifier == \(dateModifier)) AND (teamID == \(teamID)) AND (startTime == %@) AND (endTime == %@) AND (updateType != \"Delete\")", startTime as CVarArg, endTime as CVarArg)
-        
-        // Set the predicate on the fetch request
-        fetchRequest.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: E \(error.localizedDescription)")
-            return []
-        }
-    }
-    
-    func resetAllEventTemplate()
-    {
-        let fetchRequest = NSFetchRequest<EventTemplate>(entityName: "EventTemplate")
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            for myItem in fetchResults
-            {
-                myItem.updateTime =  Date()
-                myItem.updateType = "Delete"
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: F \(error.localizedDescription)")
-        }
-        
-        saveContext()
-    }
-    
-    func clearDeletedEventTemplate(predicate: NSPredicate)
-    {
-        let fetchRequest2 = NSFetchRequest<EventTemplate>(entityName: "EventTemplate")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                objectContext.delete(myItem2 as NSManagedObject)
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: G \(error.localizedDescription)")
-        }
-        saveContext()
-    }
-    
-    func clearSyncedEventTemplate(predicate: NSPredicate)
-    {
-        let fetchRequest2 = NSFetchRequest<EventTemplate>(entityName: "EventTemplate")
-        
-        // Set the predicate on the fetch request
-        fetchRequest2.predicate = predicate
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                myItem2.updateType = ""
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: H \(error.localizedDescription)")
-        }
-        
-        saveContext()
-    }
-    
-    func getEventTemplateForSync(_ syncDate: Date) -> [EventTemplate]
-    {
-        let fetchRequest = NSFetchRequest<EventTemplate>(entityName: "EventTemplate")
-  
-        
-        
-//let workingdate = Date().add(.hour, amount: -2)
-//        
-//        let predicate = NSPredicate(format: "(updateTime >= %@)", workingdate as CVarArg)
-        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
-        
-        // Set the predicate on the fetch request
-  
-        fetchRequest.predicate = predicate
-        // Execute the fetch request, and cast the results to an array of  objects
-        do
-        {
-            let fetchResults = try objectContext.fetch(fetchRequest)
-            
-            return fetchResults
-        }
-        catch
-        {
-            print("Error occurred during execution: I \(error.localizedDescription)")
-            return []
-        }
-    }
-    
-    func deleteAllEventTemplate()
-    {
-        let fetchRequest2 = NSFetchRequest<EventTemplate>(entityName: "EventTemplate")
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                self.objectContext.delete(myItem2 as NSManagedObject)
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: J \(error.localizedDescription)")
-        }
-        
-        saveContext()
-    }
-    
-    func quickFixEventTemplate()
-    {
-        let fetchRequest2 = NSFetchRequest<EventTemplate>(entityName: "EventTemplate")
-        
-        // Execute the fetch request, and cast the results to an array of LogItem objects
-        do
-        {
-            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-            for myItem2 in fetchResults2
-            {
-                myItem2.role = "Steward"
-                myItem2.updateTime = Date()
-                saveContext()
-            }
-        }
-        catch
-        {
-            print("Error occurred during execution: J \(error.localizedDescription)")
-        }
-    }
+public struct EventTemplate {
+    public var dateModifier: Int64
+    public var endTime: Date?
+    public var eventID: Int64
+    public var numRequired: Int64
+    public var role: String?
+    public var startTime: Date?
+    public var teamID: Int64
 }
 
 extension CloudKitInteraction
 {
-    func saveEventTemplateToCloudKit()
+    private func populateEventTemplate(_ records: [CKRecord]) -> [EventTemplate]
     {
-        for myItem in myDatabaseConnection.getEventTemplateForSync(getSyncDateForTable(tableName: "EventTemplate"))
+        var tempArray: [EventTemplate] = Array()
+        
+        for record in records
         {
-            saveEventTemplateRecordToCloudKit(myItem)
+            var eventID: Int64 = 0
+            if record.object(forKey: "eventID") != nil
+            {
+                eventID = record.object(forKey: "eventID") as! Int64
+            }
+            
+            var numRequired: Int64 = 0
+            if record.object(forKey: "numRequired") != nil
+            {
+                numRequired = record.object(forKey: "numRequired") as! Int64
+            }
+            
+            var dateModifier: Int64 = 0
+            if record.object(forKey: "dateModifier") != nil
+            {
+                dateModifier = record.object(forKey: "dateModifier") as! Int64
+            }
+            
+            var startTime = Date()
+            if record.object(forKey: "startTime") != nil
+            {
+                startTime = record.object(forKey: "startTime") as! Date
+            }
+            
+            var endTime = Date()
+            if record.object(forKey: "endTime") != nil
+            {
+                endTime = record.object(forKey: "endTime") as! Date
+            }
+            
+            var teamID: Int64 = 0
+            if record.object(forKey: "teamID") != nil
+            {
+                teamID = record.object(forKey: "teamID") as! Int64
+            }
+            
+            let tempItem = EventTemplate(dateModifier: dateModifier,
+                                         endTime: endTime,
+                                         eventID: eventID,
+                                         numRequired: numRequired,
+                                         role: record.object(forKey: "role") as? String,
+                                         startTime: startTime,
+                                         teamID: teamID)
+            
+            tempArray.append(tempItem)
         }
+        
+        return tempArray
     }
     
-    func updateEventTemplateInCoreData()
+    func getEventTemplateItems(eventID: Int64, teamID: Int64)->[EventTemplate]
     {
-        let predicate: NSPredicate = NSPredicate(format: "(updateTime >= %@) AND \(buildTeamList(currentUser.userID))", getSyncDateForTable(tableName: "EventTemplate") as CVarArg)
-        let query: CKQuery = CKQuery(recordType: "EventTemplate", predicate: predicate)
+        let predicate = NSPredicate(format: "eventID == \(eventID) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
         
-        let operation = CKQueryOperation(query: query)
-
-        operation.recordFetchedBlock = { (record) in
-            self.updateEventTemplateRecord(record)
-        }
-        let operationQueue = OperationQueue()
+        let query = CKQuery(recordType: "EventTemplate", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
         
-        executePublicQueryOperation(targetTable: "EventTemplate", queryOperation: operation, onOperationQueue: operationQueue)
+        sem.wait()
+        
+        let shiftArray: [EventTemplate] = populateEventTemplate(returnArray)
+        
+        return shiftArray
     }
     
-//    func deleteEventTemplate(eventID: Int,
-//                             role: String,
-//                             dateModifier: Int,
-//                             startTime: Date,
-//                             endTime: Date)
-//    {
-//        let sem = DispatchSemaphore(value: 0);
-//        
-//        var myRecordList: [CKRecordID] = Array()
-//        let predicate: NSPredicate = NSPredicate(format: "\(buildTeamList(currentUser.userID)) AND (role == \"\(role)\") AND (eventID == \(eventID)) AND (dateModifier == \(dateModifier)) AND (startTime == %@) AND (endTime == %@)", startTime as CVarArg, endTime as CVarArg)
-//        let query: CKQuery = CKQuery(recordType: "EventTemplate", predicate: predicate)
-//        publicDB.perform(query, inZoneWith: nil, completionHandler: {(results: [CKRecord]?, error: Error?) in
-//            for record in results!
-//            {
-//                myRecordList.append(record.recordID)
-//            }
-//            self.performPublicDelete(myRecordList)
-//            sem.signal()
-//        })
-//        
-//        sem.wait()
-//    }
+    func getEventTemplates(teamID: Int64)->[EventTemplate]
+    {
+        let predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\")")
+        
+        let query = CKQuery(recordType: "eventTemplate", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [EventTemplate] = populateEventTemplate(returnArray)
+        
+        //        for item in shiftArray
+        //        {
+        //            print("We have \(item.eventID)")
+        //        }
+        
+        return shiftArray
+    }
+    
+    func getEventTemplate(eventID: Int64,
+                          role: String,
+                          dateModifier: Int64,
+                          startTime: Date,
+                          endTime: Date,
+                          teamID: Int64)->[EventTemplate]
+    {
+        let predicate = NSPredicate(format: "(role == \"\(role)\") AND (eventID == \(eventID)) AND (dateModifier == \(dateModifier)) AND (teamID == \(teamID)) AND (startTime == %@) AND (endTime == %@) AND (updateType != \"Delete\")", startTime as CVarArg, endTime as CVarArg)
+        
+        let query = CKQuery(recordType: "EventTemplate", predicate: predicate)
+        let sem = DispatchSemaphore(value: 0)
+        fetchServices(query: query, sem: sem, completion: nil)
+        
+        sem.wait()
+        
+        let shiftArray: [EventTemplate] = populateEventTemplate(returnArray)
+        
+        return shiftArray
+    }
+    
+    func deleteEventTemplate(_ eventID: Int64,
+                             role: String,
+                             dateModifier: Int64,
+                             startTime: Date,
+                             endTime: Date,
+                             teamID: Int64)
+    {
+        let predicate = NSPredicate(format: "(role == \"\(role)\") AND (eventID == \(eventID)) AND (dateModifier == \(dateModifier)) AND (teamID == \(teamID)) AND (startTime == %@) AND (endTime == %@)", startTime as CVarArg, endTime as CVarArg)
+        
+        let sem = DispatchSemaphore(value: 0)
+        
+        let query = CKQuery(recordType: "EventTemplate", predicate: predicate)
+        publicDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
+            
+            self.performPublicDelete(records!)
+            
+            sem.signal()
+        })
+        sem.wait()
+    }
     
     func saveEventTemplateRecordToCloudKit(_ sourceRecord: EventTemplate)
     {
         let sem = DispatchSemaphore(value: 0)
         
         let predicate = NSPredicate(format: "(teamID == \(sourceRecord.teamID)) AND (role == \"\(sourceRecord.role!)\") AND (eventID == \(sourceRecord.eventID)) AND (dateModifier == \(sourceRecord.dateModifier)) AND (startTime == %@) AND (endTime == %@)", sourceRecord.startTime! as CVarArg, sourceRecord.endTime! as CVarArg) // better be accurate to get only the record you need
-        let query = CKQuery(recordType: "EventTemplate", predicate: predicate)
+        let query = CKQuery(recordType: "eventTemplate", predicate: predicate)
         publicDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
             if error != nil
             {
@@ -533,13 +656,6 @@ extension CloudKitInteraction
                     // Apply whatever changes you want
                     
                     record!.setValue(sourceRecord.numRequired, forKey: "numRequired")
-
-                    
-                    if sourceRecord.updateTime != nil
-                    {
-                        record!.setValue(sourceRecord.updateTime, forKey: "updateTime")
-                    }
-                    record!.setValue(sourceRecord.updateType, forKey: "updateType")
                     
                     // Save this record again
                     self.publicDB.save(record!, completionHandler: { (savedRecord, saveError) in
@@ -548,6 +664,7 @@ extension CloudKitInteraction
                             NSLog("Error saving record: B \(saveError!.localizedDescription)")
                             print("next level = \(saveError!)")
                             self.saveOK = false
+                            sem.signal()
                         }
                         else
                         {
@@ -555,6 +672,7 @@ extension CloudKitInteraction
                             {
                                 NSLog("Successfully updated record!")
                             }
+                            sem.signal()
                         }
                     })
                 }
@@ -569,17 +687,12 @@ extension CloudKitInteraction
                     record.setValue(sourceRecord.endTime, forKey: "endTime")
                     record.setValue(sourceRecord.teamID, forKey: "teamID")
                     
-                    if sourceRecord.updateTime != nil
-                    {
-                        record.setValue(sourceRecord.updateTime, forKey: "updateTime")
-                    }
-                    record.setValue(sourceRecord.updateType, forKey: "updateType")
-                    
                     self.publicDB.save(record, completionHandler: { (savedRecord, saveError) in
                         if saveError != nil
                         {
                             NSLog("Error saving record: C \(saveError!.localizedDescription)")
                             self.saveOK = false
+                            sem.signal()
                         }
                         else
                         {
@@ -587,85 +700,14 @@ extension CloudKitInteraction
                             {
                                 NSLog("Successfully saved record!")
                             }
+                            currentUser.currentTeam?.eventTemplatesList = nil
+                            sem.signal()
                         }
                     })
                 }
             }
-            sem.signal()
         })
         sem.wait()
-    }
-    
-    func updateEventTemplateRecord(_ sourceRecord: CKRecord)
-    {
-        let role = sourceRecord.object(forKey: "role") as! String
-        
-        var eventID: Int = 0
-        if sourceRecord.object(forKey: "eventID") != nil
-        {
-            eventID = sourceRecord.object(forKey: "eventID") as! Int
-        }
-        
-        var numRequired: Int = 0
-        if sourceRecord.object(forKey: "numRequired") != nil
-        {
-            numRequired = sourceRecord.object(forKey: "numRequired") as! Int
-        }
-        
-        var dateModifier: Int = 0
-        if sourceRecord.object(forKey: "dateModifier") != nil
-        {
-            dateModifier = sourceRecord.object(forKey: "dateModifier") as! Int
-        }
-        
-        var startTime = Date()
-        if sourceRecord.object(forKey: "startTime") != nil
-        {
-            startTime = sourceRecord.object(forKey: "startTime") as! Date
-        }
-        
-        var endTime = Date()
-        if sourceRecord.object(forKey: "endTime") != nil
-        {
-            endTime = sourceRecord.object(forKey: "endTime") as! Date
-        }
-        
-        var updateTime = Date()
-        if sourceRecord.object(forKey: "updateTime") != nil
-        {
-            updateTime = sourceRecord.object(forKey: "updateTime") as! Date
-        }
-        
-        var updateType: String = ""
-        if sourceRecord.object(forKey: "updateType") != nil
-        {
-            updateType = sourceRecord.object(forKey: "updateType") as! String
-        }
-        
-        var teamID: Int = 0
-        if sourceRecord.object(forKey: "teamID") != nil
-        {
-            teamID = sourceRecord.object(forKey: "teamID") as! Int
-        }
-        
-        myDatabaseConnection.recordsToChange += 1
-        
-        while self.recordCount > 0
-        {
-            usleep(self.sleepTime)
-        }
-        
-        self.recordCount += 1
-        
-        myDatabaseConnection.saveEventTemplate(eventID,
-                                               role: role,
-                                               numRequired: numRequired,
-                                               dateModifier: dateModifier,
-                                               startTime: startTime,
-                                               endTime: endTime,
-                                               teamID: teamID
-            , updateTime: updateTime, updateType: updateType)
-        self.recordCount -= 1
     }
 }
 

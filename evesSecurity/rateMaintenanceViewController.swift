@@ -8,7 +8,7 @@
 
 import UIKit
 
-class rateMaintenanceViewController: UIViewController, MyPickerDelegate, UIPopoverPresentationControllerDelegate
+public class rateMaintenanceViewController: UIViewController, MyPickerDelegate, UIPopoverPresentationControllerDelegate
 {
     @IBOutlet weak var btnStartDate: UIButton!
     @IBOutlet weak var txtName: UITextField!
@@ -16,14 +16,14 @@ class rateMaintenanceViewController: UIViewController, MyPickerDelegate, UIPopov
     @IBOutlet weak var txtClient: UITextField!
     @IBOutlet weak var btnSave: UIButton!
     
-    var communicationDelegate: myCommunicationDelegate?
-    var workingRate: rate!
+    public var communicationDelegate: myCommunicationDelegate?
+    public var workingRate: rate!
     
     fileprivate var displayList: [String] = Array()
     fileprivate var workingStaff: Double = 0.0
     fileprivate var workingClient: Double = 0.0
     
-    override func viewDidLoad()
+    override public func viewDidLoad()
     {
         if workingRate != nil
         {
@@ -47,7 +47,7 @@ class rateMaintenanceViewController: UIViewController, MyPickerDelegate, UIPopov
         }
     }
     
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
@@ -87,7 +87,7 @@ class rateMaintenanceViewController: UIViewController, MyPickerDelegate, UIPopov
         {
             let alert = UIAlertController(title: "Rate Maintenance", message: "You must provide a rate name and start date", preferredStyle: .actionSheet)
             
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default,
                                           handler: { (action: UIAlertAction) -> () in
                                             self.dismiss(animated: true, completion: nil)
             }))
@@ -154,7 +154,7 @@ class rateMaintenanceViewController: UIViewController, MyPickerDelegate, UIPopov
         self.present(pickerView, animated: true, completion: nil)
     }    
     
-    func myPickerDidFinish(_ source: String, selectedDate:Date)
+    public func myPickerDidFinish(_ source: String, selectedDate:Date)
     {
         if source == "startDate"
         {
