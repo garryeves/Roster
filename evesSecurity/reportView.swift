@@ -215,16 +215,16 @@ public class reportView: UIViewController, myCommunicationDelegate, UITableViewD
 //
 //                        self.present(contractEditViewControl, animated: true, completion: nil)
                         
-                    case reportWagesForMonth:  // Wage per person for month
-                        let rosterViewControl = shiftsStoryboard.instantiateViewController(withIdentifier: "monthlyRoster") as! monthlyRosterViewController
-                        rosterViewControl.communicationDelegate = self
-                        
-                        let tempObject = reportEntry.lines[indexPath.row].sourceObject as! person
-                        rosterViewControl.selectedPerson = tempObject
-                        
-                        rosterViewControl.month = btnDropdown.currentTitle!
-                        rosterViewControl.year = btnYear.currentTitle!
-                        self.present(rosterViewControl, animated: true, completion: nil)
+//                    case reportWagesForMonth:  // Wage per person for month
+//                        let rosterViewControl = shiftsStoryboard.instantiateViewController(withIdentifier: "monthlyRoster") as! monthlyRosterViewController
+//                        rosterViewControl.communicationDelegate = self
+//                        
+//                        let tempObject = reportEntry.lines[indexPath.row].sourceObject as! person
+//                        rosterViewControl.selectedPerson = tempObject
+//                        
+//                        rosterViewControl.month = btnDropdown.currentTitle!
+//                        rosterViewControl.year = btnYear.currentTitle!
+//                        self.present(rosterViewControl, animated: true, completion: nil)
                         
                     case reportContractForYear:
                         let _ = 1

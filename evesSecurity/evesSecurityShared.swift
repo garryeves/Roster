@@ -7,13 +7,8 @@
 //
 
 import Foundation
-#if os(iOS)
-import UIKit
-#else
-import AppKit
-#endif
-//import CoreData
 import CloudKit
+import SwiftUI
 
 public let coreDatabaseName = "EvesCRM"
 public var appName = ""
@@ -305,16 +300,16 @@ public func openPeople(_ sourceView: UIViewController)
     sourceView.present(peopleEditViewControl, animated: true)
 }
 
-public func openMonthlyRoster(_ sourceView: UIViewController, commsDelegate: myCommunicationDelegate)
-{
-    #if os(iOS)
-    let rosterViewControl = shiftsStoryboard.instantiateViewController(withIdentifier: "monthlyRoster") as! monthlyRosterViewController
-    #else
-    let rosterViewControl = shiftsStoryboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "monthlyRoster")) as! monthlyRosterViewController
-    #endif
-    rosterViewControl.communicationDelegate = commsDelegate
-    sourceView.present(rosterViewControl, animated: true)
-}
+//public func openMonthlyRoster(_ sourceView: UIViewController, commsDelegate: myCommunicationDelegate)
+//{
+//    #if os(iOS)
+//    let rosterViewControl = shiftsStoryboard.instantiateViewController(withIdentifier: "monthlyRoster") as! monthlyRosterViewController
+//    #else
+//    let rosterViewControl = shiftsStoryboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "monthlyRoster")) as! monthlyRosterViewController
+//    #endif
+//    rosterViewControl.communicationDelegate = commsDelegate
+//    sourceView.present(rosterViewControl, animated: true)
+//}
 
 public func openReports(_ sourceView: UIViewController, commsDelegate: myCommunicationDelegate)
 {
@@ -883,4 +878,71 @@ public struct teamOwnerItem
 //    
 //}
 
-
+public class displayMonthItem: NSObject, Identifiable
+{
+    public let id = UUID()
+    var myprojectID: Int64 = 0
+    var myprojectName: String = ""
+    var mynumRoles: Int = 0
+    var myWorkDate: Date!
+    var myFullyDefined: Bool = true
+    
+    public var projectID: Int64
+    {
+        get
+        {
+            return myprojectID
+        }
+    }
+    
+    public var projectName: String
+    {
+        get
+        {
+            return myprojectName
+        }
+    }
+    
+    public var workDate: Date
+    {
+        get
+        {
+            return myWorkDate
+        }
+    }
+    
+    public var numRoles: Int
+    {
+        get
+        {
+            return mynumRoles
+        }
+    }
+    
+    public var fullyDefined: Bool
+    {
+        get
+        {
+            return myFullyDefined
+        }
+        set
+        {
+            myFullyDefined = newValue
+        }
+    }
+    
+    public func addRole()
+    {
+        mynumRoles += 1
+    }
+    
+    public init(projectID: Int64, projectName: String, workDate: Date)
+    {
+        super.init()
+        
+        myprojectID = projectID
+        myprojectName = projectName
+        myWorkDate = workDate
+        mynumRoles = 1
+    }
+}

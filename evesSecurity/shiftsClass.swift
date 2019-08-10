@@ -3073,15 +3073,15 @@ extension project
 
 extension people
 {
-    convenience public init(teamID: Int64, month: String, year: String)
+    convenience public init(teamID: Int64, month: Int, year: Int)
     {
         self.init(teamID: teamID, isActive: true)
-        
+
         var workingArray: [person] = Array()
         
         // get list of shifts for the month
         
-        let shiftList = shifts(teamID: teamID, month: month.monthNum, year: Int(year)!)
+        let shiftList = shifts(teamID: teamID, month: month, year: year)
         
         for myItem in myPeople
         {
@@ -3096,7 +3096,7 @@ extension people
                 }
             }
         }
-        
+
         self.myPeople = workingArray
         self.sortArray()
     }
@@ -3138,16 +3138,16 @@ extension person
         return retVal
     }
     
-    public func loadShifts(month: String, year: String, teamID: Int64)
+    public func loadShifts(month: Int, year: Int, teamID: Int64)
     {
         tempArray.removeAll()
         
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd MMMM yyyy"
+        dateFormatter.dateFormat = "dd/MM/yyyy"
         
         dateFormatter.timeZone = TimeZone(abbreviation: "GMT")
         
-        let dateString = "01 \(month) \(year)"
+        let dateString = "01/\(month)/\(year)"
         let calculatedDate = dateFormatter.date(from: dateString)
         
         let startDate =  calculatedDate!.startOfDay  //  calendar.startOfDay(for: calculatedDate!)

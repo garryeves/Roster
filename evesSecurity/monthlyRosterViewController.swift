@@ -212,7 +212,7 @@ public class monthlyRosterViewController: UIViewController, UITableViewDataSourc
 //            let workingYear = dateFormatter.string(from: Date())
 //            selectedPerson.loadShifts(month: btnMonth.currentTitle!, year: workingYear, teamID: currentUser.currentTeam!.teamID)
         
-        selectedPerson.loadShifts(month: month, year: year, teamID: currentUser.currentTeam!.teamID)
+        selectedPerson.loadShifts(month: Int(month)!, year: Int(year)!, teamID: currentUser.currentTeam!.teamID)
         buildReport()
         tblRoster.reloadData()
     }

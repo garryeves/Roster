@@ -1066,6 +1066,16 @@ public class person: NSObject, Identifiable
     {
         myInvoices = clientInvoices(teamID: currentUser.currentTeam!.teamID, personID: myPersonID, isActive: isActive)
     }
+    
+    func shareMonthlyRoster () -> String {
+        var returnString = ""
+        
+        for item in shiftArray {
+            returnString += "\(item.workDateString) \(item.startTimeString) - \(item.endTimeString) \(item.projectName)\n\n"
+        }
+        
+        return returnString
+    }
 }
 
 extension alerts
