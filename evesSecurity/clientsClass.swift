@@ -673,10 +673,22 @@ extension CloudKitInteraction
                 }
             }
             
+            var tempClientName: String = ""
+            if record.object(forKey: "clientName") != nil
+            {
+                tempClientName = record.object(forKey: "clientName") as! String
+            }
+            
+            var tempNote: String = ""
+            if record.object(forKey: "note") != nil
+            {
+                tempNote = record.object(forKey: "note") as! String
+            }
+
             let tempItem = Clients(clientContact: clientContact,
                                    clientID: clientID,
-                                   clientName: record.object(forKey: "clientName") as! String,
-                                   note: record.object(forKey: "note") as! String,
+                                   clientName: tempClientName,
+                                   note: tempNote,
                                    teamID: teamID,
                                    isActive: active)
             

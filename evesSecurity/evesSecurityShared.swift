@@ -218,20 +218,10 @@ struct eventSignInDisplayRecord: Identifiable
 
 public func openStaffInvoicing(_ sourceView: UIViewController, commsDelegate: myCommunicationDelegate)
 {
-    #if os(iOS)
-    //let viewControl = invoiceStoryboard.instantiateViewController(withIdentifier: "staffInvoicingView") as! staffInvoicingViewController
-    
-    
     let split = invoiceStoryboard.instantiateViewController(withIdentifier: "personInvoiceSplit") as! UISplitViewController
     
     mainViewController = sourceView
     sourceView.view.window?.rootViewController = split
-
-    #else
-    let viewControl = invoiceStoryboard.instantiateViewController(withIdentifier: "staffInvoicingView") as! staffInvoicingViewController
-        viewControl.communicationDelegate = commsDelegate
-        sourceView.present(viewControl, animated: true)
-    #endif
 }
 
 //public func openClient(_ target: client?, sourceView: UIViewController, commsDelegate: myCommunicationDelegate)
@@ -281,22 +271,14 @@ public func openStaffInvoicing(_ sourceView: UIViewController, commsDelegate: my
 
 public func openSettings(_ sourceView: UIViewController, commsDelegate: myCommunicationDelegate)
 {
-    #if os(iOS)
     let userEditViewControl = settingsStoryboard.instantiateViewController(withIdentifier: "settings") as! settingsViewController
-    #else
-    let userEditViewControl = settingsStoryboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "settings")) as! settingsViewController
-    #endif
     userEditViewControl.communicationDelegate = commsDelegate
     sourceView.present(userEditViewControl, animated: true)
 }
 
 public func openPeople(_ sourceView: UIViewController)
 {
-    #if os(iOS)
     let peopleEditViewControl = personStoryboard.instantiateViewController(withIdentifier: "personForm") as! personViewController
-    #else
-    let peopleEditViewControl = personStoryboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "personForm")) as! personViewController
-    #endif
     sourceView.present(peopleEditViewControl, animated: true)
 }
 
@@ -313,16 +295,11 @@ public func openPeople(_ sourceView: UIViewController)
 
 public func openReports(_ sourceView: UIViewController, commsDelegate: myCommunicationDelegate)
 {
-    #if os(iOS)
     let reportsViewControl = reportsStoryboard.instantiateViewController(withIdentifier: "reportScreen") as! reportView
-    #else
-    let reportsViewControl = reportsStoryboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "reportScreen")) as! reportView
-    #endif
     reportsViewControl.communicationDelegate = commsDelegate
     sourceView.present(reportsViewControl, animated: true)
 }
 
-#if os(iOS)
 public func openComms(_ target: commsLogEntry, sourceView: UIViewController, commsDelegate: myCommunicationDelegate, button: UIButton, delegate: UIPopoverPresentationControllerDelegate)
 {
 //    let commsView = settingsStoryboard.instantiateViewController(withIdentifier: "commsLogView") as! commsLogView
@@ -338,14 +315,6 @@ public func openComms(_ target: commsLogEntry, sourceView: UIViewController, com
 //    commsView.workingEntry = target
 //    sourceView.present(commsView, animated: true, completion: nil)
 }
-#else
-public func openComms(_ target: commsLogEntry, sourceView: NSViewController, commsDelegate: myCommunicationDelegate, button: NSButton)
-{
-    let commsView = settingsStoryboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "commsLogView")) as! commsLogView
-    commsView.workingEntry = target
-    sourceView.presentViewControllerAsSheet(commsView)
-}
-#endif
 
 public func openUser(_ sourceView: UIViewController, commsDelegate: myCommunicationDelegate)
 {
@@ -360,11 +329,7 @@ public func openUser(_ sourceView: UIViewController, commsDelegate: myCommunicat
 
 public func openOrg(target: team?, sourceView:UIViewController, commsDelegate: myCommunicationDelegate)
 {
-    #if os(iOS)
     let orgEditViewControl = loginStoryboard.instantiateViewController(withIdentifier: "orgEdit") as! orgEditViewController
-    #else
-    let orgEditViewControl = loginStoryboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "orgEdit")) as! orgEditViewController
-    #endif
     orgEditViewControl.communicationDelegate = commsDelegate
     orgEditViewControl.workingOrganisation = target
     sourceView.present(orgEditViewControl, animated: true)
@@ -372,11 +337,7 @@ public func openOrg(target: team?, sourceView:UIViewController, commsDelegate: m
 
 public func openUserForm(_ target: userItem, sourceView: UIViewController, commsDelegate: myCommunicationDelegate)
 {
-    #if os(iOS)
     let userEditViewControl = loginStoryboard.instantiateViewController(withIdentifier: "userForm") as! userFormViewController
-    #else
-    let userEditViewControl = loginStoryboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "userForm")) as! userFormViewController
-    #endif
     userEditViewControl.workingUser = target
     userEditViewControl.communicationDelegate = commsDelegate
     userEditViewControl.initialUser = true
@@ -385,22 +346,14 @@ public func openUserForm(_ target: userItem, sourceView: UIViewController, comms
 
 public func openPassword(_ sourceView: UIViewController, commsDelegate: myCommunicationDelegate)
 {
-    #if os(iOS)
     let passwordViewControl = loginStoryboard.instantiateViewController(withIdentifier: "enterPassword") as! validatePasswordViewController
-    #else
-    let passwordViewControl = loginStoryboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "enterPassword")) as! validatePasswordViewController
-    #endif
     passwordViewControl.communicationDelegate = commsDelegate
     sourceView.present(passwordViewControl, animated: true)
 }
 
 public func openMeeting(_ target: calendarItem!, sourceView: UIViewController, commsDelegate: myCommunicationDelegate)
 {
-    #if os(iOS)
     let meetingView = meetingStoryboard.instantiateViewController(withIdentifier: "Meetings") as! meetingsViewController
-    #else
-    let meetingView = meetingStoryboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Meetings")) as! meetingsViewController
-    #endif
     if target != nil
     {
         meetingView.passedMeeting = target
@@ -410,7 +363,6 @@ public func openMeeting(_ target: calendarItem!, sourceView: UIViewController, c
     sourceView.present(meetingView, animated: true)
 }
 
-#if os(iOS)
 public func openTask(_ target: task, sourceView: UIViewController, commsDelegate: myCommunicationDelegate, button: UIButton, delegate: UIPopoverPresentationControllerDelegate)
 {
     let popoverContent = tasksStoryboard.instantiateViewController(withIdentifier: "tasks") as! taskViewController
@@ -427,15 +379,7 @@ public func openTask(_ target: task, sourceView: UIViewController, commsDelegate
     
     sourceView.present(popoverContent, animated: true, completion: nil)
 }
-#else
-public func openTask(_ target: task, sourceView: NSViewController, commsDelegate: myCommunicationDelegate, button: NSButton)
-{
-    let popoverContent = tasksStoryboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "tasks")) as! taskViewController
-    popoverContent.passedTaskType = "minutes"
-    popoverContent.passedTask = target
-    sourceView.presentViewControllerAsSheet(popoverContent)
-}
-#endif
+
 
 
 

@@ -7,11 +7,8 @@
 //
 
 import Foundation
-#if os(iOS)
 import UIKit
-#else
-import AppKit
-#endif
+import SwiftUI
 
 extension String
 {
@@ -584,6 +581,16 @@ public func calculateDate(month: String, year: String) -> Date
     workingDate.year = Int(year)
 
     return myCalendar.date(from: workingDate)!
+}
+
+extension Double {
+    var twoDP: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = NumberFormatter.Style.decimal
+        formatter.maximumFractionDigits = 2
+        
+        return formatter.string(from: NSNumber(value: self))!
+    }
 }
 
 extension Int
