@@ -9,7 +9,6 @@
 import Foundation
 //import UserNotifications
 
-public let notificationCenter = NotificationCenter.default
 //public let remoteCenter = UNUserNotificationCenter.current()
 
 public let NotificationDBReplaceDone = Notification.Name("SecurityDBReplaceDone")

@@ -348,9 +348,13 @@ public class client: NSObject, Identifiable, ObservableObject
         myInvoices = clientInvoices(teamID: currentUser.currentTeam!.teamID, clientID: myClientID, isActive: isActive)
     }
     
-    func loadShifts(month: String, year: String)
+    func loadShifts(month: Int64, year: Int64)
     {
         myShifts = shifts(clientID: myClientID, month: month, year: year, teamID: myTeamID)
+    }
+    
+    func calculateInvoice(month: Int64, year: Int64) {
+        
     }
     
     public func save()

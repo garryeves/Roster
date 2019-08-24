@@ -995,7 +995,7 @@ public class reportView: UIViewController, myCommunicationDelegate, UITableViewD
                     {
                         contractList = projects(teamID: currentUser.currentTeam!.teamID, includeEvents: true, isActive: false)
                         
-                        contractList.loadFinancials(month: btnDropdown.currentTitle!, year: btnYear.currentTitle!)
+                        contractList.loadFinancials(month: btnDropdown.currentTitle! as! Int64, year: btnYear.currentTitle! as! Int64)
                         
                         currentReport.reportContractForMonth(contractList)
                         showReport = true
@@ -1009,7 +1009,7 @@ public class reportView: UIViewController, myCommunicationDelegate, UITableViewD
                     }
                     
                 case reportContractForYear:
-                    currentReport.reportContractForYear(year: btnYear.currentTitle!)
+                    currentReport.reportContractForYear(year: btnYear.currentTitle! as! Int64)
                     showReport = true
                     
                 case reportContractDates:

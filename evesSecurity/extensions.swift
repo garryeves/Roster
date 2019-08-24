@@ -299,6 +299,13 @@ extension Double
 
 extension Date
 {
+    public var formatDateToYYYYMMDD: String
+    {
+        let myDateFormatter = DateFormatter()
+        myDateFormatter.dateFormat = "YYYY-MM-dd"
+        return myDateFormatter.string(from: self)
+    }
+    
     public var formatDateToString: String
     {
         let myDateFormatter = DateFormatter()
@@ -562,22 +569,31 @@ extension Date
         myDateFormatter.dateFormat = "YYYY"
         return myDateFormatter.string(from: self)
     }
+    
+    public var getHour: Int
+    {
+        let myDateFormatter = DateFormatter()
+        myDateFormatter.dateFormat = "HH"
+        let stringValue = myDateFormatter.string(from: self)
+        
+        return Int(stringValue)!
+    }
 }
 
-public func calculateDate(month: String, year: String) -> Date
+public func calculateDate(month: Int64, year: Int64) -> Date
 {
-    let myDateFormatter = DateFormatter()
-
-    myDateFormatter.dateFormat = "MMMM"
-    
+//    let myDateFormatter = DateFormatter()
+//
+//    myDateFormatter.dateFormat = "MM"
+//
     let myCalendar = Calendar(identifier: .gregorian)
-    
-    let tempdate = myDateFormatter.date(from: month)
-    let monthInt = myCalendar.component(.month , from: tempdate!)
+//
+//    let tempdate = myDateFormatter.date(from: month)
+//    let monthInt = myCalendar.component(.month , from: tempdate!)
     
     var workingDate = DateComponents()
     workingDate.day = 15
-    workingDate.month = monthInt
+    workingDate.month = Int(month)
     workingDate.year = Int(year)
 
     return myCalendar.date(from: workingDate)!
@@ -597,47 +613,56 @@ extension Int
 {
     public var monthName: String
     {
-        switch self
-        {
-            case 1:
-                return "January"
-            
-            case 2:
-                return "February"
-            
-            case 3:
-                return "March"
-            
-            case 4:
-                return "April"
-            
-            case 5:
-                return "May"
-            
-            case 6:
-                return "June"
-            
-            case 7:
-                return "July"
-            
-            case 8:
-                return "August"
-            
-            case 9:
-                return "September"
-            
-            case 10:
-                return "October"
-            
-            case 11:
-                return "November"
-            
-            case 12:
-                return "December"
-            
-            default:
-                return "Not a valid value \(self)"
-        }
+        return "\(DateFormatter().monthSymbols![Int(self - 1)])"
+//        switch self
+//        {
+//            case 1:
+//                return "January"
+//
+//            case 2:
+//                return "February"
+//
+//            case 3:
+//                return "March"
+//
+//            case 4:
+//                return "April"
+//
+//            case 5:
+//                return "May"
+//
+//            case 6:
+//                return "June"
+//
+//            case 7:
+//                return "July"
+//
+//            case 8:
+//                return "August"
+//
+//            case 9:
+//                return "September"
+//
+//            case 10:
+//                return "October"
+//
+//            case 11:
+//                return "November"
+//
+//            case 12:
+//                return "December"
+//
+//            default:
+//                return "Not a valid value \(self)"
+//        }
+    }
+}
+
+extension Int64
+{
+    public var monthName: String
+    {
+        return "\(DateFormatter().monthSymbols![Int(self - 1)])"
     }
 }
 

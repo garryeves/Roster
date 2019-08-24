@@ -281,7 +281,7 @@ class shifts: NSObject, Identifiable, ObservableObject
         sortArray()
     }
     
-    init(teamID: Int64, month: Int, year: Int)
+    init(teamID: Int64, month: Int64, year: Int64)
     {
         super.init()
         myTeamID = teamID
@@ -401,7 +401,7 @@ class shifts: NSObject, Identifiable, ObservableObject
         sortArray()
     }
     
-    init(projectID: Int64, month: String, year: String, teamID: Int64)
+    init(projectID: Int64, month: Int64, year: Int64, teamID: Int64)
     {
         super.init()
         myTeamID = teamID
@@ -413,7 +413,7 @@ class shifts: NSObject, Identifiable, ObservableObject
         }
         
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd MMMM yyyy"
+        dateFormatter.dateFormat = "dd MM yyyy"
         
         dateFormatter.timeZone = TimeZone(abbreviation: "GMT")
         
@@ -466,7 +466,7 @@ class shifts: NSObject, Identifiable, ObservableObject
         sortArray()
     }
     
-    init(clientID: Int64, month: String, year: String, teamID: Int64)
+    init(clientID: Int64, month: Int64, year: Int64, teamID: Int64)
     {
         super.init()
         myTeamID = teamID
@@ -478,7 +478,7 @@ class shifts: NSObject, Identifiable, ObservableObject
         }
         
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd MMMM yyyy"
+        dateFormatter.dateFormat = "dd MM yyyy"
         
         dateFormatter.timeZone = TimeZone(abbreviation: "GMT")
         
@@ -2495,7 +2495,7 @@ extension report
         }
     }
     
-    public func reportContractForYear(year: String)
+    public func reportContractForYear(year: Int64)
     {
         var janTotalAmount: Double = 0.0
         var febTotalAmount: Double = 0.0
@@ -2553,84 +2553,84 @@ extension report
                 var novShow: Bool = false
                 var decShow: Bool = false
                 
-                myProject.loadFinancials(month: "January", year: year)
+                myProject.loadFinancials(month: 1, year: year)
                 let janAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     janShow = true
                 }
                 
-                myProject.loadFinancials(month: "February", year: year)
+                myProject.loadFinancials(month: 2, year: year)
                 let febAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     febShow = true
                 }
                 
-                myProject.loadFinancials(month: "March", year: year)
+                myProject.loadFinancials(month: 3, year: year)
                 let marAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     marShow = true
                 }
                 
-                myProject.loadFinancials(month: "April", year: year)
+                myProject.loadFinancials(month: 4, year: year)
                 let aprAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     aprShow = true
                 }
                 
-                myProject.loadFinancials(month: "May", year: year)
+                myProject.loadFinancials(month: 5, year: year)
                 let mayAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     mayShow = true
                 }
                 
-                myProject.loadFinancials(month: "June", year: year)
+                myProject.loadFinancials(month: 6, year: year)
                 let junAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     junShow = true
                 }
                 
-                myProject.loadFinancials(month: "July", year: year)
+                myProject.loadFinancials(month: 7, year: year)
                 let julAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     julShow = true
                 }
                 
-                myProject.loadFinancials(month: "August", year: year)
+                myProject.loadFinancials(month: 8, year: year)
                 let augAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     augShow = true
                 }
                 
-                myProject.loadFinancials(month: "September", year: year)
+                myProject.loadFinancials(month: 9, year: year)
                 let sepAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     sepShow = true
                 }
                 
-                myProject.loadFinancials(month: "October", year: year)
+                myProject.loadFinancials(month: 10, year: year)
                 let octAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     octShow = true
                 }
                 
-                myProject.loadFinancials(month: "November", year: year)
+                myProject.loadFinancials(month: 11, year: year)
                 let novAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     novShow = true
                 }
                 
-                myProject.loadFinancials(month: "December", year: year)
+                myProject.loadFinancials(month: 12, year: year)
                 let decAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
@@ -2988,7 +2988,7 @@ extension team
 
 extension projects
 {
-    public func loadFinancials(month: String, year: String)
+    public func loadFinancials(month: Int64, year: Int64)
     {
         // Need to get the
         
@@ -3014,11 +3014,11 @@ extension projects
 
 extension project
 {
-    public func loadFinancials(month: String = "", year: String = "")
+    public func loadFinancials(month: Int64 = 0, year: Int64 = 0)
     {
         var financeArray: [monthlyFinancialsStruct] = Array()
         
-        if month == ""
+        if month == 0
         {
             // Going to get all financials
             print("GRE - Do project loadFinancials for all")
@@ -3042,12 +3042,12 @@ extension project
         
         let shiftArray = shifts(projectID: projectID, startDate: startDate, endDate: endDate, teamID: teamID)
         
-        financeArray.append(processMonth(shiftArray: shiftArray, month: "", year: ""))
+        financeArray.append(processMonth(shiftArray: shiftArray, month: 0, year: 0))
         
         financials = financeArray
     }
     
-    private func processMonth(shiftArray: shifts, month: String, year: String) -> monthlyFinancialsStruct
+    private func processMonth(shiftArray: shifts, month: Int64, year: Int64) -> monthlyFinancialsStruct
     {
         var income: Double = 0.0
         var expenditure: Double = 0.0
@@ -3073,7 +3073,7 @@ extension project
 
 extension people
 {
-    convenience public init(teamID: Int64, month: Int, year: Int)
+    convenience public init(teamID: Int64, month: Int64, year: Int64)
     {
         self.init(teamID: teamID, isActive: true)
 
@@ -3138,7 +3138,7 @@ extension person
         return retVal
     }
     
-    public func loadShifts(month: Int, year: Int, teamID: Int64)
+    public func loadShifts(month: Int64, year: Int64, teamID: Int64)
     {
         tempArray.removeAll()
         
@@ -3872,35 +3872,7 @@ extension CloudKitInteraction
         })
     }
     
-    func getRecordsForRecordID(_ searchID: CKRecord.ID)
-    {
-        let operation = CKFetchRecordsOperation(recordIDs: [searchID])
-        operation.perRecordCompletionBlock = { record, recordID, error in
-            if error != nil {
-                print("Error found in getRecordsForRecordID")
-            }
-            else
-            {
-                //                print("SearchID = \(searchID)")
-                //                if recordID != nil
-                //                {
-                //                    print("RecordID = \(recordID!)")
-                //                }
-                //                else
-                //                {
-                //                    print("No record found")
-                //                }
-            }
-        }
-        
-        //        operation.completionBlock = {
-        //            print("All Completed")
-        //        }
-        
-        //   operation.allowsCellularAccess = true
-        operation.database = self.publicDB
-        operation.start()
-    }
+
     
     func getRecordsForRecordID(_ sourceRecord: Shifts, recordID: CKRecord.ID?, sem: DispatchSemaphore)
     {

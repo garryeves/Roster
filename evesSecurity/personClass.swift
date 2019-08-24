@@ -369,7 +369,7 @@ public class people: NSObject, Identifiable
     }
 }
 
-public class person: NSObject, Identifiable
+public class person: NSObject, Identifiable, ObservableObject
 {
     public let id = UUID()
     fileprivate var myPersonID: Int64 = 0
