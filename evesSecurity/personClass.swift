@@ -395,6 +395,8 @@ public class person: NSObject, Identifiable, ObservableObject
     fileprivate var myMonthYear: String = ""
     fileprivate var myInvoices: clientInvoices!
     
+    @Published var reloadScreen = false
+    
     public var personID: Int64
     {
         get
@@ -420,7 +422,7 @@ public class person: NSObject, Identifiable, ObservableObject
         set
         {
             myClientID = newValue
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -433,7 +435,7 @@ public class person: NSObject, Identifiable, ObservableObject
         set
         {
             myProjectID = newValue
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -447,7 +449,7 @@ public class person: NSObject, Identifiable, ObservableObject
         {
             myName = newValue
             currentUser.currentTeam?.peopleList = nil
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -461,7 +463,7 @@ public class person: NSObject, Identifiable, ObservableObject
         {
             myFirstName = newValue
             currentUser.currentTeam?.peopleList = nil
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -498,7 +500,7 @@ public class person: NSObject, Identifiable, ObservableObject
         set
         {
             myTitle = newValue
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -521,7 +523,7 @@ public class person: NSObject, Identifiable, ObservableObject
         set
         {
             myGender = genderList[newValue]
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -541,7 +543,7 @@ public class person: NSObject, Identifiable, ObservableObject
         set
         {
             myGender = newValue
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -554,7 +556,7 @@ public class person: NSObject, Identifiable, ObservableObject
         set
         {
             myNote = newValue
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -572,7 +574,7 @@ public class person: NSObject, Identifiable, ObservableObject
         {
             myDob = newValue
             currentUser.currentTeam?.peopleList = nil
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -648,7 +650,7 @@ public class person: NSObject, Identifiable, ObservableObject
         set
         {
             myCanRoster = newValue
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -661,7 +663,7 @@ public class person: NSObject, Identifiable, ObservableObject
         set
         {
             myEmailOptIn = newValue
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -675,7 +677,7 @@ public class person: NSObject, Identifiable, ObservableObject
         {
             myIsActive = newValue
             currentUser.currentTeam?.peopleList = nil
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -688,7 +690,7 @@ public class person: NSObject, Identifiable, ObservableObject
         set
         {
             myuseAllowanceHours = newValue
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -696,7 +698,7 @@ public class person: NSObject, Identifiable, ObservableObject
     {
         get
         {
-            return mySessions!.notes
+            return mySessions!.noteList
         }
     }
     
@@ -767,9 +769,6 @@ public class person: NSObject, Identifiable, ObservableObject
         myMonthlyAllow.removeAll()
         myMonthYear = ""
         myInvoices = nil
-        
-        
-        
         
         save()
     }

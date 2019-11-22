@@ -1,11 +1,8 @@
-# Uncomment this line to define a global platform for your project
-# platform :ios, '6.0'
+#xcode/evesShared/evesShared.xcodeproj# Uncomment this line to define a global platform for your project
 platform :ios, '10.0'
 use_frameworks!
 
-project '/Users/garryeves/Library/Mobile\ Documents/com\~apple\~CloudDocs/xcode/evesShared/evesShared.xcodeproj'
+project '/Users/garryeves/xcode/EvesCRM/evesSecurity/Shift\ Dashboard.xcodeproj'
 
-target ‘Shift Dashboard' do
-pod 'DLRadioButton'
-pod 'SwiftyJSON'
+target ‘Shift\ Dashboard' do
 end

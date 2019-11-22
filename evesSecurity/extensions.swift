@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import SwiftUI
+import PDFKit
 
 extension String
 {
@@ -180,7 +181,7 @@ extension String
         }
     }
     
-    public var monthNum: Int
+    public var monthNum: Int64
     {
         switch self
         {
@@ -256,6 +257,16 @@ extension Double
             let doubleStr = String(format: "%.1f", self)
             // Need to format to only 1 decimal place
             return "\(doubleStr)%"
+        }
+    }
+    
+    public var formatPercentNoSign: String {
+        if self == Double(Int(self)) {
+            return "\(Int(self))"
+        } else {
+            let doubleStr = String(format: "%.1f", self)
+            // Need to format to only 1 decimal place
+            return doubleStr
         }
     }
     
@@ -607,6 +618,15 @@ extension Double {
         
         return formatter.string(from: NSNumber(value: self))!
     }
+    
+    var oneDP: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = NumberFormatter.Style.decimal
+        formatter.maximumFractionDigits = 1
+        formatter.minimumFractionDigits = 1
+        
+        return formatter.string(from: NSNumber(value: self))!
+    }
 }
 
 extension Int
@@ -680,5 +700,61 @@ extension NSMutableAttributedString {
         append(normal)
         
         return self
+    }
+}
+
+struct PDFKitRepresentedView: UIViewRepresentable {
+    let url: URL
+
+    init(_ url: URL) {
+        self.url = url
+    }
+
+    func makeUIView(context: UIViewRepresentableContext<PDFKitRepresentedView>) -> PDFKitRepresentedView.UIViewType {
+        // Create a `PDFView` and set its `PDFDocument`.
+        let pdfView = PDFView()
+        pdfView.document = PDFDocument(url: self.url)
+        return pdfView
+    }
+
+    func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PDFKitRepresentedView>) {
+        // Update the view.
+    }
+}
+
+struct PDFKitView: View {
+    @Binding var showchild: Bool
+    var url: URL
+    
+    @State var sharePDF = false
+    
+    let activityViewController = ActivityViewController()
+    
+    var body: some View {
+        return VStack {
+            
+            HStack {
+                #if targetEnvironment(macCatalyst)
+                Button("Share") {
+                    self.activityViewController.urlEntry = fileSharingURL
+                    self.activityViewController.shareFile()
+                }
+                #else
+                    Button("Share") {
+                        self.sharePDF = true
+                    }
+                    .sheet(isPresented: $sharePDF, onDismiss: { self.sharePDF = false }) {
+                        ActivityViewControllerNew(activityItems: [self.url]) }
+                #endif
+                
+                Spacer()
+                Button("Close") {
+                    self.showchild = false
+                }
+            }
+            .padding()
+            
+            PDFKitRepresentedView(url)
+        }
     }
 }

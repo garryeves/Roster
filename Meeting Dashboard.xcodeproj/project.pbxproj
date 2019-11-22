@@ -1,0 +1,1092 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		34050F691EC82B9300CC7CBE /* dropDownMenus.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34050F681EC82B9300CC7CBE /* dropDownMenus.storyboard */; };
+		34050F6C1EC82C0F00CC7CBE /* dateTimePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34050F6B1EC82C0F00CC7CBE /* dateTimePickerViewController.swift */; };
+		34050F6E1EC82C5500CC7CBE /* pickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34050F6D1EC82C5500CC7CBE /* pickerViewController.swift */; };
+		34050F701EC82C8F00CC7CBE /* timeSelectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34050F6F1EC82C8F00CC7CBE /* timeSelectViewController.swift */; };
+		3407F7AC1EC6CA4F008C5751 /* userRolesClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3407F7AB1EC6CA4F008C5751 /* userRolesClass.swift */; };
+		340A02AB1F00B97C00E425C9 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 340A02AA1F00B97C00E425C9 /* StoreKit.framework */; };
+		341323831EC3EA9700BBDE1E /* personClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341323821EC3EA9700BBDE1E /* personClass.swift */; };
+		3413238B1EC40A1D00BBDE1E /* dropdownsClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3413238A1EC40A1D00BBDE1E /* dropdownsClass.swift */; };
+		3413238F1EC42F1F00BBDE1E /* ratesClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3413238E1EC42F1F00BBDE1E /* ratesClass.swift */; };
+		341323941EC43C3500BBDE1E /* shiftsClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341323931EC43C3500BBDE1E /* shiftsClass.swift */; };
+		3413239A1EC4530300BBDE1E /* UsersClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341323991EC4530300BBDE1E /* UsersClass.swift */; };
+		341A16E52082C91900A6500E /* AgendaItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341A16E42082C91900A6500E /* AgendaItemViewController.swift */; };
+		341A16EB2082C98100A6500E /* meetingAgendaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341A16EA2082C98100A6500E /* meetingAgendaViewController.swift */; };
+		341A16F02082C9CD00A6500E /* meetingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341A16EE2082C9CD00A6500E /* meetingsViewController.swift */; };
+		341A16F32082C9F200A6500E /* meetings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 341A16F22082C9F200A6500E /* meetings.storyboard */; };
+		341A16F52082CBC400A6500E /* taskListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341A16F42082CBC400A6500E /* taskListViewController.swift */; };
+		341A16F72082CC2700A6500E /* tasks.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 341A16F62082CC2700A6500E /* tasks.storyboard */; };
+		341A16F92082CDA900A6500E /* taskUpdatesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341A16F82082CDA900A6500E /* taskUpdatesViewController.swift */; };
+		341A16FB2082CE2B00A6500E /* taskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341A16FA2082CE2A00A6500E /* taskViewController.swift */; };
+		341D39941F0DC5C40040F4D6 /* taskContextsClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341D39931F0DC5C40040F4D6 /* taskContextsClass.swift */; };
+		341D39981F0DC5F60040F4D6 /* taskPredecessorClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341D39971F0DC5F60040F4D6 /* taskPredecessorClass.swift */; };
+		3423CC1D1F00CE9E0093B915 /* IAPClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3423CC1C1F00CE9E0093B915 /* IAPClass.swift */; };
+		3434C2181F00E3D10030DD18 /* IAPViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3434C2171F00E3D10030DD18 /* IAPViewController.swift */; };
+		343757D21ED3F26300A9D313 /* eventPlanningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343757D11ED3F26300A9D313 /* eventPlanningViewController.swift */; };
+		343757D41ED3F27E00A9D313 /* eventTemplateVoewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343757D31ED3F27E00A9D313 /* eventTemplateVoewController.swift */; };
+		343757D61ED3FA3A00A9D313 /* eventTemplateClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343757D51ED3FA3A00A9D313 /* eventTemplateClass.swift */; };
+		343757D81ED4070600A9D313 /* eventTemplateHeadClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343757D71ED4070600A9D313 /* eventTemplateHeadClass.swift */; };
+		344BF8291EC94D4B0066CD35 /* securityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344BF8281EC94D4B0066CD35 /* securityViewController.swift */; };
+		344BF82C1EC954C70066CD35 /* settingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344BF82B1EC954C70066CD35 /* settingViewController.swift */; };
+		344BF82E1EC96E180066CD35 /* setPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344BF82D1EC96E180066CD35 /* setPasswordViewController.swift */; };
+		345886381F0DC51800823571 /* contextClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345886371F0DC51800823571 /* contextClass.swift */; };
+		345E66D720805AA1008FC38F /* commsLogClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E66D620805AA1008FC38F /* commsLogClass.swift */; };
+		3460BE681ECFCC5C00857332 /* rateMaintenanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3460BE671ECFCC5C00857332 /* rateMaintenanceViewController.swift */; };
+		346229512081868A00ED7E24 /* commsLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346229502081868A00ED7E24 /* commsLogView.swift */; };
+		3463FA9C1ED141ED00486195 /* Shifts.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3463FA9B1ED141ED00486195 /* Shifts.storyboard */; };
+		3463FA9E1ED15B3F00486195 /* shiftMaintenanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463FA9D1ED15B3F00486195 /* shiftMaintenanceViewController.swift */; };
+		3465675B1F106FDB00631C4B /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 346567591F106FDB00631C4B /* Settings.storyboard */; };
+		346864E620770D0900D82E60 /* shiftDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346864E520770D0900D82E60 /* shiftDetailsView.swift */; };
+		34729B171EF4B5C700A6DEC6 /* dropdownMaintenanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34729B161EF4B5C700A6DEC6 /* dropdownMaintenanceViewController.swift */; };
+		347BCEBE1EC559BD006B95BA /* LoginRoles.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 347BCEBD1EC559BD006B95BA /* LoginRoles.storyboard */; };
+		347BCEC01EC55D88006B95BA /* newUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347BCEBF1EC55D88006B95BA /* newUserViewController.swift */; };
+		347BCEC21EC563F0006B95BA /* orgEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347BCEC11EC563F0006B95BA /* orgEditViewController.swift */; };
+		347BCEC61EC56DAC006B95BA /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 347BCEC51EC56DAC006B95BA /* CloudKit.framework */; };
+		347BCEC91EC59C43006B95BA /* userTeamsClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347BCEC81EC59C43006B95BA /* userTeamsClass.swift */; };
+		3492932E1ECD797600AFAE25 /* addPerInfoMaintenanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3492932D1ECD797600AFAE25 /* addPerInfoMaintenanceViewController.swift */; };
+		349652FF1EC1E5B800210A46 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349652FE1EC1E5B800210A46 /* AppDelegate.swift */; };
+		349653011EC1E5B800210A46 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349653001EC1E5B800210A46 /* ViewController.swift */; };
+		349653041EC1E5B800210A46 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 349653021EC1E5B800210A46 /* Main.storyboard */; };
+		349653091EC1E5B800210A46 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 349653081EC1E5B800210A46 /* Assets.xcassets */; };
+		3496530C1EC1E5B800210A46 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3496530A1EC1E5B800210A46 /* LaunchScreen.storyboard */; };
+		349653171EC1E5B800210A46 /* evesSecurityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349653161EC1E5B800210A46 /* evesSecurityTests.swift */; };
+		349653221EC1E5B900210A46 /* evesSecurityUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349653211EC1E5B900210A46 /* evesSecurityUITests.swift */; };
+		349653331EC1F0DC00210A46 /* evesSecurityShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349653321EC1F0DC00210A46 /* evesSecurityShared.swift */; };
+		34968CDE1ECAC68D0009798B /* person.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34968CDD1ECAC68D0009798B /* person.storyboard */; };
+		34968CE01ECACA350009798B /* personViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34968CDF1ECACA350009798B /* personViewController.swift */; };
+		34991C081EF2427A00D99B0D /* reports.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34991C071EF2427A00D99B0D /* reports.storyboard */; };
+		34991C0A1EF25BDE00D99B0D /* reportMaintenanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34991C091EF25BDE00D99B0D /* reportMaintenanceViewController.swift */; };
+		3499EDF41EDE8B720027CE5C /* monthlyRosterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499EDF31EDE8B720027CE5C /* monthlyRosterViewController.swift */; };
+		349EE2FF20783D3600BA1FA8 /* reportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349EE2FE20783D3600BA1FA8 /* reportView.swift */; };
+		34B01DCB1EE3B89200B836C8 /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B01DCA1EE3B89200B836C8 /* extensions.swift */; };
+		34B3582A1F15D3FE00EFA9EA /* CalendarDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412960C1F15D2DB00B2AC7C /* CalendarDetails.swift */; };
+		34B3582D1F15D47500EFA9EA /* meetingAttendeeClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3582C1F15D46700EFA9EA /* meetingAttendeeClass.swift */; };
+		34B3582E1F15D47500EFA9EA /* meetingAgendaItemClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3582B1F15D44D00EFA9EA /* meetingAgendaItemClass.swift */; };
+		34B358301F15D4B500EFA9EA /* meetingSupportingDocsClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3582F1F15D4AC00EFA9EA /* meetingSupportingDocsClass.swift */; };
+		34B35A7F1ECE6D0A00B4FFD7 /* Clients.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34B35A7E1ECE6D0A00B4FFD7 /* Clients.storyboard */; };
+		34B35A811ECE77A300B4FFD7 /* clientMaintenanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B35A801ECE77A300B4FFD7 /* clientMaintenanceViewController.swift */; };
+		34B35A831ECEC2D600B4FFD7 /* Projects.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34B35A821ECEC2D600B4FFD7 /* Projects.storyboard */; };
+		34B35A851ECEC7A900B4FFD7 /* contractMaintenanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B35A841ECEC7A900B4FFD7 /* contractMaintenanceViewController.swift */; };
+		34B43A701ECC0A7500BBE4D1 /* contactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B43A6F1ECC0A7500BBE4D1 /* contactsViewController.swift */; };
+		34BB33901EFF5D1E0032CF5F /* securityDeletedItemsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB338F1EFF5D1E0032CF5F /* securityDeletedItemsViewController.swift */; };
+		34C462781EC81D810037D79E /* userFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C462771EC81D810037D79E /* userFormViewController.swift */; };
+		34CAA890206E474000895983 /* MeetingSupportingDocs+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAA82E206E473900895983 /* MeetingSupportingDocs+CoreDataProperties.swift */; };
+		34CAA891206E474000895983 /* MeetingSupportingDocs+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAA82E206E473900895983 /* MeetingSupportingDocs+CoreDataProperties.swift */; };
+		34CAA892206E474000895983 /* MeetingSupportingDocs+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAA82E206E473900895983 /* MeetingSupportingDocs+CoreDataProperties.swift */; };
+		34CAA8A8206E474000895983 /* ReportingMonth+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAA836206E473A00895983 /* ReportingMonth+CoreDataProperties.swift */; };
+		34CAA8A9206E474000895983 /* ReportingMonth+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAA836206E473A00895983 /* ReportingMonth+CoreDataProperties.swift */; };
+		34CAA8AA206E474000895983 /* ReportingMonth+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAA836206E473A00895983 /* ReportingMonth+CoreDataProperties.swift */; };
+		34CAA8D5206E474000895983 /* TaskAttachment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAA845206E473C00895983 /* TaskAttachment+CoreDataProperties.swift */; };
+		34CAA8D6206E474000895983 /* TaskAttachment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAA845206E473C00895983 /* TaskAttachment+CoreDataProperties.swift */; };
+		34CAA8D7206E474000895983 /* TaskAttachment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAA845206E473C00895983 /* TaskAttachment+CoreDataProperties.swift */; };
+		34CAA8F6206E474000895983 /* Panes+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAA850206E473E00895983 /* Panes+CoreDataProperties.swift */; };
+		34CAA8F7206E474000895983 /* Panes+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAA850206E473E00895983 /* Panes+CoreDataProperties.swift */; };
+		34CAA8F8206E474000895983 /* Panes+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAA850206E473E00895983 /* Panes+CoreDataProperties.swift */; };
+		34CAA911206E474000895983 /* ProjectTeamMembers+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAA859206E473F00895983 /* ProjectTeamMembers+CoreDataProperties.swift */; };
+		34CAA912206E474000895983 /* ProjectTeamMembers+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAA859206E473F00895983 /* ProjectTeamMembers+CoreDataProperties.swift */; };
+		34CAA913206E474000895983 /* ProjectTeamMembers+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CAA859206E473F00895983 /* ProjectTeamMembers+CoreDataProperties.swift */; };
+		34CEE9701EC2BE4E00F85A11 /* CloudKitInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEE96F1EC2BE4E00F85A11 /* CloudKitInteraction.swift */; };
+		34CEE9741EC2BEC200F85A11 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEE9731EC2BEC200F85A11 /* UserInfo.swift */; };
+		34CEE9761EC2C1A900F85A11 /* reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEE9751EC2C1A900F85A11 /* reachability.swift */; };
+		34CEE9781EC2C1DF00F85A11 /* teamClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEE9771EC2C1DF00F85A11 /* teamClass.swift */; };
+		34CEE97E1EC2C37E00F85A11 /* notificationDefinitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEE97D1EC2C37E00F85A11 /* notificationDefinitions.swift */; };
+		34CEE9801EC2C41600F85A11 /* decodesClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEE97F1EC2C41600F85A11 /* decodesClass.swift */; };
+		34CEE9AA1EC2C61500F85A11 /* taskClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEE9A91EC2C61500F85A11 /* taskClass.swift */; };
+		34CEE9D41EC2C71C00F85A11 /* projectClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEE9D31EC2C71C00F85A11 /* projectClass.swift */; };
+		34CEE9DC1EC2C79600F85A11 /* taskUpdatesClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEE9DB1EC2C79600F85A11 /* taskUpdatesClass.swift */; };
+		34CEE9EA1EC2C81800F85A11 /* EvesCRMSharedFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEE9E91EC2C81800F85A11 /* EvesCRMSharedFiles.swift */; };
+		34CEE9F21EC2C99C00F85A11 /* ContactDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEE9F11EC2C99C00F85A11 /* ContactDetails.swift */; };
+		34CEEA391EC2EB5E00F85A11 /* addressClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEEA381EC2EB5E00F85A11 /* addressClass.swift */; };
+		34CEEA3F1EC303CC00F85A11 /* clientsClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEEA3E1EC303CC00F85A11 /* clientsClass.swift */; };
+		34CEEA431EC30B7700F85A11 /* Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEEA421EC30B7700F85A11 /* Contacts.swift */; };
+		34CEEA471EC3145200F85A11 /* personAdditionalInfoClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEEA461EC3145200F85A11 /* personAdditionalInfoClass.swift */; };
+		34CEEA611EC31D6C00F85A11 /* personAddInfoEntryClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEEA601EC31D6C00F85A11 /* personAddInfoEntryClass.swift */; };
+		34D797951ED7BEB90045DFD9 /* IOSCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D797941ED7BEB90045DFD9 /* IOSCalendar.swift */; };
+		34E07BBA1ECAF02A007711A6 /* addressesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E07BB91ECAF02A007711A6 /* addressesViewController.swift */; };
+		34EEE5F21EECCDC50006B921 /* alertsClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EEE5F11EECCDC50006B921 /* alertsClass.swift */; };
+		34EFB4191EE2454800772C8C /* reporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EFB4181EE2454800772C8C /* reporting.swift */; };
+		34FC32B21EC97C250053443D /* validatePasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FC32B11EC97C250053443D /* validatePasswordViewController.swift */; };
+		65887F20714DB64A8AA64BDF /* Pods_Shift_Dashboard.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F5A26B60DBD10DF1719A504 /* Pods_Shift_Dashboard.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		349653131EC1E5B800210A46 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 349652F31EC1E5B800210A46 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 349652FA1EC1E5B800210A46;
+			remoteInfo = evesSecurity;
+		};
+		3496531E1EC1E5B800210A46 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 349652F31EC1E5B800210A46 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 349652FA1EC1E5B800210A46;
+			remoteInfo = evesSecurity;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1F5A26B60DBD10DF1719A504 /* Pods_Shift_Dashboard.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Shift_Dashboard.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		34050F681EC82B9300CC7CBE /* dropDownMenus.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = dropDownMenus.storyboard; sourceTree = "<group>"; };
+		34050F6B1EC82C0F00CC7CBE /* dateTimePickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = dateTimePickerViewController.swift; sourceTree = "<group>"; };
+		34050F6D1EC82C5500CC7CBE /* pickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = pickerViewController.swift; sourceTree = "<group>"; };
+		34050F6F1EC82C8F00CC7CBE /* timeSelectViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = timeSelectViewController.swift; sourceTree = "<group>"; };
+		3407F7AB1EC6CA4F008C5751 /* userRolesClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = userRolesClass.swift; sourceTree = "<group>"; };
+		340A02AA1F00B97C00E425C9 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		3412960C1F15D2DB00B2AC7C /* CalendarDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CalendarDetails.swift; path = ../../EvesCRM/CalendarDetails.swift; sourceTree = "<group>"; };
+		341323821EC3EA9700BBDE1E /* personClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = personClass.swift; sourceTree = "<group>"; };
+		3413238A1EC40A1D00BBDE1E /* dropdownsClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = dropdownsClass.swift; sourceTree = "<group>"; };
+		3413238E1EC42F1F00BBDE1E /* ratesClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ratesClass.swift; sourceTree = "<group>"; };
+		341323931EC43C3500BBDE1E /* shiftsClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = shiftsClass.swift; sourceTree = "<group>"; };
+		341323991EC4530300BBDE1E /* UsersClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsersClass.swift; sourceTree = "<group>"; };
+		341A16E42082C91900A6500E /* AgendaItemViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgendaItemViewController.swift; sourceTree = "<group>"; };
+		341A16EA2082C98100A6500E /* meetingAgendaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = meetingAgendaViewController.swift; sourceTree = "<group>"; };
+		341A16EE2082C9CD00A6500E /* meetingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = meetingsViewController.swift; sourceTree = "<group>"; };
+		341A16F22082C9F200A6500E /* meetings.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = meetings.storyboard; sourceTree = "<group>"; };
+		341A16F42082CBC400A6500E /* taskListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = taskListViewController.swift; sourceTree = "<group>"; };
+		341A16F62082CC2700A6500E /* tasks.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = tasks.storyboard; sourceTree = "<group>"; };
+		341A16F82082CDA900A6500E /* taskUpdatesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = taskUpdatesViewController.swift; sourceTree = "<group>"; };
+		341A16FA2082CE2A00A6500E /* taskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = taskViewController.swift; sourceTree = "<group>"; };
+		341D39931F0DC5C40040F4D6 /* taskContextsClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = taskContextsClass.swift; path = ../../EvesCRM/taskContextsClass.swift; sourceTree = "<group>"; };
+		341D39971F0DC5F60040F4D6 /* taskPredecessorClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = taskPredecessorClass.swift; path = ../../EvesCRM/taskPredecessorClass.swift; sourceTree = "<group>"; };
+		3423CC1C1F00CE9E0093B915 /* IAPClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPClass.swift; sourceTree = "<group>"; };
+		3434C2171F00E3D10030DD18 /* IAPViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IAPViewController.swift; sourceTree = "<group>"; };
+		343757D11ED3F26300A9D313 /* eventPlanningViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = eventPlanningViewController.swift; sourceTree = "<group>"; };
+		343757D31ED3F27E00A9D313 /* eventTemplateVoewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = eventTemplateVoewController.swift; sourceTree = "<group>"; };
+		343757D51ED3FA3A00A9D313 /* eventTemplateClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = eventTemplateClass.swift; sourceTree = "<group>"; };
+		343757D71ED4070600A9D313 /* eventTemplateHeadClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = eventTemplateHeadClass.swift; sourceTree = "<group>"; };
+		344BF8281EC94D4B0066CD35 /* securityViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = securityViewController.swift; sourceTree = "<group>"; };
+		344BF82B1EC954C70066CD35 /* settingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = settingViewController.swift; sourceTree = "<group>"; };
+		344BF82D1EC96E180066CD35 /* setPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = setPasswordViewController.swift; sourceTree = "<group>"; };
+		345886371F0DC51800823571 /* contextClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = contextClass.swift; path = ../../EvesCRM/contextClass.swift; sourceTree = "<group>"; };
+		345E66D620805AA1008FC38F /* commsLogClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = commsLogClass.swift; sourceTree = "<group>"; };
+		3460BE671ECFCC5C00857332 /* rateMaintenanceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = rateMaintenanceViewController.swift; sourceTree = "<group>"; };
+		346229502081868A00ED7E24 /* commsLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = commsLogView.swift; sourceTree = "<group>"; };
+		3463FA9B1ED141ED00486195 /* Shifts.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Shifts.storyboard; sourceTree = "<group>"; };
+		3463FA9D1ED15B3F00486195 /* shiftMaintenanceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = shiftMaintenanceViewController.swift; sourceTree = "<group>"; };
+		3465675A1F106FDB00631C4B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
+		346864E520770D0900D82E60 /* shiftDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = shiftDetailsView.swift; sourceTree = "<group>"; };
+		34729B161EF4B5C700A6DEC6 /* dropdownMaintenanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dropdownMaintenanceViewController.swift; sourceTree = "<group>"; };
+		347BCEBD1EC559BD006B95BA /* LoginRoles.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LoginRoles.storyboard; sourceTree = "<group>"; };
+		347BCEBF1EC55D88006B95BA /* newUserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = newUserViewController.swift; sourceTree = "<group>"; };
+		347BCEC11EC563F0006B95BA /* orgEditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = orgEditViewController.swift; sourceTree = "<group>"; };
+		347BCEC41EC56DA7006B95BA /* evesSecurity.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = evesSecurity.entitlements; sourceTree = "<group>"; };
+		347BCEC51EC56DAC006B95BA /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		347BCEC81EC59C43006B95BA /* userTeamsClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = userTeamsClass.swift; sourceTree = "<group>"; };
+		3492932D1ECD797600AFAE25 /* addPerInfoMaintenanceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = addPerInfoMaintenanceViewController.swift; sourceTree = "<group>"; };
+		349652FB1EC1E5B800210A46 /* Meeting Dashboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Meeting Dashboard.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		349652FE1EC1E5B800210A46 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		349653001EC1E5B800210A46 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		349653031EC1E5B800210A46 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		349653081EC1E5B800210A46 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3496530B1EC1E5B800210A46 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		3496530D1EC1E5B800210A46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		349653121EC1E5B800210A46 /* Shift DashboardTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Shift DashboardTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		349653161EC1E5B800210A46 /* evesSecurityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = evesSecurityTests.swift; sourceTree = "<group>"; };
+		349653181EC1E5B800210A46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3496531D1EC1E5B800210A46 /* Shift DashboardUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Shift DashboardUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		349653211EC1E5B900210A46 /* evesSecurityUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = evesSecurityUITests.swift; sourceTree = "<group>"; };
+		349653231EC1E5B900210A46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		349653321EC1F0DC00210A46 /* evesSecurityShared.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = evesSecurityShared.swift; sourceTree = "<group>"; };
+		34968CDD1ECAC68D0009798B /* person.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = person.storyboard; sourceTree = "<group>"; };
+		34968CDF1ECACA350009798B /* personViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = personViewController.swift; sourceTree = "<group>"; };
+		34991C071EF2427A00D99B0D /* reports.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = reports.storyboard; sourceTree = "<group>"; };
+		34991C091EF25BDE00D99B0D /* reportMaintenanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = reportMaintenanceViewController.swift; sourceTree = "<group>"; };
+		3499EDF31EDE8B720027CE5C /* monthlyRosterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = monthlyRosterViewController.swift; sourceTree = "<group>"; };
+		349EE2FE20783D3600BA1FA8 /* reportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = reportView.swift; sourceTree = "<group>"; };
+		34B01DCA1EE3B89200B836C8 /* extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = extensions.swift; sourceTree = "<group>"; };
+		34B3582B1F15D44D00EFA9EA /* meetingAgendaItemClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = meetingAgendaItemClass.swift; path = ../../EvesCRM/meetingAgendaItemClass.swift; sourceTree = "<group>"; };
+		34B3582C1F15D46700EFA9EA /* meetingAttendeeClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = meetingAttendeeClass.swift; path = ../../EvesCRM/meetingAttendeeClass.swift; sourceTree = "<group>"; };
+		34B3582F1F15D4AC00EFA9EA /* meetingSupportingDocsClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = meetingSupportingDocsClass.swift; path = ../../EvesCRM/meetingSupportingDocsClass.swift; sourceTree = "<group>"; };
+		34B35A7E1ECE6D0A00B4FFD7 /* Clients.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Clients.storyboard; sourceTree = "<group>"; };
+		34B35A801ECE77A300B4FFD7 /* clientMaintenanceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = clientMaintenanceViewController.swift; sourceTree = "<group>"; };
+		34B35A821ECEC2D600B4FFD7 /* Projects.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Projects.storyboard; sourceTree = "<group>"; };
+		34B35A841ECEC7A900B4FFD7 /* contractMaintenanceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = contractMaintenanceViewController.swift; sourceTree = "<group>"; };
+		34B43A6F1ECC0A7500BBE4D1 /* contactsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = contactsViewController.swift; sourceTree = "<group>"; };
+		34BB338F1EFF5D1E0032CF5F /* securityDeletedItemsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = securityDeletedItemsViewController.swift; sourceTree = "<group>"; };
+		34C462771EC81D810037D79E /* userFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = userFormViewController.swift; sourceTree = "<group>"; };
+		34CAA82E206E473900895983 /* MeetingSupportingDocs+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MeetingSupportingDocs+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		34CAA836206E473A00895983 /* ReportingMonth+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ReportingMonth+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		34CAA845206E473C00895983 /* TaskAttachment+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TaskAttachment+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		34CAA850206E473E00895983 /* Panes+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Panes+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		34CAA859206E473F00895983 /* ProjectTeamMembers+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ProjectTeamMembers+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		34CEE96F1EC2BE4E00F85A11 /* CloudKitInteraction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CloudKitInteraction.swift; path = ../../EvesCRM/CloudKitInteraction.swift; sourceTree = "<group>"; };
+		34CEE9731EC2BEC200F85A11 /* UserInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UserInfo.swift; path = ../../EvesCRM/UserInfo.swift; sourceTree = "<group>"; };
+		34CEE9751EC2C1A900F85A11 /* reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = reachability.swift; path = ../../EvesCRM/reachability.swift; sourceTree = "<group>"; };
+		34CEE9771EC2C1DF00F85A11 /* teamClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = teamClass.swift; path = ../../EvesCRM/teamClass.swift; sourceTree = "<group>"; };
+		34CEE97D1EC2C37E00F85A11 /* notificationDefinitions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = notificationDefinitions.swift; sourceTree = "<group>"; };
+		34CEE97F1EC2C41600F85A11 /* decodesClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = decodesClass.swift; path = ../../EvesCRM/decodesClass.swift; sourceTree = "<group>"; };
+		34CEE9A91EC2C61500F85A11 /* taskClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = taskClass.swift; path = ../../EvesCRM/taskClass.swift; sourceTree = "<group>"; };
+		34CEE9D31EC2C71C00F85A11 /* projectClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = projectClass.swift; path = ../../EvesCRM/projectClass.swift; sourceTree = "<group>"; };
+		34CEE9DB1EC2C79600F85A11 /* taskUpdatesClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = taskUpdatesClass.swift; path = ../../EvesCRM/taskUpdatesClass.swift; sourceTree = "<group>"; };
+		34CEE9E91EC2C81800F85A11 /* EvesCRMSharedFiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EvesCRMSharedFiles.swift; path = ../../EvesCRM/EvesCRMSharedFiles.swift; sourceTree = "<group>"; };
+		34CEE9F11EC2C99C00F85A11 /* ContactDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContactDetails.swift; path = ../../EvesCRM/ContactDetails.swift; sourceTree = "<group>"; };
+		34CEEA381EC2EB5E00F85A11 /* addressClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = addressClass.swift; sourceTree = "<group>"; };
+		34CEEA3E1EC303CC00F85A11 /* clientsClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = clientsClass.swift; sourceTree = "<group>"; };
+		34CEEA421EC30B7700F85A11 /* Contacts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contacts.swift; sourceTree = "<group>"; };
+		34CEEA461EC3145200F85A11 /* personAdditionalInfoClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = personAdditionalInfoClass.swift; sourceTree = "<group>"; };
+		34CEEA601EC31D6C00F85A11 /* personAddInfoEntryClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = personAddInfoEntryClass.swift; sourceTree = "<group>"; };
+		34D797941ED7BEB90045DFD9 /* IOSCalendar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOSCalendar.swift; sourceTree = "<group>"; };
+		34E07BB91ECAF02A007711A6 /* addressesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = addressesViewController.swift; sourceTree = "<group>"; };
+		34EEE5F11EECCDC50006B921 /* alertsClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = alertsClass.swift; sourceTree = "<group>"; };
+		34EFB4181EE2454800772C8C /* reporting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = reporting.swift; sourceTree = "<group>"; };
+		34FC32B11EC97C250053443D /* validatePasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = validatePasswordViewController.swift; sourceTree = "<group>"; };
+		43D412E29278CCE92FCC1722 /* Pods-Shift Dashboard.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shift Dashboard.release.xcconfig"; path = "Pods/Target Support Files/Pods-Shift Dashboard/Pods-Shift Dashboard.release.xcconfig"; sourceTree = "<group>"; };
+		EA96443DD3D0E19717F153B4 /* Pods-Shift Dashboard.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shift Dashboard.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Shift Dashboard/Pods-Shift Dashboard.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		349652F81EC1E5B800210A46 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				340A02AB1F00B97C00E425C9 /* StoreKit.framework in Frameworks */,
+				347BCEC61EC56DAC006B95BA /* CloudKit.framework in Frameworks */,
+				65887F20714DB64A8AA64BDF /* Pods_Shift_Dashboard.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3496530F1EC1E5B800210A46 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3496531A1EC1E5B800210A46 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		349652F21EC1E5B800210A46 = {
+			isa = PBXGroup;
+			children = (
+				349652FD1EC1E5B800210A46 /* evesSecurity */,
+				349653151EC1E5B800210A46 /* evesSecurityTests */,
+				349653201EC1E5B800210A46 /* evesSecurityUITests */,
+				349652FC1EC1E5B800210A46 /* Products */,
+				958FC654A5F313C7C735E1DD /* Pods */,
+				FF3209C55564F5826792BA74 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		349652FC1EC1E5B800210A46 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				349652FB1EC1E5B800210A46 /* Meeting Dashboard.app */,
+				349653121EC1E5B800210A46 /* Shift DashboardTests.xctest */,
+				3496531D1EC1E5B800210A46 /* Shift DashboardUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		349652FD1EC1E5B800210A46 /* evesSecurity */ = {
+			isa = PBXGroup;
+			children = (
+				34CAA81C206E470000895983 /* data classes */,
+				347BCEC41EC56DA7006B95BA /* evesSecurity.entitlements */,
+				349653311EC1F0BA00210A46 /* Views */,
+				349653301EC1F0B200210A46 /* Database */,
+				3496532F1EC1F0A800210A46 /* Classes */,
+				349653081EC1E5B800210A46 /* Assets.xcassets */,
+				3496530D1EC1E5B800210A46 /* Info.plist */,
+			);
+			path = evesSecurity;
+			sourceTree = "<group>";
+		};
+		349653151EC1E5B800210A46 /* evesSecurityTests */ = {
+			isa = PBXGroup;
+			children = (
+				349653161EC1E5B800210A46 /* evesSecurityTests.swift */,
+				349653181EC1E5B800210A46 /* Info.plist */,
+			);
+			path = evesSecurityTests;
+			sourceTree = "<group>";
+		};
+		349653201EC1E5B800210A46 /* evesSecurityUITests */ = {
+			isa = PBXGroup;
+			children = (
+				349653211EC1E5B900210A46 /* evesSecurityUITests.swift */,
+				349653231EC1E5B900210A46 /* Info.plist */,
+			);
+			path = evesSecurityUITests;
+			sourceTree = "<group>";
+		};
+		3496532F1EC1F0A800210A46 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				34EEE5F11EECCDC50006B921 /* alertsClass.swift */,
+				34CEEA381EC2EB5E00F85A11 /* addressClass.swift */,
+				3412960C1F15D2DB00B2AC7C /* CalendarDetails.swift */,
+				34CEEA3E1EC303CC00F85A11 /* clientsClass.swift */,
+				345E66D620805AA1008FC38F /* commsLogClass.swift */,
+				34CEEA421EC30B7700F85A11 /* Contacts.swift */,
+				34CEE9F11EC2C99C00F85A11 /* ContactDetails.swift */,
+				345886371F0DC51800823571 /* contextClass.swift */,
+				34CEE97F1EC2C41600F85A11 /* decodesClass.swift */,
+				349653321EC1F0DC00210A46 /* evesSecurityShared.swift */,
+				3413238A1EC40A1D00BBDE1E /* dropdownsClass.swift */,
+				343757D71ED4070600A9D313 /* eventTemplateHeadClass.swift */,
+				343757D51ED3FA3A00A9D313 /* eventTemplateClass.swift */,
+				34B01DCA1EE3B89200B836C8 /* extensions.swift */,
+				3423CC1C1F00CE9E0093B915 /* IAPClass.swift */,
+				34D797941ED7BEB90045DFD9 /* IOSCalendar.swift */,
+				34B3582B1F15D44D00EFA9EA /* meetingAgendaItemClass.swift */,
+				34B3582C1F15D46700EFA9EA /* meetingAttendeeClass.swift */,
+				34B3582F1F15D4AC00EFA9EA /* meetingSupportingDocsClass.swift */,
+				34CEE97D1EC2C37E00F85A11 /* notificationDefinitions.swift */,
+				34CEEA461EC3145200F85A11 /* personAdditionalInfoClass.swift */,
+				341323821EC3EA9700BBDE1E /* personClass.swift */,
+				34CEEA601EC31D6C00F85A11 /* personAddInfoEntryClass.swift */,
+				34CEE9D31EC2C71C00F85A11 /* projectClass.swift */,
+				3413238E1EC42F1F00BBDE1E /* ratesClass.swift */,
+				34EFB4181EE2454800772C8C /* reporting.swift */,
+				341323931EC43C3500BBDE1E /* shiftsClass.swift */,
+				34CEE9A91EC2C61500F85A11 /* taskClass.swift */,
+				341D39931F0DC5C40040F4D6 /* taskContextsClass.swift */,
+				341D39971F0DC5F60040F4D6 /* taskPredecessorClass.swift */,
+				34CEE9DB1EC2C79600F85A11 /* taskUpdatesClass.swift */,
+				34CEE9771EC2C1DF00F85A11 /* teamClass.swift */,
+				341323991EC4530300BBDE1E /* UsersClass.swift */,
+				3407F7AB1EC6CA4F008C5751 /* userRolesClass.swift */,
+				347BCEC81EC59C43006B95BA /* userTeamsClass.swift */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		349653301EC1F0B200210A46 /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				34CEE96F1EC2BE4E00F85A11 /* CloudKitInteraction.swift */,
+				34CEE9E91EC2C81800F85A11 /* EvesCRMSharedFiles.swift */,
+				34CEE9751EC2C1A900F85A11 /* reachability.swift */,
+				34CEE9731EC2BEC200F85A11 /* UserInfo.swift */,
+			);
+			name = Database;
+			sourceTree = "<group>";
+		};
+		349653311EC1F0BA00210A46 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				341A16FA2082CE2A00A6500E /* taskViewController.swift */,
+				341A16F82082CDA900A6500E /* taskUpdatesViewController.swift */,
+				341A16F42082CBC400A6500E /* taskListViewController.swift */,
+				341A16EE2082C9CD00A6500E /* meetingsViewController.swift */,
+				341A16EA2082C98100A6500E /* meetingAgendaViewController.swift */,
+				341A16E42082C91900A6500E /* AgendaItemViewController.swift */,
+				3496530A1EC1E5B800210A46 /* LaunchScreen.storyboard */,
+				34B35A7E1ECE6D0A00B4FFD7 /* Clients.storyboard */,
+				34050F681EC82B9300CC7CBE /* dropDownMenus.storyboard */,
+				347BCEBD1EC559BD006B95BA /* LoginRoles.storyboard */,
+				349653021EC1E5B800210A46 /* Main.storyboard */,
+				341A16F22082C9F200A6500E /* meetings.storyboard */,
+				34968CDD1ECAC68D0009798B /* person.storyboard */,
+				34B35A821ECEC2D600B4FFD7 /* Projects.storyboard */,
+				34991C071EF2427A00D99B0D /* reports.storyboard */,
+				346567591F106FDB00631C4B /* Settings.storyboard */,
+				3463FA9B1ED141ED00486195 /* Shifts.storyboard */,
+				341A16F62082CC2700A6500E /* tasks.storyboard */,
+				349652FE1EC1E5B800210A46 /* AppDelegate.swift */,
+				349653001EC1E5B800210A46 /* ViewController.swift */,
+				3492932D1ECD797600AFAE25 /* addPerInfoMaintenanceViewController.swift */,
+				34E07BB91ECAF02A007711A6 /* addressesViewController.swift */,
+				34B35A801ECE77A300B4FFD7 /* clientMaintenanceViewController.swift */,
+				346229502081868A00ED7E24 /* commsLogView.swift */,
+				34B43A6F1ECC0A7500BBE4D1 /* contactsViewController.swift */,
+				34B35A841ECEC7A900B4FFD7 /* contractMaintenanceViewController.swift */,
+				34729B161EF4B5C700A6DEC6 /* dropdownMaintenanceViewController.swift */,
+				34050F6B1EC82C0F00CC7CBE /* dateTimePickerViewController.swift */,
+				347BCEC11EC563F0006B95BA /* orgEditViewController.swift */,
+				343757D11ED3F26300A9D313 /* eventPlanningViewController.swift */,
+				343757D31ED3F27E00A9D313 /* eventTemplateVoewController.swift */,
+				3434C2171F00E3D10030DD18 /* IAPViewController.swift */,
+				3499EDF31EDE8B720027CE5C /* monthlyRosterViewController.swift */,
+				347BCEBF1EC55D88006B95BA /* newUserViewController.swift */,
+				34968CDF1ECACA350009798B /* personViewController.swift */,
+				34050F6D1EC82C5500CC7CBE /* pickerViewController.swift */,
+				3460BE671ECFCC5C00857332 /* rateMaintenanceViewController.swift */,
+				34991C091EF25BDE00D99B0D /* reportMaintenanceViewController.swift */,
+				344BF8281EC94D4B0066CD35 /* securityViewController.swift */,
+				349EE2FE20783D3600BA1FA8 /* reportView.swift */,
+				34BB338F1EFF5D1E0032CF5F /* securityDeletedItemsViewController.swift */,
+				344BF82D1EC96E180066CD35 /* setPasswordViewController.swift */,
+				344BF82B1EC954C70066CD35 /* settingViewController.swift */,
+				3463FA9D1ED15B3F00486195 /* shiftMaintenanceViewController.swift */,
+				346864E520770D0900D82E60 /* shiftDetailsView.swift */,
+				34050F6F1EC82C8F00CC7CBE /* timeSelectViewController.swift */,
+				34C462771EC81D810037D79E /* userFormViewController.swift */,
+				34FC32B11EC97C250053443D /* validatePasswordViewController.swift */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		34CAA81C206E470000895983 /* data classes */ = {
+			isa = PBXGroup;
+			children = (
+				34CAA850206E473E00895983 /* Panes+CoreDataProperties.swift */,
+				34CAA859206E473F00895983 /* ProjectTeamMembers+CoreDataProperties.swift */,
+				34CAA845206E473C00895983 /* TaskAttachment+CoreDataProperties.swift */,
+				34CAA836206E473A00895983 /* ReportingMonth+CoreDataProperties.swift */,
+				34CAA82E206E473900895983 /* MeetingSupportingDocs+CoreDataProperties.swift */,
+			);
+			name = "data classes";
+			sourceTree = "<group>";
+		};
+		958FC654A5F313C7C735E1DD /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				EA96443DD3D0E19717F153B4 /* Pods-Shift Dashboard.debug.xcconfig */,
+				43D412E29278CCE92FCC1722 /* Pods-Shift Dashboard.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		FF3209C55564F5826792BA74 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				340A02AA1F00B97C00E425C9 /* StoreKit.framework */,
+				347BCEC51EC56DAC006B95BA /* CloudKit.framework */,
+				1F5A26B60DBD10DF1719A504 /* Pods_Shift_Dashboard.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		349652FA1EC1E5B800210A46 /* Meeting Dashboard */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 349653261EC1E5B900210A46 /* Build configuration list for PBXNativeTarget "Meeting Dashboard" */;
+			buildPhases = (
+				216046868713F08143F8DE88 /* [CP] Check Pods Manifest.lock */,
+				349652F71EC1E5B800210A46 /* Sources */,
+				349652F81EC1E5B800210A46 /* Frameworks */,
+				349652F91EC1E5B800210A46 /* Resources */,
+				E94F0C3ADDEEDC6B12907556 /* [CP] Embed Pods Frameworks */,
+				EE6174A95B66530754477F9D /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Meeting Dashboard";
+			productName = evesSecurity;
+			productReference = 349652FB1EC1E5B800210A46 /* Meeting Dashboard.app */;
+			productType = "com.apple.product-type.application";
+		};
+		349653111EC1E5B800210A46 /* Shift DashboardTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 349653291EC1E5B900210A46 /* Build configuration list for PBXNativeTarget "Shift DashboardTests" */;
+			buildPhases = (
+				3496530E1EC1E5B800210A46 /* Sources */,
+				3496530F1EC1E5B800210A46 /* Frameworks */,
+				349653101EC1E5B800210A46 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				349653141EC1E5B800210A46 /* PBXTargetDependency */,
+			);
+			name = "Shift DashboardTests";
+			productName = evesSecurityTests;
+			productReference = 349653121EC1E5B800210A46 /* Shift DashboardTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		3496531C1EC1E5B800210A46 /* Shift DashboardUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3496532C1EC1E5B900210A46 /* Build configuration list for PBXNativeTarget "Shift DashboardUITests" */;
+			buildPhases = (
+				349653191EC1E5B800210A46 /* Sources */,
+				3496531A1EC1E5B800210A46 /* Frameworks */,
+				3496531B1EC1E5B800210A46 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3496531F1EC1E5B800210A46 /* PBXTargetDependency */,
+			);
+			name = "Shift DashboardUITests";
+			productName = evesSecurityUITests;
+			productReference = 3496531D1EC1E5B800210A46 /* Shift DashboardUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		349652F31EC1E5B800210A46 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0830;
+				LastUpgradeCheck = 0930;
+				ORGANIZATIONNAME = "Garry Eves";
+				TargetAttributes = {
+					349652FA1EC1E5B800210A46 = {
+						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = 76YDDNPU7W;
+						LastSwiftMigration = 0920;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+							com.apple.Push = {
+								enabled = 1;
+							};
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
+					};
+					349653111EC1E5B800210A46 = {
+						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = 76YDDNPU7W;
+						LastSwiftMigration = 0920;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 349652FA1EC1E5B800210A46;
+					};
+					3496531C1EC1E5B800210A46 = {
+						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = 76YDDNPU7W;
+						LastSwiftMigration = 0920;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 349652FA1EC1E5B800210A46;
+					};
+				};
+			};
+			buildConfigurationList = 349652F61EC1E5B800210A46 /* Build configuration list for PBXProject "Meeting Dashboard" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 349652F21EC1E5B800210A46;
+			productRefGroup = 349652FC1EC1E5B800210A46 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				349652FA1EC1E5B800210A46 /* Meeting Dashboard */,
+				349653111EC1E5B800210A46 /* Shift DashboardTests */,
+				3496531C1EC1E5B800210A46 /* Shift DashboardUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		349652F91EC1E5B800210A46 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3496530C1EC1E5B800210A46 /* LaunchScreen.storyboard in Resources */,
+				3463FA9C1ED141ED00486195 /* Shifts.storyboard in Resources */,
+				341A16F32082C9F200A6500E /* meetings.storyboard in Resources */,
+				3465675B1F106FDB00631C4B /* Settings.storyboard in Resources */,
+				349653091EC1E5B800210A46 /* Assets.xcassets in Resources */,
+				347BCEBE1EC559BD006B95BA /* LoginRoles.storyboard in Resources */,
+				34991C081EF2427A00D99B0D /* reports.storyboard in Resources */,
+				34B35A7F1ECE6D0A00B4FFD7 /* Clients.storyboard in Resources */,
+				34B35A831ECEC2D600B4FFD7 /* Projects.storyboard in Resources */,
+				34968CDE1ECAC68D0009798B /* person.storyboard in Resources */,
+				349653041EC1E5B800210A46 /* Main.storyboard in Resources */,
+				341A16F72082CC2700A6500E /* tasks.storyboard in Resources */,
+				34050F691EC82B9300CC7CBE /* dropDownMenus.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		349653101EC1E5B800210A46 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3496531B1EC1E5B800210A46 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		216046868713F08143F8DE88 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Shift Dashboard-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E94F0C3ADDEEDC6B12907556 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Shift Dashboard/Pods-Shift Dashboard-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/DLRadioButton/DLRadioButton.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DLRadioButton.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Shift Dashboard/Pods-Shift Dashboard-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EE6174A95B66530754477F9D /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Shift Dashboard/Pods-Shift Dashboard-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		349652F71EC1E5B800210A46 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				34B358301F15D4B500EFA9EA /* meetingSupportingDocsClass.swift in Sources */,
+				34B3582D1F15D47500EFA9EA /* meetingAttendeeClass.swift in Sources */,
+				34B3582E1F15D47500EFA9EA /* meetingAgendaItemClass.swift in Sources */,
+				34B3582A1F15D3FE00EFA9EA /* CalendarDetails.swift in Sources */,
+				34050F6E1EC82C5500CC7CBE /* pickerViewController.swift in Sources */,
+				341A16FB2082CE2B00A6500E /* taskViewController.swift in Sources */,
+				34729B171EF4B5C700A6DEC6 /* dropdownMaintenanceViewController.swift in Sources */,
+				34CAA911206E474000895983 /* ProjectTeamMembers+CoreDataProperties.swift in Sources */,
+				34CAA8D5206E474000895983 /* TaskAttachment+CoreDataProperties.swift in Sources */,
+				341A16EB2082C98100A6500E /* meetingAgendaViewController.swift in Sources */,
+				34CEEA391EC2EB5E00F85A11 /* addressClass.swift in Sources */,
+				343757D21ED3F26300A9D313 /* eventPlanningViewController.swift in Sources */,
+				34B01DCB1EE3B89200B836C8 /* extensions.swift in Sources */,
+				34B35A811ECE77A300B4FFD7 /* clientMaintenanceViewController.swift in Sources */,
+				34EEE5F21EECCDC50006B921 /* alertsClass.swift in Sources */,
+				349653011EC1E5B800210A46 /* ViewController.swift in Sources */,
+				347BCEC21EC563F0006B95BA /* orgEditViewController.swift in Sources */,
+				341D39941F0DC5C40040F4D6 /* taskContextsClass.swift in Sources */,
+				341323831EC3EA9700BBDE1E /* personClass.swift in Sources */,
+				341323941EC43C3500BBDE1E /* shiftsClass.swift in Sources */,
+				349EE2FF20783D3600BA1FA8 /* reportView.swift in Sources */,
+				34CEE9D41EC2C71C00F85A11 /* projectClass.swift in Sources */,
+				34B35A851ECEC7A900B4FFD7 /* contractMaintenanceViewController.swift in Sources */,
+				345E66D720805AA1008FC38F /* commsLogClass.swift in Sources */,
+				34CAA8A8206E474000895983 /* ReportingMonth+CoreDataProperties.swift in Sources */,
+				347BCEC91EC59C43006B95BA /* userTeamsClass.swift in Sources */,
+				34CEE9AA1EC2C61500F85A11 /* taskClass.swift in Sources */,
+				3413238F1EC42F1F00BBDE1E /* ratesClass.swift in Sources */,
+				34CEEA3F1EC303CC00F85A11 /* clientsClass.swift in Sources */,
+				3423CC1D1F00CE9E0093B915 /* IAPClass.swift in Sources */,
+				3460BE681ECFCC5C00857332 /* rateMaintenanceViewController.swift in Sources */,
+				34CEE9761EC2C1A900F85A11 /* reachability.swift in Sources */,
+				34CEE9701EC2BE4E00F85A11 /* CloudKitInteraction.swift in Sources */,
+				344BF82E1EC96E180066CD35 /* setPasswordViewController.swift in Sources */,
+				34CAA890206E474000895983 /* MeetingSupportingDocs+CoreDataProperties.swift in Sources */,
+				344BF82C1EC954C70066CD35 /* settingViewController.swift in Sources */,
+				34E07BBA1ECAF02A007711A6 /* addressesViewController.swift in Sources */,
+				345886381F0DC51800823571 /* contextClass.swift in Sources */,
+				34CEE9EA1EC2C81800F85A11 /* EvesCRMSharedFiles.swift in Sources */,
+				34991C0A1EF25BDE00D99B0D /* reportMaintenanceViewController.swift in Sources */,
+				34B43A701ECC0A7500BBE4D1 /* contactsViewController.swift in Sources */,
+				34CAA8F6206E474000895983 /* Panes+CoreDataProperties.swift in Sources */,
+				341D39981F0DC5F60040F4D6 /* taskPredecessorClass.swift in Sources */,
+				34BB33901EFF5D1E0032CF5F /* securityDeletedItemsViewController.swift in Sources */,
+				343757D41ED3F27E00A9D313 /* eventTemplateVoewController.swift in Sources */,
+				341A16F02082C9CD00A6500E /* meetingsViewController.swift in Sources */,
+				3492932E1ECD797600AFAE25 /* addPerInfoMaintenanceViewController.swift in Sources */,
+				34CEE9F21EC2C99C00F85A11 /* ContactDetails.swift in Sources */,
+				344BF8291EC94D4B0066CD35 /* securityViewController.swift in Sources */,
+				34CEE97E1EC2C37E00F85A11 /* notificationDefinitions.swift in Sources */,
+				34CEE9801EC2C41600F85A11 /* decodesClass.swift in Sources */,
+				34968CE01ECACA350009798B /* personViewController.swift in Sources */,
+				346229512081868A00ED7E24 /* commsLogView.swift in Sources */,
+				34EFB4191EE2454800772C8C /* reporting.swift in Sources */,
+				3413238B1EC40A1D00BBDE1E /* dropdownsClass.swift in Sources */,
+				34CEEA611EC31D6C00F85A11 /* personAddInfoEntryClass.swift in Sources */,
+				3434C2181F00E3D10030DD18 /* IAPViewController.swift in Sources */,
+				341A16F92082CDA900A6500E /* taskUpdatesViewController.swift in Sources */,
+				34C462781EC81D810037D79E /* userFormViewController.swift in Sources */,
+				34CEEA471EC3145200F85A11 /* personAdditionalInfoClass.swift in Sources */,
+				34CEE9DC1EC2C79600F85A11 /* taskUpdatesClass.swift in Sources */,
+				34D797951ED7BEB90045DFD9 /* IOSCalendar.swift in Sources */,
+				34050F6C1EC82C0F00CC7CBE /* dateTimePickerViewController.swift in Sources */,
+				341A16F52082CBC400A6500E /* taskListViewController.swift in Sources */,
+				3407F7AC1EC6CA4F008C5751 /* userRolesClass.swift in Sources */,
+				343757D61ED3FA3A00A9D313 /* eventTemplateClass.swift in Sources */,
+				349653331EC1F0DC00210A46 /* evesSecurityShared.swift in Sources */,
+				3463FA9E1ED15B3F00486195 /* shiftMaintenanceViewController.swift in Sources */,
+				347BCEC01EC55D88006B95BA /* newUserViewController.swift in Sources */,
+				3499EDF41EDE8B720027CE5C /* monthlyRosterViewController.swift in Sources */,
+				34CEE9781EC2C1DF00F85A11 /* teamClass.swift in Sources */,
+				34050F701EC82C8F00CC7CBE /* timeSelectViewController.swift in Sources */,
+				3413239A1EC4530300BBDE1E /* UsersClass.swift in Sources */,
+				346864E620770D0900D82E60 /* shiftDetailsView.swift in Sources */,
+				34CEE9741EC2BEC200F85A11 /* UserInfo.swift in Sources */,
+				349652FF1EC1E5B800210A46 /* AppDelegate.swift in Sources */,
+				343757D81ED4070600A9D313 /* eventTemplateHeadClass.swift in Sources */,
+				34CEEA431EC30B7700F85A11 /* Contacts.swift in Sources */,
+				341A16E52082C91900A6500E /* AgendaItemViewController.swift in Sources */,
+				34FC32B21EC97C250053443D /* validatePasswordViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3496530E1EC1E5B800210A46 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				34CAA8D6206E474000895983 /* TaskAttachment+CoreDataProperties.swift in Sources */,
+				34CAA912206E474000895983 /* ProjectTeamMembers+CoreDataProperties.swift in Sources */,
+				34CAA891206E474000895983 /* MeetingSupportingDocs+CoreDataProperties.swift in Sources */,
+				34CAA8A9206E474000895983 /* ReportingMonth+CoreDataProperties.swift in Sources */,
+				349653171EC1E5B800210A46 /* evesSecurityTests.swift in Sources */,
+				34CAA8F7206E474000895983 /* Panes+CoreDataProperties.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		349653191EC1E5B800210A46 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				34CAA8D7206E474000895983 /* TaskAttachment+CoreDataProperties.swift in Sources */,
+				34CAA913206E474000895983 /* ProjectTeamMembers+CoreDataProperties.swift in Sources */,
+				34CAA892206E474000895983 /* MeetingSupportingDocs+CoreDataProperties.swift in Sources */,
+				34CAA8AA206E474000895983 /* ReportingMonth+CoreDataProperties.swift in Sources */,
+				349653221EC1E5B900210A46 /* evesSecurityUITests.swift in Sources */,
+				34CAA8F8206E474000895983 /* Panes+CoreDataProperties.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		349653141EC1E5B800210A46 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 349652FA1EC1E5B800210A46 /* Meeting Dashboard */;
+			targetProxy = 349653131EC1E5B800210A46 /* PBXContainerItemProxy */;
+		};
+		3496531F1EC1E5B800210A46 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 349652FA1EC1E5B800210A46 /* Meeting Dashboard */;
+			targetProxy = 3496531E1EC1E5B800210A46 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		346567591F106FDB00631C4B /* Settings.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3465675A1F106FDB00631C4B /* Base */,
+			);
+			name = Settings.storyboard;
+			sourceTree = "<group>";
+		};
+		349653021EC1E5B800210A46 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				349653031EC1E5B800210A46 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		3496530A1EC1E5B800210A46 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3496530B1EC1E5B800210A46 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		349653241EC1E5B900210A46 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Debug;
+		};
+		349653251EC1E5B900210A46 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				TARGETED_DEVICE_FAMILY = 2;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		349653271EC1E5B900210A46 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EA96443DD3D0E19717F153B4 /* Pods-Shift Dashboard.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = evesSecurity/evesSecurity.entitlements;
+				DEVELOPMENT_TEAM = 76YDDNPU7W;
+				ENABLE_BITCODE = YES;
+				INFOPLIST_FILE = evesSecurity/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.garryeves.evesMeeting;
+				PRODUCT_NAME = "Meeting Dashboard";
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Debug;
+		};
+		349653281EC1E5B900210A46 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 43D412E29278CCE92FCC1722 /* Pods-Shift Dashboard.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = evesSecurity/evesSecurity.entitlements;
+				DEVELOPMENT_TEAM = 76YDDNPU7W;
+				ENABLE_BITCODE = YES;
+				INFOPLIST_FILE = evesSecurity/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.garryeves.evesMeeting;
+				PRODUCT_NAME = "Meeting Dashboard";
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
+		3496532A1EC1E5B900210A46 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = 76YDDNPU7W;
+				INFOPLIST_FILE = evesSecurityTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.garryeves.evesSecurityTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Shift Dashboard.app/Shift Dashboard";
+			};
+			name = Debug;
+		};
+		3496532B1EC1E5B900210A46 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = 76YDDNPU7W;
+				INFOPLIST_FILE = evesSecurityTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.garryeves.evesSecurityTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Shift Dashboard.app/Shift Dashboard";
+			};
+			name = Release;
+		};
+		3496532D1EC1E5B900210A46 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				DEVELOPMENT_TEAM = 76YDDNPU7W;
+				INFOPLIST_FILE = evesSecurityUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.garryeves.evesSecurityUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
+				TEST_TARGET_NAME = evesSecurity;
+			};
+			name = Debug;
+		};
+		3496532E1EC1E5B900210A46 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				DEVELOPMENT_TEAM = 76YDDNPU7W;
+				INFOPLIST_FILE = evesSecurityUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.garryeves.evesSecurityUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
+				TEST_TARGET_NAME = evesSecurity;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		349652F61EC1E5B800210A46 /* Build configuration list for PBXProject "Meeting Dashboard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				349653241EC1E5B900210A46 /* Debug */,
+				349653251EC1E5B900210A46 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		349653261EC1E5B900210A46 /* Build configuration list for PBXNativeTarget "Meeting Dashboard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				349653271EC1E5B900210A46 /* Debug */,
+				349653281EC1E5B900210A46 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		349653291EC1E5B900210A46 /* Build configuration list for PBXNativeTarget "Shift DashboardTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3496532A1EC1E5B900210A46 /* Debug */,
+				3496532B1EC1E5B900210A46 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3496532C1EC1E5B900210A46 /* Build configuration list for PBXNativeTarget "Shift DashboardUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3496532D1EC1E5B900210A46 /* Debug */,
+				3496532E1EC1E5B900210A46 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 349652F31EC1E5B800210A46 /* Project object */;
+}

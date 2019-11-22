@@ -157,7 +157,7 @@ public class userFormViewController: UIViewController, UIPopoverPresentationCont
     {
         if tableView == tblUsers
         {
-            workingUser = userItem(userID: userList.users[indexPath.row].userID)
+            workingUser = userItem(userID: userList.users[indexPath.row].userID!)
             workingUser.name = userList.users[indexPath.row].name!
             workingUser.email = userList.users[indexPath.row].email!
             
@@ -200,7 +200,7 @@ public class userFormViewController: UIViewController, UIPopoverPresentationCont
             {
                 if editingStyle == .delete
                 {
-                    let teamList = userTeams(userID: userList.users[indexPath.row].userID)
+                    let teamList = userTeams(userID: userList.users[indexPath.row].userID!)
                     for myItem in teamList.UserTeams
                     {
                         if myItem.teamID == currentUser.currentTeam!.teamID

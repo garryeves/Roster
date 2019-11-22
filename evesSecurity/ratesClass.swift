@@ -16,37 +16,12 @@ public class rates: NSObject, Identifiable
     public let id = UUID()
     fileprivate var myRates:[rate] = Array()
     
-    public init(clientID: Int64, teamID: Int64)
+    public init(clientID: Int64, teamID: Int64, isActive: Bool = false)
     {
-        if currentUser.currentTeam!.rates == nil
-        {
-            currentUser.currentTeam!.rates = myCloudDB.getRates(teamID: teamID)
-        }
-        
-        //        var returnArray: [Rates] = Array()
-        
-        //        for item in (currentUser.currentTeam?.rates)!
-        //        for item in myCloudDB.getRates(clientID: clientID, teamID: teamID)
-        //        {
-        //            if item.clientID == clientID
-        //            {
-        //                returnArray.append(item)
-        //            }
-        //        }
-        //
-        //        for myItem in returnArray
-        //        {
-        //            let myObject = rate(rateID: myItem.rateID,
-        //                                clientID: myItem.clientID,
-        //                                rateName: myItem.rateName!,
-        //                                rateAmount: myItem.rateAmount,
-        //                                chargeAmount: myItem.chargeAmount,
-        //                                startDate: myItem.startDate! as Date,
-        //                                teamID: myItem.teamID,
-        //                                active: myItem.active)
-        //            myRates.append(myObject)
-        //        }
-        
+//        if currentUser.currentTeam!.rates == nil
+//        {
+            currentUser.currentTeam!.rates = myCloudDB.getRates(teamID: teamID, isActive: isActive)
+//        }
         
         for item in (currentUser.currentTeam?.rates)!
         {
@@ -87,12 +62,12 @@ public class rates: NSObject, Identifiable
         }
     }
     
-    public init(teamID: Int64)
+    public init(teamID: Int64, isActive: Bool = false)
     {
-        if currentUser.currentTeam?.rates == nil
-        {
-            currentUser.currentTeam?.rates = myCloudDB.getRates(teamID: teamID)
-        }
+//        if currentUser.currentTeam?.rates == nil
+//        {
+            currentUser.currentTeam?.rates = myCloudDB.getRates(teamID: teamID, isActive: isActive)
+ //       }
         
         for myItem in (currentUser.currentTeam?.rates)!
         {
@@ -305,7 +280,7 @@ public class rate: NSObject, Identifiable
         super.init()
         if currentUser.currentTeam?.rates == nil
         {
-            currentUser.currentTeam?.rates = myCloudDB.getRates(teamID: teamID)
+            currentUser.currentTeam?.rates = myCloudDB.getRates(teamID: teamID, isActive: false)
         }
         
         var myItem: Rates!
@@ -645,9 +620,14 @@ extension CloudKitInteraction
         return tempArray
     }
     
-    func getRates(clientID: Int64, teamID: Int64)->[Rates]
+    func getRates(clientID: Int64, teamID: Int64, isActive: Bool)->[Rates]
     {
-        let predicate = NSPredicate(format: "(clientID == \(clientID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
+        var predicate = NSPredicate()
+        if isActive {
+            predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\") AND (active == \"true\")")
+        } else {
+            predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\")")
+        }
         
         let query = CKQuery(recordType: "Rates", predicate: predicate)
         let sem = DispatchSemaphore(value: 0)
@@ -659,10 +639,15 @@ extension CloudKitInteraction
         return shiftArray
     }
     
-    func getRates(teamID: Int64)->[Rates]
+    func getRates(teamID: Int64, isActive: Bool)->[Rates]
     {
-        let predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\")")
-        
+        var predicate = NSPredicate()
+        if isActive {
+            predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\") AND (active == \"true\")")
+        } else {
+            predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\")")
+        }
+
         let query = CKQuery(recordType: "Rates", predicate: predicate)
         let sem = DispatchSemaphore(value: 0)
         fetchServices(query: query, sem: sem, completion: nil)

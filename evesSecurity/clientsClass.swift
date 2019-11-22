@@ -137,6 +137,8 @@ public class client: NSObject, Identifiable, ObservableObject
     fileprivate var myProjectList = project()
     fileprivate var myRateList: rates!
     
+    @Published var reloadScreen = false
+    
     public var clientID: Int64
     {
         get
@@ -155,7 +157,7 @@ public class client: NSObject, Identifiable, ObservableObject
         {
             myClientName = newValue
             currentUser.currentTeam?.clients = nil
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -168,7 +170,7 @@ public class client: NSObject, Identifiable, ObservableObject
         set
         {
             myClientNote = newValue
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -181,7 +183,7 @@ public class client: NSObject, Identifiable, ObservableObject
         set
         {
             myClientContact = newValue
-            save()
+            reloadScreen.toggle()
         }
     }
     
@@ -195,7 +197,7 @@ public class client: NSObject, Identifiable, ObservableObject
         {
             myIsActive = newValue
             currentUser.currentTeam?.clients = nil
-            save()
+            reloadScreen.toggle()
         }
     }
     

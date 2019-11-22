@@ -147,6 +147,24 @@ public class dropdowns: NSObject, Identifiable
     {
         return myDropdownTypes
     }
+    
+    func move(source: IndexSet, destination: Int) {
+        myDropdowns.move(fromOffsets: source, toOffset: destination)
+
+        var processIndex: Int64 = 1
+        
+        DispatchQueue.global(qos: .background).async {
+            for item in self.myDropdowns {
+                if item.order != processIndex {
+                    item.order = processIndex
+                    item.saveMove()
+                }
+                processIndex += 1
+            }
+
+            myCloudDB.performBulkPublicSave()
+        }
+    }
 }
 
 public class dropdownItem: NSObject, Identifiable
@@ -197,6 +215,10 @@ public class dropdownItem: NSObject, Identifiable
         }
     }
     
+    public override init() {
+        super.init()
+    }
+    
     public init(dropdownType: String, dropdownValue: String, teamID: Int64, order: Int64, saveRecord: Bool)
     {
         super.init()
@@ -223,6 +245,15 @@ public class dropdownItem: NSObject, Identifiable
                 {
                     myCloudDB.saveDropdownsRecordToCloudKit(temp)
             }
+        }
+    }
+    
+    func saveMove() {
+        if currentUser.checkWritePermission(adminRoleType)
+        {
+            let temp = Dropdowns(dropDownType: myDropdownType, dropDownValue: myDropdownValue, teamID: myTeamID, order: myOrder)
+            
+            myCloudDB.moveQuestionRecordToCloudKit(temp)
         }
     }
     
@@ -426,6 +457,34 @@ extension CloudKitInteraction
                             sem.signal()
                         }
                     })
+                }
+            }
+        })
+        sem.wait()
+    }
+    
+    func moveQuestionRecordToCloudKit(_ sourceRecord: Dropdowns) {
+        let predicate = NSPredicate(format: "(dropDownType == \"\(sourceRecord.dropDownType!)\") AND (dropDownValue == \"\(sourceRecord.dropDownValue!)\") AND (teamID == \(sourceRecord.teamID))")
+        let query = CKQuery(recordType: "Dropdowns", predicate: predicate)
+        
+        let sem = DispatchSemaphore(value: 0)
+        
+        privateDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
+            if error != nil {
+                NSLog("Error querying records: \(error!.localizedDescription)")
+            } else {
+                // Lets go and get the additional details from the context1_1 table
+                
+                if records!.count > 0 {
+                    let record = records!.first// as! CKRecord
+                    // Now you have grabbed your existing record from iCloud
+                    // Apply whatever changes you want
+                     
+                    record!.setValue(sourceRecord.order, forKey: "order")
+
+                    self.checkSaveRecordList(record!)
+                    self.saveRecordList.append(record!)
+                    sem.signal()
                 }
             }
         })

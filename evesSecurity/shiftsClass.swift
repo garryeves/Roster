@@ -1156,6 +1156,8 @@ class shifts: NSObject, Identifiable, ObservableObject
         {
             myShifts.remove(at: indexNum)
         }
+        
+        
     }
     
     public func removeAll(projectID: Int64, teamID: Int64)
@@ -1931,11 +1933,33 @@ public class shift: NSObject, Identifiable, ObservableObject
         myType = type
         myStartTime = getDefaultDate()
         myEndTime = getDefaultDate()
-        
-        currentUser.currentTeam?.appendShift(myCloudDB.createShiftRecord(self))
+//print("Garry from init")
+//        currentUser.currentTeam?.appendShift(myCloudDB.createShiftRecord(self))
         
         newRecordDelay = saveDelay
     }
+    
+    public init(projectID: Int64, workDate: Date, weekEndDate: Date, teamID: Int64, shiftLineID: Int64, type: String, description: String) {
+            super.init()
+            
+            //        myShiftID = myCloudDB.getNextID("Shifts", teamID: teamID)
+            myProjectID = projectID
+            myTeamID = teamID
+            myWeekEndDate = weekEndDate
+            myStatus = shiftStatusOpen
+            myWorkDate = workDate
+            myShiftLineID = shiftLineID
+            myType = type
+            myStartTime = getDefaultDate()
+            myEndTime = getDefaultDate()
+            myShiftDescription = description
+        
+            save()
+    //print("Garry from init")
+    //        currentUser.currentTeam?.appendShift(myCloudDB.createShiftRecord(self))
+            
+            newRecordDelay = saveDelay
+        }
     
     public init(projectID: Int64, workDate: Date, weekEndDate: Date, teamID: Int64, shiftLineID: Int64, type: String, shiftDescription: String, startTime: Date, endTime: Date)
     {
@@ -2098,6 +2122,7 @@ public class shift: NSObject, Identifiable, ObservableObject
                 if reloadShift
                 {
                     temp.recordID = newRecordID
+
                     currentUser.currentTeam?.appendShift(temp)
                 }
             }
@@ -2134,7 +2159,6 @@ public class shift: NSObject, Identifiable, ObservableObject
             myCloudDB.deleteShifts(projectID: myProjectID, shiftLineID: myShiftLineID, weekEndDate: myWeekEndDate, workDate: myWorkDate, teamID: myTeamID)
             
             currentUser.currentTeam?.reloadShiftData = true
-            // currentUser.currentTeam?.shifts = nil
         }
     }
     
@@ -2495,7 +2519,7 @@ extension report
         }
     }
     
-    public func reportContractForYear(year: Int64)
+    public func reportContractForYear(year: String)
     {
         var janTotalAmount: Double = 0.0
         var febTotalAmount: Double = 0.0
@@ -2553,84 +2577,84 @@ extension report
                 var novShow: Bool = false
                 var decShow: Bool = false
                 
-                myProject.loadFinancials(month: 1, year: year)
+                myProject.loadFinancials(month: "January", year: year)
                 let janAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     janShow = true
                 }
                 
-                myProject.loadFinancials(month: 2, year: year)
+                myProject.loadFinancials(month: "February", year: year)
                 let febAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     febShow = true
                 }
                 
-                myProject.loadFinancials(month: 3, year: year)
+                myProject.loadFinancials(month: "March", year: year)
                 let marAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     marShow = true
                 }
                 
-                myProject.loadFinancials(month: 4, year: year)
+                myProject.loadFinancials(month: "April", year: year)
                 let aprAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     aprShow = true
                 }
                 
-                myProject.loadFinancials(month: 5, year: year)
+                myProject.loadFinancials(month: "May", year: year)
                 let mayAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     mayShow = true
                 }
                 
-                myProject.loadFinancials(month: 6, year: year)
+                myProject.loadFinancials(month: "June", year: year)
                 let junAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     junShow = true
                 }
                 
-                myProject.loadFinancials(month: 7, year: year)
+                myProject.loadFinancials(month: "July", year: year)
                 let julAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     julShow = true
                 }
                 
-                myProject.loadFinancials(month: 8, year: year)
+                myProject.loadFinancials(month: "August", year: year)
                 let augAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     augShow = true
                 }
                 
-                myProject.loadFinancials(month: 9, year: year)
+                myProject.loadFinancials(month: "September", year: year)
                 let sepAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     sepShow = true
                 }
                 
-                myProject.loadFinancials(month: 10, year: year)
+                myProject.loadFinancials(month: "October", year: year)
                 let octAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     octShow = true
                 }
                 
-                myProject.loadFinancials(month: 11, year: year)
+                myProject.loadFinancials(month: "November", year: year)
                 let novAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
                     novShow = true
                 }
                 
-                myProject.loadFinancials(month: 12, year: year)
+                myProject.loadFinancials(month: "December", year: year)
                 let decAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0
                 {
@@ -2891,114 +2915,115 @@ extension report
 
 extension team
 {
-    public var reportingMonths: [String]
-    {
-        get
-        {
-            var returnArray: [String] = Array()
-            var workingArray: [Int64] = Array()
-            
-            currentUser.currentTeam?.loadShifts(nil)
-            
-            for myItem in (currentUser.currentTeam?.ShiftList!)!
-            {
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "MM"
-                
-                let month = dateFormatter.string(from: myItem.workDate! as Date)
-                
-                let monthInt = Int64(month)
-                
-                var found: Bool = false
-                
-                for myMonth in workingArray
-                {
-                    if myMonth == monthInt
-                    {
-                        found = true
-                        break
-                    }
-                }
-                
-                if !found
-                {
-                    workingArray.append(monthInt!)
-                }
-            }
-            
-            // Now we have all the entries sort into numerical ascending order
-            
-            if workingArray.count > 0
-            {
-                workingArray.sort { $0 < $1 }
-            }
-            
-            // Now Convert to Month Names
-            
-            for myItem in workingArray
-            {
-                switch myItem
-                {
-                case 1:
-                    returnArray.append("January")
-                    
-                case 2:
-                    returnArray.append("February")
-                    
-                case 3:
-                    returnArray.append("March")
-                    
-                case 4:
-                    returnArray.append("April")
-                    
-                case 5:
-                    returnArray.append("May")
-                    
-                case 6:
-                    returnArray.append("June")
-                    
-                case 7:
-                    returnArray.append("July")
-                    
-                case 8:
-                    returnArray.append("August")
-                    
-                case 9:
-                    returnArray.append("September")
-                    
-                case 10:
-                    returnArray.append("October")
-                    
-                case 11:
-                    returnArray.append("November")
-                    
-                case 12:
-                    returnArray.append("December")
-                    
-                default:
-                    print("Teams reportingMonths - got unexpected month - myItem")
-                }
-                
-            }
-            
-            return returnArray
-        }
-    }
+//    public var reportingMonths: [String]
+//    {
+//        get
+//        {
+//            var returnArray: [String] = Array()
+//            var workingArray: [Int64] = Array()
+//
+//            currentUser.currentTeam?.loadShifts(nil)
+//
+//            for myItem in (currentUser.currentTeam?.ShiftList!)!
+//            {
+//                let dateFormatter = DateFormatter()
+//                dateFormatter.dateFormat = "MM"
+//
+//                let month = dateFormatter.string(from: myItem.workDate! as Date)
+//
+//                let monthInt = Int64(month)
+//
+//                var found: Bool = false
+//
+//                for myMonth in workingArray
+//                {
+//                    if myMonth == monthInt
+//                    {
+//                        found = true
+//                        break
+//                    }
+//                }
+//
+//                if !found
+//                {
+//                    workingArray.append(monthInt!)
+//                }
+//            }
+//
+//            // Now we have all the entries sort into numerical ascending order
+//
+//            if workingArray.count > 0
+//            {
+//                workingArray.sort { $0 < $1 }
+//            }
+//
+//            // Now Convert to Month Names
+//
+//            for myItem in workingArray
+//            {
+//                switch myItem
+//                {
+//                case 1:
+//                    returnArray.append("January")
+//
+//                case 2:
+//                    returnArray.append("February")
+//
+//                case 3:
+//                    returnArray.append("March")
+//
+//                case 4:
+//                    returnArray.append("April")
+//
+//                case 5:
+//                    returnArray.append("May")
+//
+//                case 6:
+//                    returnArray.append("June")
+//
+//                case 7:
+//                    returnArray.append("July")
+//
+//                case 8:
+//                    returnArray.append("August")
+//
+//                case 9:
+//                    returnArray.append("September")
+//
+//                case 10:
+//                    returnArray.append("October")
+//
+//                case 11:
+//                    returnArray.append("November")
+//
+//                case 12:
+//                    returnArray.append("December")
+//
+//                default:
+//                    print("Teams reportingMonths - got unexpected month - myItem")
+//                }
+//
+//            }
+//
+//            return returnArray
+//        }
+ //   }
 }
 
 extension projects
 {
-    public func loadFinancials(month: Int64, year: Int64)
-    {
-        // Need to get the
-        
-        // get the projects for the team
-        
-        for workingProject in projectList
-        {
-            workingProject.loadFinancials(month: month, year: year)
-        }
-    }
+//    public func loadFinancials(month: String, year: String)
+//    {
+//        // Need to get the
+//
+//        // get the projects for the team
+//
+//        for workingProject in projectList
+//        {
+//            workingProject.loadFinancials(month: month, year: year)
+//        }
+//    }
+    
     public func loadFinancials(startDate: Date, endDate: Date)
     {
         // Need to get the
@@ -3010,29 +3035,52 @@ extension projects
             workingProject.loadFinancials(startDate: startDate, endDate: endDate)
         }
     }
+    
+    public func loadFinancials(month: String, year: String)
+    {
+        // Need to get the
+        
+        // get the projects for the team
+        
+        for workingProject in projectList
+        {
+            workingProject.loadFinancials(month: month, year: year)
+        }
+    }
 }
 
 extension project
 {
-    public func loadFinancials(month: Int64 = 0, year: Int64 = 0)
+//    public func loadFinancials(month: Int64 = 0, year: Int64 = 0)
+//    {
+//        var financeArray: [monthlyFinancialsStruct] = Array()
+//
+//        if month == 0
+//        {
+//            // Going to get all financials
+//            print("GRE - Do project loadFinancials for all")
+//
+//        }
+//        else
+//        {
+//            let shiftArray = shifts(projectID: projectID, month: month, year: year, teamID: teamID)
+//
+//            financeArray.append(processMonth(shiftArray: shiftArray, month: month, year: year))
+//        }
+//
+//        financials = financeArray
+//    }
+    
+    public func loadFinancials(month: String, year: String)
     {
         var financeArray: [monthlyFinancialsStruct] = Array()
         
-        if month == 0
-        {
-            // Going to get all financials
-            print("GRE - Do project loadFinancials for all")
-            
-            
-            
-        }
-        else
-        {
-            let shiftArray = shifts(projectID: projectID, month: month, year: year, teamID: teamID)
-            
-            financeArray.append(processMonth(shiftArray: shiftArray, month: month, year: year))
-        }
+        let yearInt = Int64(year)
         
+        let shiftArray = shifts(projectID: projectID, month: month.monthNum, year: yearInt!, teamID: teamID)
+            
+            financeArray.append(processMonth(shiftArray: shiftArray, month: month.monthNum, year: yearInt!))
+
         financials = financeArray
     }
     

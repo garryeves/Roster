@@ -110,7 +110,7 @@ public class settingsViewController: UIViewController, UITableViewDataSource, UI
                 let cell = tableView.dequeueReusableCell(withIdentifier:"cellSettings", for: indexPath) as! settingEntryItem
                 
                 cell.lblName.text = decodeList[indexPath.row].name
-                cell.txtValue.text = decodeList[indexPath.row].value
+         //       cell.txtValue.text = decodeList[indexPath.row].value
                 cell.source = decodeList[indexPath.row].source
                 
                 return cell
@@ -154,51 +154,51 @@ public class settingsViewController: UIViewController, UITableViewDataSource, UI
 
     @IBAction func btnTeam(_ sender: UIButton)
     {
-        let orgEditViewControl = loginStoryboard.instantiateViewController(withIdentifier: "orgEdit") as! orgEditViewController
-        orgEditViewControl.workingOrganisation = currentUser!.currentTeam
-        self.present(orgEditViewControl, animated: true, completion: nil)
+//        let orgEditViewControl = loginStoryboard.instantiateViewController(withIdentifier: "orgEdit") as! orgEditViewController
+//        orgEditViewControl.workingOrganisation = currentUser!.currentTeam
+//        self.present(orgEditViewControl, animated: true, completion: nil)
     }
     
     @IBAction func btnInAppPurchase(_ sender: UIButton)
     {
-        let passwordView = loginStoryboard.instantiateViewController(withIdentifier: "renewalView") as! IAPViewController
-        passwordView.modalPresentationStyle = .popover
-        
-        let popover = passwordView.popoverPresentationController!
-        popover.delegate = self
-        popover.sourceView = sender
-        popover.sourceRect = sender.bounds
-        popover.permittedArrowDirections = .any
-        passwordView.preferredContentSize = CGSize(width: 800,height: 800)
-        
-        self.present(passwordView, animated: true, completion: nil)
+//        let passwordView = loginStoryboard.instantiateViewController(withIdentifier: "renewalView") as! IAPViewController
+//        passwordView.modalPresentationStyle = .popover
+//        
+//        let popover = passwordView.popoverPresentationController!
+//        popover.delegate = self
+//        popover.sourceView = sender
+//        popover.sourceRect = sender.bounds
+//        popover.permittedArrowDirections = .any
+//        passwordView.preferredContentSize = CGSize(width: 800,height: 800)
+//        
+//        self.present(passwordView, animated: true, completion: nil)
     }
     
     @IBAction func btnPassword(_ sender: UIButton)
     {
-        let passwordView = loginStoryboard.instantiateViewController(withIdentifier: "setPassword") as! setPasswordViewController
-        passwordView.modalPresentationStyle = .popover
-        
-        let popover = passwordView.popoverPresentationController!
-        popover.delegate = self
-        popover.sourceView = sender
-        popover.sourceRect = sender.bounds
-        popover.permittedArrowDirections = .any
-        passwordView.preferredContentSize = CGSize(width: 600,height: 500)
-        
-        self.present(passwordView, animated: true, completion: nil)
+//        let passwordView = loginStoryboard.instantiateViewController(withIdentifier: "setPassword") as! setPasswordViewController
+//        passwordView.modalPresentationStyle = .popover
+//
+//        let popover = passwordView.popoverPresentationController!
+//        popover.delegate = self
+//        popover.sourceView = sender
+//        popover.sourceRect = sender.bounds
+//        popover.permittedArrowDirections = .any
+//        passwordView.preferredContentSize = CGSize(width: 600,height: 500)
+//
+//        self.present(passwordView, animated: true, completion: nil)
     }
     
     @IBAction func btnPerAddInfo(_ sender: UIButton)
     {
-        let addPerInfoViewControl = personStoryboard.instantiateViewController(withIdentifier: "AddPersonInfo") as! addPerInfoMaintenanceViewController
-        self.present(addPerInfoViewControl, animated: true, completion: nil)
+//        let addPerInfoViewControl = personStoryboard.instantiateViewController(withIdentifier: "AddPersonInfo") as! addPerInfoMaintenanceViewController
+//        self.present(addPerInfoViewControl, animated: true, completion: nil)
     }
     
     @IBAction func btnDropdowns(_ sender: UIButton)
     {
-        let dropdownEditViewControl = loginStoryboard.instantiateViewController(withIdentifier: "dropdownMaintenance") as! dropdownMaintenanceViewController
-        self.present(dropdownEditViewControl, animated: true, completion: nil)
+//        let dropdownEditViewControl = loginStoryboard.instantiateViewController(withIdentifier: "dropdownMaintenance") as! dropdownMaintenanceViewController
+//        self.present(dropdownEditViewControl, animated: true, completion: nil)
     }
     
     @IBAction func btnRestore(_ sender: UIButton)
@@ -209,17 +209,17 @@ public class settingsViewController: UIViewController, UITableViewDataSource, UI
     
     @IBAction func btnSwitchUsers(_ sender: UIButton)
     {
-        let newView = settingsStoryboard.instantiateViewController(withIdentifier: "emailTemplateListView") as! emailTemplateListViewController
-        newView.modalPresentationStyle = .popover
-        
-        let popover = newView.popoverPresentationController!
-        popover.delegate = self
-        popover.sourceView = self.btnSwitchUsers
-        popover.sourceRect = self.btnSwitchUsers.bounds
-        popover.permittedArrowDirections = .any
-        newView.preferredContentSize = CGSize(width: 800,height: 800)
-        
-        self.present(newView, animated: true, completion: nil)
+//        let newView = settingsStoryboard.instantiateViewController(withIdentifier: "emailTemplateListView") as! emailTemplateListViewController
+//        newView.modalPresentationStyle = .popover
+//        
+//        let popover = newView.popoverPresentationController!
+//        popover.delegate = self
+//        popover.sourceView = self.btnSwitchUsers
+//        popover.sourceRect = self.btnSwitchUsers.bounds
+//        popover.permittedArrowDirections = .any
+//        newView.preferredContentSize = CGSize(width: 800,height: 800)
+//        
+//        self.present(newView, animated: true, completion: nil)
     }
     
     @IBAction func btnDefaultCalendar(_ sender: UIButton) {
@@ -320,9 +320,9 @@ public class settingsViewController: UIViewController, UITableViewDataSource, UI
         
         refreshScreen()
         btnPassword.isEnabled = true
-        let orgEditViewControl = loginStoryboard.instantiateViewController(withIdentifier: "orgEdit") as! orgEditViewController
-        orgEditViewControl.workingOrganisation = currentUser!.currentTeam
-        self.present(orgEditViewControl, animated: true, completion: nil)
+//        let orgEditViewControl = loginStoryboard.instantiateViewController(withIdentifier: "orgEdit") as! orgEditViewController
+//        orgEditViewControl.workingOrganisation = currentUser!.currentTeam
+//        self.present(orgEditViewControl, animated: true, completion: nil)
     }
     
 //    @IBAction func btnBack(_ sender: Any)
@@ -437,8 +437,8 @@ public class settingsViewController: UIViewController, UITableViewDataSource, UI
             calBefore = 2
         }
         
-        let newItemBefore = decodeItem(name: "Number of weeks before today", value: "\(calBefore)", source: "CalBefore")
-        decodeList.append(newItemBefore)
+    //    let newItemBefore = decodeItem(name: "Number of weeks before today", value: "\(calBefore)", source: "CalBefore")
+     //   decodeList.append(newItemBefore)
         
         var calAfter = readDefaultInt("CalAfter")
         
@@ -447,8 +447,8 @@ public class settingsViewController: UIViewController, UITableViewDataSource, UI
             writeDefaultInt("CalAfter", value: 4)
             calAfter = 4
         }
-        let newItemAfter = decodeItem(name: "Number of weeks after today", value: "\(calAfter)", source: "CalAfter")
-        decodeList.append(newItemAfter)
+    //   let newItemAfter = decodeItem(name: "Number of weeks after today", value: "\(calAfter)", source: "CalAfter")
+      //  decodeList.append(newItemAfter)
         
         tblSettings.reloadData()
     }
@@ -518,13 +518,13 @@ public class settingsViewController: UIViewController, UITableViewDataSource, UI
             
             self.present(alert, animated: false, completion: nil)
         }
-        else
-        {
-            let dupsView = shiftsStoryboard.instantiateViewController(withIdentifier: "dupShiftsView") as! duplicateShiftsViewController
-            
-            dupsView.shiftList = shiftList
-            self.present(dupsView, animated: true, completion: nil)
-        }
+//        else
+//        {
+//            let dupsView = shiftsStoryboard.instantiateViewController(withIdentifier: "dupShiftsView") as! duplicateShiftsViewController
+//            
+//            dupsView.shiftList = shiftList
+//            self.present(dupsView, animated: true, completion: nil)
+//        }
     }
 }
 

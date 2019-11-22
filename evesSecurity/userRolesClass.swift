@@ -126,6 +126,10 @@ public class userRoleItem: NSObject, Identifiable
         }
     }
     
+    public override init() {
+        super.init()
+    }
+    
     public init(userID: Int64, roleType: String, teamID: Int64, roleID: Int64)
     {
         super.init()

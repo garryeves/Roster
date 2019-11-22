@@ -63,7 +63,7 @@ public class eventTemplates: NSObject, Identifiable
     }
 }
 
-public class eventTemplate: NSObject, Identifiable
+public class eventTemplate: NSObject, Identifiable, ObservableObject
 {
     public let id = UUID()
     fileprivate var myEventID: Int64 = 0

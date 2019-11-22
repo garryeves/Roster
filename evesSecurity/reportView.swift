@@ -995,7 +995,7 @@ public class reportView: UIViewController, myCommunicationDelegate, UITableViewD
                     {
                         contractList = projects(teamID: currentUser.currentTeam!.teamID, includeEvents: true, isActive: false)
                         
-                        contractList.loadFinancials(month: btnDropdown.currentTitle! as! Int64, year: btnYear.currentTitle! as! Int64)
+  //                      contractList.loadFinancials(month: btnDropdown.currentTitle! as! Int64, year: btnYear.currentTitle! as! Int64)
                         
                         currentReport.reportContractForMonth(contractList)
                         showReport = true
@@ -1009,7 +1009,7 @@ public class reportView: UIViewController, myCommunicationDelegate, UITableViewD
                     }
                     
                 case reportContractForYear:
-                    currentReport.reportContractForYear(year: btnYear.currentTitle! as! Int64)
+ //                   currentReport.reportContractForYear(year: btnYear.currentTitle! as! Int64)
                     showReport = true
                     
                 case reportContractDates:
@@ -1127,11 +1127,11 @@ public class reportView: UIViewController, myCommunicationDelegate, UITableViewD
     func populateMonthList()
     {
         monthList.removeAll()
-        
-        for myItem in currentUser.currentTeam!.reportingMonths
-        {
-            monthList.append(myItem)
-        }
+//        
+//        for myItem in currentUser.currentTeam!.reportingMonths
+//        {
+//            monthList.append(myItem)
+//        }
         
         if readDefaultString("reportMonth") != ""
         {

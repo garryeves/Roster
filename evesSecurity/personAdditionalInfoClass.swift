@@ -93,7 +93,7 @@ public class personAdditionalInfo: NSObject, Identifiable
         myTeamID = teamID
         
         currentUser.currentTeam?.personAdditionalInfo = nil
-        save()
+   //     save()
     }
     
     public init(addInfoID: Int64, teamID: Int64)
@@ -421,7 +421,7 @@ extension CloudKitInteraction
     {
         let sem = DispatchSemaphore(value: 0)
         
-        let predicate = NSPredicate(format: "(addInfoName == \"\(sourceRecord.addInfoName!)\") AND (teamID == \(sourceRecord.teamID))") // better be accurate to get only the record you need
+        let predicate = NSPredicate(format: "(addInfoID == \(sourceRecord.addInfoID)) AND (teamID == \(sourceRecord.teamID))") // better be accurate to get only the record you need
         let query = CKQuery(recordType: "PersonAdditionalInfo", predicate: predicate)
         publicDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
             if error != nil
@@ -438,7 +438,7 @@ extension CloudKitInteraction
                     // Now you have grabbed your existing record from iCloud
                     // Apply whatever changes you want
                     
-                    record!.setValue(sourceRecord.addInfoID, forKey: "addInfoID")
+            //        record!.setValue(sourceRecord.addInfoID, forKey: "addInfoID")
                     record!.setValue(sourceRecord.addInfoName, forKey: "addInfoName")
                     record!.setValue(sourceRecord.addInfoType, forKey: "addInfoType")
                     
@@ -463,6 +463,7 @@ extension CloudKitInteraction
                 else
                 {  // Insert
                     let record = CKRecord(recordType: "PersonAdditionalInfo")
+                    record.setValue(sourceRecord.addInfoID, forKey: "addInfoID")
                     record.setValue(sourceRecord.addInfoName, forKey: "addInfoName")
                     record.setValue(sourceRecord.addInfoType, forKey: "addInfoType")
                     record.setValue(sourceRecord.teamID, forKey: "teamID")
