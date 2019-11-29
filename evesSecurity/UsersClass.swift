@@ -267,10 +267,13 @@ public class userItem: NSObject, Identifiable, ObservableObject
         }
     }
     
-    public var teamList: userTeams
+  //  public var teamList: userTeams
+    public var teamList: [team]
     {
         get {
-            return myTeamList
+            return myTeams
+            
+            //return myTeamList
         }
     }
     
@@ -421,7 +424,9 @@ public class userItem: NSObject, Identifiable, ObservableObject
                 email = ""
             }
             
-            loadTeams()
+            if myTeams.count == 0 {
+                loadTeams()
+            }
             
             loadRoles()
             
@@ -701,7 +706,7 @@ public class userItem: NSObject, Identifiable, ObservableObject
                                 clientName = " - \(temp[0].name)"
                             }
                         }
-                        let tempClient = menuArray(menuTextx: "     \(item.projectName) \(clientName)", menuActionx: menuProject, indexx: item.projectID, IDx: menuID, parentIDx: parentID, displayx: false)
+                        let tempClient = menuArray(menuTextx: "     \(item.projectName) \(clientName) - \(item.displayProjectStartDate)", menuActionx: menuProject, indexx: item.projectID, IDx: menuID, parentIDx: parentID, displayx: false)
                         myMenuOptions.append(tempClient)
                         menuID += 1
                     }

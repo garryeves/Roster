@@ -2376,6 +2376,8 @@ extension report
         
         var clientProjects: Int = 0
         
+        myLines.removeAll() 
+        
         for myItem in contractList.projectList
         {
             let profit = myItem.financials[0].income - myItem.financials[0].expense
@@ -2500,6 +2502,8 @@ extension report
     
     public func reportWagesForMonth(month: String, year: String, teamID: Int64)
     {
+        myLines.removeAll()
+        
         for myItem in people(teamID: teamID, isActive: true).people
         {
             let monthReport = myItem.getFinancials(month: month, year: year)
@@ -2533,6 +2537,8 @@ extension report
         var octTotalAmount: Double = 0.0
         var novTotalAmount: Double = 0.0
         var decTotalAmount: Double = 0.0
+        
+        myLines.removeAll()
         
         for myClient in clients(teamID: currentUser.currentTeam!.teamID, isActive: true).clients
         {
@@ -2879,6 +2885,8 @@ extension report
     public func reportContractDates(_ contractList: projects)
     {
         var lastClientID: Int64 = -1
+        
+        myLines.removeAll()
         
         for myItem in contractList.projectList
         {

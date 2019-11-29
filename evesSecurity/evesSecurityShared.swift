@@ -23,16 +23,6 @@ public let saveDelay: UInt32 = 2
 
 public let NoStageLabel = "No stage"
 
-@objc public protocol myCommunicationDelegate
-{
-    @objc optional func orgEdit(_ organisation: team?)
-    @objc optional func userCreated(_ userRecord: userItem, teamID: Int64)
-    @objc optional func loadMainScreen()
-    @objc optional func passwordCorrect()
-    @objc optional func refreshScreen()
-    @objc optional func callLoadMainScreen()
-}
-
 let eventSignInNotPresentType = "Staff Not Present"
 let eventSignInOnSiteType = "Staff On-Site"
 
@@ -386,12 +376,6 @@ public let salesStoryboard = UIStoryboard(name: "Leads", bundle: frameworkBundle
 
 public var currentAddressBook: addressBookClass!
 public var currentUser: userItem!
-
- protocol mainScreenProtocol
-{
-    func reloadMenu()
-    func loadShifts()
-}
 
 public class displayMonthItem: NSObject, Identifiable
 {

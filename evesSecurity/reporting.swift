@@ -364,7 +364,6 @@ public class report: NSObject, Identifiable
     fileprivate var myReportName: String = ""
     fileprivate var myHeader: reportLine!
     var myLines: [reportLine] = Array()
-//    fileprivate var myPdfData: NSMutableData!
     fileprivate var myPdfData: Data!
     fileprivate var myDisplayString: String = ""
     fileprivate var mySubject: String = ""
@@ -1174,59 +1173,7 @@ public class report: NSObject, Identifiable
             return myLines.count
         }
     }
-    
-//    public var activityController: UIActivityViewController
-//    {
-//        createPDF()
-//        createDisplayString()
-//
-//        let printController = UIPrintInteractionController.shared
-//        // 2
-//        let printInfo = UIPrintInfo(dictionary:nil)
-//        printInfo.outputType = .general
-//        printInfo.jobName = mySubject
-//        printController.printInfo = printInfo
-//
-//        let sharingItem = reportShareSource(displayString: myDisplayString, PDFData: myPdfData)
-//
-//        let activityItems: [Any] = [sharingItem]
-//
-//        let activityViewController: UIActivityViewController = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
-//
-//        activityViewController.setValue(mySubject, forKey: "Subject")
-//        activityViewController.excludedActivityTypes = shareExclutionArray
-//
-//        return activityViewController
-//    }
-//
-//    public var pdfData: Data
-//    {
-//        createPDF()
-//
-//        let printController = UIPrintInteractionController.shared
-//        // 2
-//        let printInfo = UIPrintInfo(dictionary:nil)
-//        printInfo.outputType = .general
-//        printInfo.jobName = mySubject
-//        printController.printInfo = printInfo
-//
-//        return myPdfData
-//    }
-//
-//    public var textData: String
-//    {
-//        createDisplayString()
-//
-//        let printController = UIPrintInteractionController.shared
-//        // 2
-//        let printInfo = UIPrintInfo(dictionary:nil)
-//        printInfo.outputType = .general
-//        printInfo.jobName = mySubject
-//        printController.printInfo = printInfo
-//
-//        return myDisplayString
-//    }
-    
+        
     public var displayWidth: CGFloat
     {
         get
@@ -1439,7 +1386,6 @@ public class report: NSObject, Identifiable
             }
             
             createHeader()
-            
         }
     }
     
@@ -1638,191 +1584,63 @@ public class report: NSObject, Identifiable
             kCGPDFContextTitle: "Dashboard Export"
         ]
         
-        
         var topSide: Int = 50
         
          let format = UIGraphicsPDFRendererFormat()
          format.documentInfo = pdfMetadata as [String: Any]
 
         // Creates a new PDF file at the specified path.
-        UIGraphicsBeginPDFContextToFile(filePath, CGRect.zero, pdfMetadata)
+        
+        var pageBounds = CGRect.zero
+        
+        if myPaperOrientation == "Landscape" {
+            pageBounds = CGRect(x: 0, y: 0, width: 842, height: 595)
+        }
+        
+        UIGraphicsBeginPDFContextToFile(filePath, pageBounds, pdfMetadata)
 
         // Creates a new page in the current PDF context.
         UIGraphicsBeginPDFPage()
 
-        
-//         let renderer = UIGraphicsPDFRenderer(bounds: pageRect, format: format)
-//
-//         let data = renderer.pdfData { (context) in
-           // 5
-//           context.beginPage()
-           // 6
-            
-            if mySubject != ""{
-                reportHeader(topSide, height: 40)
-            }
+        if mySubject != ""{
+            reportHeader(topSide, height: 40)
+        }
 
-            topSide += 5 + 40
+        topSide += 5 + 40
 
-            if myHeader != nil {
-                pageHeader(topSide)
-            }
+        if myHeader != nil {
+            pageHeader(topSide)
+        }
 
-            for item in myLines {
+        for item in myLines {
+            topSide += 5 + myRowHeight
+
+            if CGFloat(topSide) >= paperSize.height - 50 {
+                UIGraphicsBeginPDFPageWithInfo(paperSize, nil)
+                if myHeader != nil {
+                    topSide = 50
+                    pageHeader(topSide)
+                }
+
                 topSide += 5 + myRowHeight
-
-                if CGFloat(topSide) >= paperSize.height - 50 {
-                    UIGraphicsBeginPDFPageWithInfo(paperSize, nil)
-                    if myHeader != nil {
-                        topSide = 50
-                        pageHeader(topSide)
-                    }
-
-                    topSide += 5 + myRowHeight
-                }
-
-                if item.drawLine {
-                    let trianglePath = UIBezierPath()
-                    trianglePath.move(to: CGPoint(x: 50, y: topSide))
-                    trianglePath.addLine(to: CGPoint(x: paperSize.width - 50, y: CGFloat(topSide)))
-
-                    item.lineColour.setStroke()
-                    trianglePath.stroke()
-                    UIColor.black.setStroke()
-                } else {
-                    lineEntry(item, top: topSide)
-                }
             }
-  //      }
 
-       // myPdfData = data
+            if item.drawLine {
+                let trianglePath = UIBezierPath()
+                trianglePath.move(to: CGPoint(x: 50, y: topSide))
+                trianglePath.addLine(to: CGPoint(x: paperSize.width - 50, y: CGFloat(topSide)))
+
+                item.lineColour.setStroke()
+                trianglePath.stroke()
+                UIColor.black.setStroke()
+            } else {
+                lineEntry(item, top: topSide)
+            }
+        }
+
         UIGraphicsEndPDFContext()
     }
 
-    
-//    private func createPDF()
-//    {
-//        var topSide: Int = 50
-//
-//        let pdfMetaData = [
-//           kCGPDFContextCreator: "Dashboard Export",
-//           kCGPDFContextAuthor: "nextactions.com.au"
-//         ]
-//
-//         let format = UIGraphicsPDFRendererFormat()
-//         format.documentInfo = pdfMetaData as [String: Any]
-//
-//         let pageWidth = 8.5 * 72.0
-//         let pageHeight = 11 * 72.0
-//
-//         let pageRect = CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight)
-//
-//         let renderer = UIGraphicsPDFRenderer(bounds: pageRect, format: format)
-//
-//         let data = renderer.pdfData { (context) in
-//           // 5
-//           context.beginPage()
-//           // 6
-//
-//            if mySubject != ""{
-//                reportHeader(topSide, height: 40)
-//            }
-//
-//            topSide += 5 + 40
-//
-//            if myHeader != nil {
-//                pageHeader(topSide)
-//            }
-//
-//            for item in myLines {
-//                topSide += 5 + myRowHeight
-//
-//                if CGFloat(topSide) >= paperSize.height - 50 {
-//                    UIGraphicsBeginPDFPageWithInfo(paperSize, nil)
-//                    if myHeader != nil {
-//                        topSide = 50
-//                        pageHeader(topSide)
-//                    }
-//
-//                    topSide += 5 + myRowHeight
-//                }
-//
-//                if item.drawLine {
-//                    let trianglePath = UIBezierPath()
-//                    trianglePath.move(to: CGPoint(x: 50, y: topSide))
-//                    trianglePath.addLine(to: CGPoint(x: paperSize.width - 50, y: CGFloat(topSide)))
-//
-//                    item.lineColour.setStroke()
-//                    trianglePath.stroke()
-//                    UIColor.black.setStroke()
-//                } else {
-//                    lineEntry(item, top: topSide)
-//                }
-//            }
-//        }
-//
-//        myPdfData = data
-//
-////           let text = "I'm a PDF!"
-////           text.draw(at: CGPoint(x: 0, y: 0), withAttributes: attributes)
-//   //      }
-//
-//  //       return data
-//
-////        myPdfData = NSMutableData()
-////
-////        UIGraphicsBeginPDFContextToData(myPdfData, .zero, nil)
-////        UIGraphicsBeginPDFPageWithInfo(paperSize, nil)
-////
-////        // report header
-////
-////        if mySubject != ""
-////        {
-////            reportHeader(topSide, height: 40)
-////        }
-////
-////        topSide += 5 + 40
-////
-////        if myHeader != nil
-////        {
-////            pageHeader(topSide)
-////        }
-////
-////        for myItem in myLines
-////        {
-////            topSide += 5 + myRowHeight
-////
-////            if CGFloat(topSide) >= paperSize.height - 50  // We use the extra number to ensure that there is bottom margin
-////            {
-////                UIGraphicsBeginPDFPageWithInfo(paperSize, nil)
-////                if myHeader != nil
-////                {
-////                    topSide = 50
-////                    pageHeader(topSide)
-////                }
-////
-////                topSide += 5 + myRowHeight
-////            }
-////
-////            if myItem.drawLine
-////            {
-////                let trianglePath = UIBezierPath()
-////                trianglePath.move(to: CGPoint(x: 50, y: topSide))
-////                trianglePath.addLine(to: CGPoint(x: paperSize.width - 50, y: CGFloat(topSide)))
-////
-////                myItem.lineColour.setStroke()
-////                trianglePath.stroke()
-////                UIColor.black.setStroke()
-////            }
-////            else
-////            {
-////                lineEntry(myItem, top: topSide)
-////            }
-////        }
-////
-////        UIGraphicsEndPDFContext()
-//    }
-    
     private func createDisplayString()
     {
         myDisplayString = mySubject
@@ -1939,7 +1757,6 @@ public class report: NSObject, Identifiable
     
     private func writePDFHeaderEntry(title: String, x: Int, y: Int, width: CGFloat, height: Int)
     {
-        //        let displayWidth = Double(width)/disvisor
         let displayWidth = Int((paperSize.width - 150) * (width / 100))
         
         let titleParagraphStyle = NSMutableParagraphStyle()
@@ -1964,7 +1781,6 @@ public class report: NSObject, Identifiable
     
     private func writePDFEntry(title: String, x: Int, y: Int, width: CGFloat, height: Int, format: String)
     {
-        //        let displayWidth = Double(width)/disvisor
         let displayWidth = Int((paperSize.width - 150) * (width / 100))
         
         let titleParagraphStyle = NSMutableParagraphStyle()
@@ -2580,338 +2396,6 @@ public class reportLine: NSObject, Identifiable
     }
 }
 
-//extension coreDatabase
-//{
-//    func saveReport(_ reportID: Int,
-//                        reportTitle: String,
-//                        reportDescription: String,
-//                        reportType: String,
-//                        systemReport: Bool,
-//                        teamID: Int,
-//                        orientation: String,
-//                        columnTitle1: String,
-//                        columnSource1: String,
-//                        columnWidth1: Double,
-//                        columnTitle2: String,
-//                        columnSource2: String,
-//                        columnWidth2: Double,
-//                        columnTitle3: String,
-//                        columnSource3: String,
-//                        columnWidth3: Double,
-//                        columnTitle4: String,
-//                        columnSource4: String,
-//                        columnWidth4: Double,
-//                        columnTitle5: String,
-//                        columnSource5: String,
-//                        columnWidth5: Double,
-//                        columnTitle6: String,
-//                        columnSource6: String,
-//                        columnWidth6: Double,
-//                        columnTitle7: String,
-//                        columnSource7: String,
-//                        columnWidth7: Double,
-//                        columnTitle8: String,
-//                        columnSource8: String,
-//                        columnWidth8: Double,
-//                        columnTitle9: String,
-//                        columnSource9: String,
-//                        columnWidth9: Double,
-//                        columnTitle10: String,
-//                        columnSource10: String,
-//                        columnWidth10: Double,
-//                        columnTitle11: String,
-//                        columnSource11: String,
-//                        columnWidth11: Double,
-//                        columnTitle12: String,
-//                        columnSource12: String,
-//                        columnWidth12: Double,
-//                        columnTitle13: String,
-//                        columnSource13: String,
-//                        columnWidth13: Double,
-//                        columnWidth14: Double,
-//                        columnTitle14: String,
-//                        columnSource14: String,
-//                        selectionCriteria1: String,
-//                        selectionCriteria2: String,
-//                        selectionCriteria3: String,
-//                        selectionCriteria4: String,
-//                        sortOrder1: String,
-//                        sortOrder2: String,
-//                        sortOrder3: String,
-//                        sortOrder4: String,
-//                   updateTime: Date =  Date(), updateType: String = "CODE")
-//    {
-//        var myItem: Reports!
-//
-//        let myReturn = getReportDetails(reportID, teamID: teamID)
-//
-//        if myReturn.count == 0
-//        { // Add
-//            myItem = Reports(context: objectContext)
-//            myItem.reportID = Int64(reportID)
-//            myItem.reportTitle = reportTitle
-//            myItem.reportDescription = reportDescription
-//            myItem.reportType = reportType
-//            myItem.systemReport = systemReport
-//            myItem.teamID = Int64(teamID)
-//            myItem.columnTitle1 = columnTitle1
-//            myItem.columnSource1 = columnSource1
-//            myItem.columnWidth1 = columnWidth1
-//            myItem.columnTitle2 = columnTitle2
-//            myItem.columnSource2 = columnSource2
-//            myItem.columnWidth2 = columnWidth2
-//            myItem.columnTitle3 = columnTitle3
-//            myItem.columnSource3 = columnSource3
-//            myItem.columnWidth3 = columnWidth3
-//            myItem.columnTitle4 = columnTitle4
-//            myItem.columnSource4 = columnSource4
-//            myItem.columnWidth4 = columnWidth4
-//            myItem.columnTitle5 = columnTitle5
-//            myItem.columnSource5 = columnSource5
-//            myItem.columnWidth5 = columnWidth5
-//            myItem.columnTitle6 = columnTitle6
-//            myItem.columnSource6 = columnSource6
-//            myItem.columnWidth6 = columnWidth6
-//            myItem.columnTitle7 = columnTitle7
-//            myItem.columnSource7 = columnSource7
-//            myItem.columnWidth7 = columnWidth7
-//            myItem.columnTitle8 = columnTitle8
-//            myItem.columnSource8 = columnSource8
-//            myItem.columnWidth8 = columnWidth8
-//            myItem.columnTitle9 = columnTitle9
-//            myItem.columnSource9 = columnSource9
-//            myItem.columnWidth9 = columnWidth9
-//            myItem.columnTitle10 = columnTitle10
-//            myItem.columnSource10 = columnSource10
-//            myItem.columnWidth10 = columnWidth10
-//            myItem.columnTitle11 = columnTitle11
-//            myItem.columnSource11 = columnSource11
-//            myItem.columnWidth11 = columnWidth11
-//            myItem.columnTitle12 = columnTitle12
-//            myItem.columnSource12 = columnSource12
-//            myItem.columnWidth12 = columnWidth12
-//            myItem.columnTitle13 = columnTitle13
-//            myItem.columnSource13 = columnSource13
-//            myItem.columnWidth13 = columnWidth13
-//            myItem.columnWidth14 = columnWidth14
-//            myItem.columnTitle14 = columnTitle14
-//            myItem.columnSource14 = columnSource14
-//            myItem.selectionCriteria1 = selectionCriteria1
-//            myItem.selectionCriteria2 = selectionCriteria2
-//            myItem.selectionCriteria3 = selectionCriteria3
-//            myItem.selectionCriteria4 = selectionCriteria4
-//            myItem.sortOrder1 = sortOrder1
-//            myItem.sortOrder2 = sortOrder2
-//            myItem.sortOrder3 = sortOrder3
-//            myItem.sortOrder4 = sortOrder4
-//            myItem.orientation = orientation
-//
-//            if updateType == "CODE"
-//            {
-//                myItem.updateTime =  Date()
-//
-//                myItem.updateType = "Add"
-//            }
-//            else
-//            {
-//                myItem.updateTime = updateTime
-//                myItem.updateType = updateType
-//            }
-//        }
-//        else
-//        {
-//            myItem = myReturn[0]
-//            myItem.reportTitle = reportTitle
-//            myItem.reportDescription = reportDescription
-//            myItem.reportType = reportType
-//            myItem.systemReport = systemReport
-//            myItem.columnTitle1 = columnTitle1
-//            myItem.columnSource1 = columnSource1
-//            myItem.columnWidth1 = columnWidth1
-//            myItem.columnTitle2 = columnTitle2
-//            myItem.columnSource2 = columnSource2
-//            myItem.columnWidth2 = columnWidth2
-//            myItem.columnTitle3 = columnTitle3
-//            myItem.columnSource3 = columnSource3
-//            myItem.columnWidth3 = columnWidth3
-//            myItem.columnTitle4 = columnTitle4
-//            myItem.columnSource4 = columnSource4
-//            myItem.columnWidth4 = columnWidth4
-//            myItem.columnTitle5 = columnTitle5
-//            myItem.columnSource5 = columnSource5
-//            myItem.columnWidth5 = columnWidth5
-//            myItem.columnTitle6 = columnTitle6
-//            myItem.columnSource6 = columnSource6
-//            myItem.columnWidth6 = columnWidth6
-//            myItem.columnTitle7 = columnTitle7
-//            myItem.columnSource7 = columnSource7
-//            myItem.columnWidth7 = columnWidth7
-//            myItem.columnTitle8 = columnTitle8
-//            myItem.columnSource8 = columnSource8
-//            myItem.columnWidth8 = columnWidth8
-//            myItem.columnTitle9 = columnTitle9
-//            myItem.columnSource9 = columnSource9
-//            myItem.columnWidth9 = columnWidth9
-//            myItem.columnTitle10 = columnTitle10
-//            myItem.columnSource10 = columnSource10
-//            myItem.columnWidth10 = columnWidth10
-//            myItem.columnTitle11 = columnTitle11
-//            myItem.columnSource11 = columnSource11
-//            myItem.columnWidth11 = columnWidth11
-//            myItem.columnTitle12 = columnTitle12
-//            myItem.columnSource12 = columnSource12
-//            myItem.columnWidth12 = columnWidth12
-//            myItem.columnTitle13 = columnTitle13
-//            myItem.columnSource13 = columnSource13
-//            myItem.columnWidth13 = columnWidth13
-//            myItem.columnWidth14 = columnWidth14
-//            myItem.columnTitle14 = columnTitle14
-//            myItem.columnSource14 = columnSource14
-//            myItem.selectionCriteria1 = selectionCriteria1
-//            myItem.selectionCriteria2 = selectionCriteria2
-//            myItem.selectionCriteria3 = selectionCriteria3
-//            myItem.selectionCriteria4 = selectionCriteria4
-//            myItem.sortOrder1 = sortOrder1
-//            myItem.sortOrder2 = sortOrder2
-//            myItem.sortOrder3 = sortOrder3
-//            myItem.sortOrder4 = sortOrder4
-//            myItem.orientation = orientation
-//
-//            if updateType == "CODE"
-//            {
-//                myItem.updateTime =  Date()
-//                if myItem.updateType != "Add"
-//                {
-//                    myItem.updateType = "Update"
-//                }
-//            }
-//            else
-//            {
-//                myItem.updateTime = updateTime
-//                myItem.updateType = updateType
-//            }
-//        }
-//
-//        saveContext()
-//
-//        self.recordsProcessed += 1
-//    }
-
-//    func resetAllReports()
-//    {
-//        let fetchRequest = NSFetchRequest<Reports>(entityName: "Reports")
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults = try objectContext.fetch(fetchRequest)
-//            for myItem in fetchResults
-//            {
-//                myItem.updateTime =  Date()
-//                myItem.updateType = "Delete"
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: \(error)")
-//        }
-//
-//        saveContext()
-//    }
-//
-//    func clearDeletedReports(predicate: NSPredicate)
-//    {
-//        let fetchRequest2 = NSFetchRequest<Reports>(entityName: "Reports")
-//
-//        // Set the predicate on the fetch request
-//        fetchRequest2.predicate = predicate
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-//            for myItem2 in fetchResults2
-//            {
-//                objectContext.delete(myItem2 as NSManagedObject)
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: \(error)")
-//        }
-//        saveContext()
-//    }
-//
-//    func clearSyncedReports(predicate: NSPredicate)
-//    {
-//        let fetchRequest2 = NSFetchRequest<Reports>(entityName: "Reports")
-//
-//        // Set the predicate on the fetch request
-//        fetchRequest2.predicate = predicate
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-//            for myItem2 in fetchResults2
-//            {
-//                myItem2.updateType = ""
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: \(error)")
-//        }
-//
-//        saveContext()
-//    }
-//
-//    func getReportsForSync(_ syncDate: Date) -> [Reports]
-//    {
-//        let fetchRequest = NSFetchRequest<Reports>(entityName: "Reports")
-//
-//        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
-//
-//        // Set the predicate on the fetch request
-//
-//        fetchRequest.predicate = predicate
-//        // Execute the fetch request, and cast the results to an array of  objects
-//        do
-//        {
-//            let fetchResults = try objectContext.fetch(fetchRequest)
-//
-//            return fetchResults
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: \(error)")
-//            return []
-//        }
-//    }
-//
-//    func deleteAllReports()
-//    {
-//        let fetchRequest2 = NSFetchRequest<Reports>(entityName: "Reports")
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-//            for myItem2 in fetchResults2
-//            {
-//                self.objectContext.delete(myItem2 as NSManagedObject)
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: \(error)")
-//        }
-//
-//        saveContext()
-//    }
-//}
-//
-
 public struct Reports {
     public var columnSource1: String?
     public var columnSource2: String?
@@ -2971,7 +2455,6 @@ public struct Reports {
     public var systemReport: Bool
     public var teamID: Int64
 }
-
 
 extension CloudKitInteraction
 {
@@ -3152,7 +2635,6 @@ extension CloudKitInteraction
     
     func getReports(teamID: Int64)->[Reports]
     {
-        //        let predicate = NSPredicate(format: "(teamID == \(teamID)) && (updateType != \"Delete\") AND (systemReport == \"False\")")
         let predicate = NSPredicate(format: "(teamID == \(teamID)) && (updateType != \"Delete\")")
         
         let query = CKQuery(recordType: "Reports", predicate: predicate)
