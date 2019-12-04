@@ -28,8 +28,8 @@ public class dropdowns: NSObject, Identifiable
         
         for myItem in (currentUser.currentTeam?.dropdowns)!
         {
-            let myObject = dropdownItem(dropdownType: myItem.dropDownType!,
-                                        dropdownValue: myItem.dropDownValue!,
+            let myObject = dropdownItem(dropdownType: myItem.dropDownType,
+                                        dropdownValue: myItem.dropDownValue,
                                         teamID: myItem.teamID,
                                         order: myItem.order,
                                         saveRecord: false
@@ -40,7 +40,7 @@ public class dropdowns: NSObject, Identifiable
             
             for myType in myDropdownTypes
             {
-                if myItem.dropDownType! == myType
+                if myItem.dropDownType == myType
                 {
                     typeFound = true
                     break
@@ -49,7 +49,7 @@ public class dropdowns: NSObject, Identifiable
             
             if !typeFound
             {
-                myDropdownTypes.append(myItem.dropDownType!)
+                myDropdownTypes.append(myItem.dropDownType)
             }
         }
         
@@ -77,8 +77,8 @@ public class dropdowns: NSObject, Identifiable
         
         for myItem in workingArray
         {
-            let myObject = dropdownItem(dropdownType: myItem.dropDownType!,
-                                        dropdownValue: myItem.dropDownValue!,
+            let myObject = dropdownItem(dropdownType: myItem.dropDownType,
+                                        dropdownValue: myItem.dropDownValue,
                                         teamID: myItem.teamID,
                                         order: myItem.order,
                                         saveRecord: false
@@ -88,7 +88,7 @@ public class dropdowns: NSObject, Identifiable
             
             for myType in myDropdownTypes
             {
-                if myItem.dropDownType! == myType
+                if myItem.dropDownType == myType
                 {
                     typeFound = true
                     break
@@ -97,7 +97,7 @@ public class dropdowns: NSObject, Identifiable
             
             if !typeFound
             {
-                myDropdownTypes.append(myItem.dropDownType!)
+                myDropdownTypes.append(myItem.dropDownType)
             }
         }
         
@@ -268,8 +268,8 @@ public class dropdownItem: NSObject, Identifiable
 }
 
 public struct Dropdowns {
-    public var dropDownType: String?
-    public var dropDownValue: String?
+    public var dropDownType: String
+    public var dropDownValue: String
     public var teamID: Int64
     public var order: Int64
 }
@@ -294,8 +294,8 @@ extension CloudKitInteraction
                 order = record.object(forKey: "order") as! Int64
             }
             
-            let tempItem = Dropdowns(dropDownType: record.object(forKey: "dropDownType") as? String,
-                                     dropDownValue: record.object(forKey: "dropDownValue") as? String,
+            let tempItem = Dropdowns(dropDownType: record.object(forKey: "dropDownType") as! String,
+                                     dropDownValue: record.object(forKey: "dropDownValue") as! String,
                                      teamID: teamID,
                                      order: order)
             
@@ -321,7 +321,7 @@ extension CloudKitInteraction
         
         for myItem in shiftArray
         {
-            workingArray.append(myItem.dropDownType!)
+            workingArray.append(myItem.dropDownType)
         }
         
         return workingArray
@@ -394,7 +394,7 @@ extension CloudKitInteraction
     {
         let sem = DispatchSemaphore(value: 0)
         
-        let predicate = NSPredicate(format: "(dropDownType == \"\(sourceRecord.dropDownType!)\") AND (dropDownValue == \"\(sourceRecord.dropDownValue!)\") AND (teamID == \(sourceRecord.teamID))") // better be accurate to get only the record you need
+        let predicate = NSPredicate(format: "(dropDownType == \"\(sourceRecord.dropDownType)\") AND (dropDownValue == \"\(sourceRecord.dropDownValue)\") AND (teamID == \(sourceRecord.teamID))") // better be accurate to get only the record you need
         let query = CKQuery(recordType: "Dropdowns", predicate: predicate)
         publicDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
             if error != nil
@@ -464,7 +464,7 @@ extension CloudKitInteraction
     }
     
     func moveQuestionRecordToCloudKit(_ sourceRecord: Dropdowns) {
-        let predicate = NSPredicate(format: "(dropDownType == \"\(sourceRecord.dropDownType!)\") AND (dropDownValue == \"\(sourceRecord.dropDownValue!)\") AND (teamID == \(sourceRecord.teamID))")
+        let predicate = NSPredicate(format: "(dropDownType == \"\(sourceRecord.dropDownType)\") AND (dropDownValue == \"\(sourceRecord.dropDownValue)\") AND (teamID == \(sourceRecord.teamID))")
         let query = CKQuery(recordType: "Dropdowns", predicate: predicate)
         
         let sem = DispatchSemaphore(value: 0)

@@ -37,8 +37,8 @@ public class personContacts: NSObject, Identifiable
         for myItem in workingArray
         {
             let myObject = contactItem(personID: myItem.personID,
-                                       contactType: myItem.contactType!,
-                                       contactValue: myItem.contactValue!,
+                                       contactType: myItem.contactType,
+                                       contactValue: myItem.contactValue,
                                        teamID: myItem.teamID,
                                        clientID: myItem.clientID,
                                        projectID: myItem.projectID)
@@ -61,8 +61,8 @@ public class personContacts: NSObject, Identifiable
         for myItem in workingArray
         {
             let myObject = contactItem(personID: myItem.personID,
-                                       contactType: myItem.contactType!,
-                                       contactValue: myItem.contactValue!,
+                                       contactType: myItem.contactType,
+                                       contactValue: myItem.contactValue,
                                        teamID: myItem.teamID,
                                        clientID: myItem.clientID,
                                        projectID: myItem.projectID)
@@ -85,8 +85,8 @@ public class personContacts: NSObject, Identifiable
         for myItem in workingArray
         {
             let myObject = contactItem(personID: myItem.personID,
-                                       contactType: myItem.contactType!,
-                                       contactValue: myItem.contactValue!,
+                                       contactType: myItem.contactType,
+                                       contactValue: myItem.contactValue,
                                        teamID: myItem.teamID,
                                        clientID: myItem.clientID,
                                        projectID: myItem.projectID)
@@ -222,8 +222,8 @@ public class contactItem: NSObject, Identifiable
         
         if myItem != nil
         {
-            myContactType = myItem.contactType!
-            myContactValue = myItem.contactValue!
+            myContactType = myItem.contactType
+            myContactValue = myItem.contactValue
             myClientID = myItem.clientID
             myProjectID = myItem.projectID
             myTeamID = myItem.teamID
@@ -249,8 +249,8 @@ public class contactItem: NSObject, Identifiable
         if myItem != nil
         {
             myPersonID = myItem.personID
-            myContactType = myItem.contactType!
-            myContactValue = myItem.contactValue!
+            myContactType = myItem.contactType
+            myContactValue = myItem.contactValue
             myTeamID = myItem.teamID
             myProjectID = myItem.projectID
         }
@@ -276,8 +276,8 @@ public class contactItem: NSObject, Identifiable
         if myItem != nil
         {
             myPersonID = myItem.personID
-            myContactType = myItem.contactType!
-            myContactValue = myItem.contactValue!
+            myContactType = myItem.contactType
+            myContactValue = myItem.contactValue
             myTeamID = myItem.teamID
             myClientID = myItem.clientID
         }
@@ -529,8 +529,8 @@ public class contactItem: NSObject, Identifiable
 
 public struct Contacts {
     public var clientID: Int64
-    public var contactType: String?
-    public var contactValue: String?
+    public var contactType: String
+    public var contactValue: String
     public var personID: Int64
     public var projectID: Int64
     public var teamID: Int64
@@ -568,8 +568,8 @@ extension CloudKitInteraction
                 projectID = record.object(forKey: "projectID") as! Int64
             }
             let tempItem = Contacts(clientID: clientID,
-                                    contactType: record.object(forKey: "contactType") as? String,
-                                    contactValue: record.object(forKey: "contactValue") as? String,
+                                    contactType: record.object(forKey: "contactType") as! String,
+                                    contactValue: record.object(forKey: "contactValue") as! String,
                                     personID: personID,
                                     projectID: projectID,
                                     teamID: teamID)
@@ -737,7 +737,7 @@ extension CloudKitInteraction
     {
         let sem = DispatchSemaphore(value: 0)
         
-        let predicate = NSPredicate(format: "(personID == \(sourceRecord.personID)) AND (clientID == \(sourceRecord.clientID)) AND (projectID == \(sourceRecord.projectID)) AND (contactType == \"\(sourceRecord.contactType!)\") AND (teamID == \(sourceRecord.teamID))") // better be accurate to get only the record you need
+        let predicate = NSPredicate(format: "(personID == \(sourceRecord.personID)) AND (clientID == \(sourceRecord.clientID)) AND (projectID == \(sourceRecord.projectID)) AND (contactType == \"\(sourceRecord.contactType)\") AND (teamID == \(sourceRecord.teamID))") // better be accurate to get only the record you need
         let query = CKQuery(recordType: "Contacts", predicate: predicate)
         publicDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
             if error != nil

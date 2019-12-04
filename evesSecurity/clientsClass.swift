@@ -7,7 +7,6 @@
 //
 
 import Foundation
-//import CoreData
 import CloudKit
 import SwiftUI
 
@@ -42,48 +41,46 @@ public class clients: NSObject, Identifiable
         self.sortArrayByClient()
     }
     
-    public init(query: String, teamID: Int64, isActive: Bool)
-    {
+    public init(alertQuery: String, teamID: Int64, isActive: Bool) {
         super.init()
-        if currentUser.currentTeam?.clients == nil
-        {
+
+        if currentUser.currentTeam?.clients == nil {
             currentUser.currentTeam?.clients = myCloudDB.getClients(teamID: teamID, isActive: isActive)
         }
         
         var returnArray: [Clients] = Array()
         
         myClients.removeAll()
-        
-        switch query
-        {
-        case alertClientNoProject:
-            for myItem in (currentUser.currentTeam?.clients)!
-            {
-                let myReturn = projects(clientID: myItem.clientID, teamID: teamID, isActive: true)
-                
-                if myReturn.projectList.count == 0
+
+        switch alertQuery {
+            case alertClientNoProject:
+                for myItem in (currentUser.currentTeam?.clients)!
                 {
-                    returnArray.append(myItem)
+                    let myReturn = projects(clientID: myItem.clientID, teamID: teamID, isActive: true)
+                    
+                    if myReturn.projectList.count == 0 {
+                        returnArray.append(myItem)
+                    }
                 }
-            }
-            
-        case alertClientNoRates:
-            for myItem in (currentUser.currentTeam?.clients)!
-            {
-                let myReturn = rates(clientID: myItem.clientID, teamID: teamID)
                 
-                if myReturn.rates.count == 0
-                {
-                    returnArray.append(myItem)
+            case alertClientNoRates:
+                
+                let rateList = rates(teamID: teamID)
+                
+                for myItem in (currentUser.currentTeam?.clients)! {
+                    
+                    let myReturn = rateList.rates.filter { $0.clientID == myItem.clientID}
+
+                    if myReturn.count == 0 {
+                        returnArray.append(myItem)
+                    }
                 }
-            }
-            
-        default:
-            let _ = 1
+                
+            default:
+                let _ = 1
         }
         
-        for myItem in returnArray
-        {
+        for myItem in returnArray {
             let myObject = client(clientID: myItem.clientID,
                                   clientName: myItem.clientName,
                                   clientContact: myItem.clientContact,
@@ -93,6 +90,7 @@ public class clients: NSObject, Identifiable
             )
             myClients.append(myObject)
         }
+                
         self.sortArrayByClient()
     }
     
@@ -396,8 +394,8 @@ extension alerts
     {
         // check for clients with no projects
         var recordCount: Int = 0
-        
-        for myItem in clients(query: alertClientNoProject, teamID: teamID, isActive: true).clients
+
+        for myItem in clients(alertQuery: alertClientNoProject, teamID: teamID, isActive: true).clients
         {
             let alertEntry = alertItem()
             
@@ -420,8 +418,8 @@ extension alerts
         
  //       notificationCenter.post(name: NotificationAlertUpdate, object: nil)
         // check for clients with no projects
-        
-        for myItem in clients(query: alertClientNoRates, teamID: teamID, isActive: true).clients
+ 
+        for myItem in clients(alertQuery: alertClientNoRates, teamID: teamID, isActive: true).clients
         {
             let alertEntry = alertItem()
             
@@ -435,205 +433,14 @@ extension alerts
             
             recordCount += 1
         }
-        
+
         let tempEntry1 = alertSummary(displayText: "Client has no Rates", displayAmount: recordCount)
         
         alertSummaryList.append(tempEntry1)
         
         recordCount = 0
-        
-//        notificationCenter.post(name: NotificationAlertUpdate, object: nil)
     }
 }
-
-//extension coreDatabase
-//{
-//    func saveClient(_ clientID: Int,
-//                    clientName: String,
-//                    clientContact: Int,
-//                    teamID: Int,
-//                    note: String,
-//                     updateTime: Date =  Date(), updateType: String = "CODE")
-//    {
-//        var myItem: Clients!
-//
-//        let myReturn = getClientDetails(clientID: clientID, teamID: teamID)
-//
-//        if myReturn.count == 0
-//        { // Add
-//            myItem = Clients(context: objectContext)
-//            myItem.clientID = Int64(clientID)
-//            myItem.clientName = clientName
-//            myItem.clientContact = Int64(clientContact)
-//            myItem.teamID = Int64(teamID)
-//            myItem.note = note
-//
-//            if updateType == "CODE"
-//            {
-//                myItem.updateTime =  Date()
-//
-//                myItem.updateType = "Add"
-//            }
-//            else
-//            {
-//                myItem.updateTime = updateTime
-//                myItem.updateType = updateType
-//            }
-//        }
-//        else
-//        {
-//            myItem = myReturn[0]
-//            myItem.clientName = clientName
-//            myItem.clientContact = Int64(clientContact)
-//            myItem.note = note
-//
-//            if updateType == "CODE"
-//            {
-//                myItem.updateTime =  Date()
-//                if myItem.updateType != "Add"
-//                {
-//                    myItem.updateType = "Update"
-//                }
-//            }
-//            else
-//            {
-//                myItem.updateTime = updateTime
-//                myItem.updateType = updateType
-//            }
-//        }
-//
-//        saveContext()
-//
-//        self.recordsProcessed += 1
-//    }
-//
-//
-
-//
-//    func restoreClient(_ clientID: Int, teamID: Int)
-//    {
-//        for myItem in getClientDetails(clientID: clientID, teamID: teamID)
-//        {
-//            myItem.updateType = "Update"
-//            myItem.updateTime = Date()
-//        }
-//        saveContext()
-//    }
-//
-//    func resetAllClients()
-//    {
-//        let fetchRequest = NSFetchRequest<Clients>(entityName: "Clients")
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults = try objectContext.fetch(fetchRequest)
-//            for myItem in fetchResults
-//            {
-//                myItem.updateTime =  Date()
-//                myItem.updateType = "Delete"
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: \(error)")
-//        }
-//
-//        saveContext()
-//    }
-//
-//    func clearDeletedClients(predicate: NSPredicate)
-//    {
-//        let fetchRequest2 = NSFetchRequest<Clients>(entityName: "Clients")
-//
-//        // Set the predicate on the fetch request
-//        fetchRequest2.predicate = predicate
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-//            for myItem2 in fetchResults2
-//            {
-//                objectContext.delete(myItem2 as NSManagedObject)
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: \(error)")
-//        }
-//        saveContext()
-//    }
-//
-//    func clearSyncedClients(predicate: NSPredicate)
-//    {
-//        let fetchRequest2 = NSFetchRequest<Clients>(entityName: "Clients")
-//
-//        // Set the predicate on the fetch request
-//        fetchRequest2.predicate = predicate
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-//            for myItem2 in fetchResults2
-//            {
-//                myItem2.updateType = ""
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: \(error)")
-//        }
-//
-//        saveContext()
-//    }
-//
-//    func getClientsForSync(_ syncDate: Date) -> [Clients]
-//    {
-//        let fetchRequest = NSFetchRequest<Clients>(entityName: "Clients")
-//
-//        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
-//
-//        // Set the predicate on the fetch request
-//
-//        fetchRequest.predicate = predicate
-//        // Execute the fetch request, and cast the results to an array of  objects
-//        do
-//        {
-//            let fetchResults = try objectContext.fetch(fetchRequest)
-//
-//            return fetchResults
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: \(error)")
-//            return []
-//        }
-//    }
-//
-//    func deleteAllClients()
-//    {
-//        let fetchRequest2 = NSFetchRequest<Clients>(entityName: "Clients")
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-//            for myItem2 in fetchResults2
-//            {
-//                self.objectContext.delete(myItem2 as NSManagedObject)
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: \(error)")
-//        }
-//
-//        saveContext()
-//    }
-//}
-//
 
 public struct Clients {
     public var clientContact: Int64

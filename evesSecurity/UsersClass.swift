@@ -299,9 +299,9 @@ public class userItem: NSObject, Identifiable, ObservableObject
         let returnArray = myCloudDB.checkExistingUser(email: email)
         if returnArray.count > 0
         {
-            if returnArray[0].userID! > 0
+            if returnArray[0].userID > 0
             {
-                myUserID = returnArray[0].userID!
+                myUserID = returnArray[0].userID
             }
         }
         else
@@ -497,18 +497,17 @@ public class userItem: NSObject, Identifiable, ObservableObject
     
     public func loadMenu(showActive: Bool, month: Int64, year: Int64)
     {
-        if currentTeam != nil
-        {
+        if currentTeam != nil {
             if myMenuBuiltForActive != showActive ||
                 myMenuMonth != month ||
-                myMenuYear != year
-            {
+                myMenuYear != year {
                 let clientList = clients(teamID: currentTeam!.teamID, isActive: showActive)
                 let projectList = projects(teamID: currentTeam!.teamID, includeEvents: true, isActive: showActive)
+                let peopleList = people(teamID: currentTeam!.teamID, isActive: showActive)
+                let leadList = leads(teamID: currentTeam!.teamID, isActive: showActive)
                 
-                let peopleList = people(teamID: (currentTeam?.teamID)!, isActive: showActive)
-                let leadList = leads(teamID: (currentTeam?.teamID)!, isActive: showActive)
-                
+                let shiftsForMonth = shifts(teamID: currentUser.currentTeam!.teamID, month: month, year: year)
+                let personShiftsThisMonth = peopleList.checkShifts(shiftList: shiftsForMonth)
                 
                 myMenuOptions.removeAll()
                 var menuID: Int = 1
@@ -518,8 +517,7 @@ public class userItem: NSObject, Identifiable, ObservableObject
                 myMenuOptions.append(tempA)
                 menuID += 1
                 
-                if checkReadPermission(rosteringRoleType)
-                {
+                if checkReadPermission(rosteringRoleType) {
                     let temp5 = menuArray(menuTextx: "Rostering", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
                     myMenuOptions.append(temp5)
                     parentID = menuID
@@ -534,8 +532,7 @@ public class userItem: NSObject, Identifiable, ObservableObject
                     let eventPlanID = menuID
                     menuID += 1
                     
-                    for item in currentTeam!.activeProjectList(eventProjectType, rebuild: true).projectList
-                    {
+                    for item in currentTeam!.activeProjectList(eventProjectType, rebuild: true).projectList {
                         let tempPlan = menuArray(menuTextx: "        \(item.projectName) - \(item.displayProjectStartDate)", menuActionx: menuEventPlanning, indexx: item.projectID, IDx: menuID, parentIDx: eventPlanID, displayx: false)
                         myMenuOptions.append(tempPlan)
                         menuID += 1
@@ -546,8 +543,7 @@ public class userItem: NSObject, Identifiable, ObservableObject
                     let templatePlanID = menuID
                     menuID += 1
                     
-                    for item in currentTeam!.eventTemplatesClassList.templates
-                    {
+                    for item in currentTeam!.eventTemplatesClassList.templates {
                         let tempTemplate = menuArray(menuTextx: "        \(item.templateName)", menuActionx: menuEventTemplates, indexx: item.templateID, IDx: menuID, parentIDx: templatePlanID, displayx: false)
                         myMenuOptions.append(tempTemplate)
                         menuID += 1
@@ -562,7 +558,7 @@ public class userItem: NSObject, Identifiable, ObservableObject
                     let monthlyRosterID = menuID
                     menuID += 1
 
-                    for item in people(teamID: currentUser.currentTeam!.teamID, month: month, year: year).people {
+                    for item in personShiftsThisMonth {
                         let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuMonthlyRoster, indexx: item.personID, IDx: menuID, parentIDx: monthlyRosterID, displayx: false)
                         myMenuOptions.append(tempItem)
                         menuID += 1
@@ -578,23 +574,20 @@ public class userItem: NSObject, Identifiable, ObservableObject
                     myMenuOptions.append(temp8c)
                     menuID += 1
                 }
-                
-                if checkReadPermission(coachingRoleType)
-                {
+
+                if checkReadPermission(coachingRoleType) {
                     let temp8c = menuArray(menuTextx: "Coaching", menuActionx: menuCourse, indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
                     myMenuOptions.append(temp8c)
                     menuID += 1
                 }
                 
-                if checkReadPermission(salesRoleType)
-                {
+                if checkReadPermission(salesRoleType) {
                     let temp8b = menuArray(menuTextx: "Sales", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
                     myMenuOptions.append(temp8b)
                     parentID = menuID
                     menuID += 1
                     
-                    for item in leadList.leads
-                    {
+                    for item in leadList.leads {
                         let tempLead = menuArray(menuTextx: "     \(item.name)", menuActionx: menuSales, indexx: item.leadID, IDx: menuID, parentIDx: parentID, displayx: false)
                         myMenuOptions.append(tempLead)
                         menuID += 1
@@ -604,9 +597,8 @@ public class userItem: NSObject, Identifiable, ObservableObject
                     myMenuOptions.append(tempLead)
                     menuID += 1
                 }
-                
-                if checkReadPermission(invoicingRoleType)
-                {
+
+                if checkReadPermission(invoicingRoleType) {
                     let temp14 = menuArray(menuTextx: "Invoicing", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
                     myMenuOptions.append(temp14)
                     parentID = menuID
@@ -616,25 +608,28 @@ public class userItem: NSObject, Identifiable, ObservableObject
                     myMenuOptions.append(temp15)
                     let personInvoiceID = menuID
                     menuID += 1
-                    
-                    for item in people(teamID: currentUser.currentTeam!.teamID, month: month, year: year).people {
+
+                    for item in personShiftsThisMonth {
                         // Check to see if we need to show this as an alert colour
                         
-                        let tempInvoice = personInvoice(personID: item.personID, teamID: currentUser.currentTeam!.teamID, month: month, year: year, type: "get")
+                        let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false)
+                        myMenuOptions.append(tempItem)
                         
-                        if tempInvoice.invoiceID == 0 {
-                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false, alertColourx: true)
-                            myMenuOptions.append(tempItem)
-                        }
-                        else if tempInvoice.status == invoiceStatusPaid || tempInvoice.status == invoiceStatusApproved {
-                        
-                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false)
-                            myMenuOptions.append(tempItem)
-                        }
-                        else {
-                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false, alertColourx: true)
-                            myMenuOptions.append(tempItem)
-                        }
+//                        let tempInvoice = personInvoice(personID: item.personID, teamID: currentUser.currentTeam!.teamID, month: month, year: year, type: "get")
+//
+//                        if tempInvoice.invoiceID == 0 {
+//                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false, alertColourx: true)
+//                            myMenuOptions.append(tempItem)
+//                        }
+//                        else if tempInvoice.status == invoiceStatusPaid || tempInvoice.status == invoiceStatusApproved {
+//
+//                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false)
+//                            myMenuOptions.append(tempItem)
+//                        }
+//                        else {
+//                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false, alertColourx: true)
+//                            myMenuOptions.append(tempItem)
+//                        }
                         menuID += 1
                     }
                     
@@ -646,8 +641,10 @@ public class userItem: NSObject, Identifiable, ObservableObject
                     myMenuOptions.append(temp15b)
                     let clientInvoiceID = menuID
                     menuID += 1
-                    
+
+
                     let clientInvoiceList = clients(teamID: currentUser.currentTeam!.teamID, isActive: true)
+
                     let coachingInvoiceList = coachingClients(teamID: currentUser.currentTeam!.teamID, isActive: true)
                     
                     for item in clientInvoiceList.clients {
@@ -666,7 +663,7 @@ public class userItem: NSObject, Identifiable, ObservableObject
                     myMenuOptions.append(temp15c)
                     menuID += 1
                 }
-                
+
                 if checkReadPermission(salesRoleType) || checkReadPermission(clientRoleType)
                 {
                     let temp17 = menuArray(menuTextx: "Clients", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
@@ -674,8 +671,7 @@ public class userItem: NSObject, Identifiable, ObservableObject
                     parentID = menuID
                     menuID += 1
                     
-                    for item in clientList.clients
-                    {
+                    for item in clientList.clients {
                         let tempClient = menuArray(menuTextx: "     \(item.name)", menuActionx: menuClient, indexx: item.clientID, IDx: menuID, parentIDx: parentID, displayx: false)
                         myMenuOptions.append(tempClient)
                         menuID += 1
@@ -685,24 +681,20 @@ public class userItem: NSObject, Identifiable, ObservableObject
                     myMenuOptions.append(tempClient)
                     menuID += 1
                 }
-                
-                if checkReadPermission(pmRoleType)
-                {
+
+                if checkReadPermission(pmRoleType) {
                     let temp17a = menuArray(menuTextx: "Projects", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
                     myMenuOptions.append(temp17a)
                     parentID = menuID
                     menuID += 1
                     
-                    for item in projectList.projectList
-                    {
+                    for item in projectList.projectList {
                         var clientName: String = ""
                         
-                        if item.clientID > 0
-                        {
+                        if item.clientID > 0 {
                             let temp = clientList.clients.filter {$0.clientID == item.clientID}
                             
-                            if temp.count > 0
-                            {
+                            if temp.count > 0 {
                                 clientName = " - \(temp[0].name)"
                             }
                         }
@@ -711,7 +703,7 @@ public class userItem: NSObject, Identifiable, ObservableObject
                         menuID += 1
                     }
                 }
-                
+
                 if checkReadPermission(hrRoleType)
                 {
                     let temp17b = menuArray(menuTextx: "People", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
@@ -719,8 +711,7 @@ public class userItem: NSObject, Identifiable, ObservableObject
                     parentID = menuID
                     menuID += 1
                     
-                    for item in peopleList.people
-                    {
+                    for item in peopleList.people {
                         let tempClient = menuArray(menuTextx: "     \(item.name)", menuActionx: menuPerson, indexx: item.personID, IDx: menuID, parentIDx: parentID, displayx: false)
                         myMenuOptions.append(tempClient)
                         menuID += 1
@@ -730,7 +721,7 @@ public class userItem: NSObject, Identifiable, ObservableObject
                     myMenuOptions.append(tempPerson)
                     menuID += 1
                 }
-                
+
                 let temp10 = menuArray(menuTextx: "Reports", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
                 myMenuOptions.append(temp10)
                 
@@ -757,9 +748,8 @@ public class userItem: NSObject, Identifiable, ObservableObject
                 let temp12 = menuArray(menuTextx: "New Communication", menuActionx: menuNewComms, indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
                 myMenuOptions.append(temp12)
                 menuID += 1
-                
-                if checkReadPermission(adminRoleType)
-                {
+
+                if checkReadPermission(adminRoleType) {
                     let temp16 = menuArray(menuTextx: "Settings", menuActionx: menuSettings, indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
                     myMenuOptions.append(temp16)
                     menuID += 1
@@ -858,13 +848,13 @@ public class userItem: NSObject, Identifiable, ObservableObject
 public struct Users: Identifiable {
     public let id = UUID()
     
-    public var email: String?
-    public var name: String?
-    public var teamID: Int64?
-    public var userID: Int64?
-    public var passPhrase: String?
-    public var phraseDate: Date?
-    public var defaultCalendar: String?
+    public var email: String
+    public var name: String
+    public var teamID: Int64
+    public var userID: Int64
+    public var passPhrase: String
+    public var phraseDate: Date
+    public var defaultCalendar: String
 }
 
 extension CloudKitInteraction
@@ -892,14 +882,21 @@ extension CloudKitInteraction
             {
                 phraseDate = record.object(forKey: "phraseDate") as! Date
             }
+
+            var defaultCalendar = ""
+            if record.object(forKey: "defaultCalendar") != nil
+            {
+                defaultCalendar = record.object(forKey: "defaultCalendar") as! String
+            }
+
             
-            let tempItem = Users(email: record.object(forKey: "email") as? String,
-                                 name: record.object(forKey: "name") as? String,
+            let tempItem = Users(email: record.object(forKey: "email") as! String,
+                                 name: record.object(forKey: "name") as! String,
                                  teamID: teamID,
                                  userID: userID,
-                                 passPhrase: record.object(forKey: "passPhrase") as? String,
+                                 passPhrase: record.object(forKey: "passPhrase") as! String,
                                  phraseDate: phraseDate,
-                                 defaultCalendar: record.object(forKey: "defaultCalendar") as? String
+                                 defaultCalendar: defaultCalendar
             )
             
             tempArray.append(tempItem)

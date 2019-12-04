@@ -36,16 +36,16 @@ public class personAddresses: NSObject, Identifiable
         for myItem in workingArray
         {
             let myContext = address(addressID: myItem.addressID,
-                                    addressLine1: myItem.addressLine1!,
-                                    addressLine2: myItem.addressLine2!,
-                                    city: myItem.city!,
+                                    addressLine1: myItem.addressLine1,
+                                    addressLine2: myItem.addressLine2,
+                                    city: myItem.city,
                                     clientID: myItem.clientID,
-                                    country: myItem.country!,
+                                    country: myItem.country,
                                     personID: myItem.personID,
-                                    postcode: myItem.postcode!,
+                                    postcode: myItem.postcode,
                                     projectID: myItem.projectID,
-                                    state: myItem.state!,
-                                    addressType: myItem.addressType!,
+                                    state: myItem.state,
+                                    addressType: myItem.addressType,
                                     teamID: myItem.teamID)
             myAddresses.append(myContext)
         }
@@ -71,16 +71,16 @@ public class personAddresses: NSObject, Identifiable
         for myItem in workingArray
         {
             let myContext = address(addressID: myItem.addressID,
-                                    addressLine1: myItem.addressLine1!,
-                                    addressLine2: myItem.addressLine2!,
-                                    city: myItem.city!,
+                                    addressLine1: myItem.addressLine1,
+                                    addressLine2: myItem.addressLine2,
+                                    city: myItem.city,
                                     clientID: myItem.clientID,
-                                    country: myItem.country!,
+                                    country: myItem.country,
                                     personID: myItem.personID,
-                                    postcode: myItem.postcode!,
+                                    postcode: myItem.postcode,
                                     projectID: myItem.projectID,
-                                    state: myItem.state!,
-                                    addressType: myItem.addressType!,
+                                    state: myItem.state,
+                                    addressType: myItem.addressType,
                                     teamID: myItem.teamID)
             
             myAddresses.append(myContext)
@@ -107,16 +107,16 @@ public class personAddresses: NSObject, Identifiable
         for myItem in workingArray
         {
             let myContext = address(addressID: myItem.addressID,
-                                    addressLine1: myItem.addressLine1!,
-                                    addressLine2: myItem.addressLine2!,
-                                    city: myItem.city!,
+                                    addressLine1: myItem.addressLine1,
+                                    addressLine2: myItem.addressLine2,
+                                    city: myItem.city,
                                     clientID: myItem.clientID,
-                                    country: myItem.country!,
+                                    country: myItem.country,
                                     personID: myItem.personID,
-                                    postcode: myItem.postcode!,
+                                    postcode: myItem.postcode,
                                     projectID: myItem.projectID,
-                                    state: myItem.state!,
-                                    addressType: myItem.addressType!,
+                                    state: myItem.state,
+                                    addressType: myItem.addressType,
                                     teamID: myItem.teamID)
             myAddresses.append(myContext)
         }
@@ -317,16 +317,16 @@ public class address: NSObject, Identifiable
         if myItem != nil
         {
             myAddressID = myItem.addressID
-            myAddressLine1 = myItem.addressLine1!
-            myAddressLine2 = myItem.addressLine2!
-            myCity = myItem.city!
+            myAddressLine1 = myItem.addressLine1
+            myAddressLine2 = myItem.addressLine2
+            myCity = myItem.city
             myClientID = myItem.clientID
-            myCountry = myItem.country!
+            myCountry = myItem.country
             myPersonID = myItem.personID
-            myPostcode = myItem.postcode!
+            myPostcode = myItem.postcode
             myProjectID = myItem.projectID
-            myState = myItem.state!
-            myAddressType = myItem.addressType!
+            myState = myItem.state
+            myAddressType = myItem.addressType
             myTeamID = myItem.teamID
         }
     }
@@ -585,16 +585,16 @@ public class address: NSObject, Identifiable
 
 public struct Addresses {
     public var addressID: Int64
-    public var addressLine1: String?
-    public var addressLine2: String?
-    public var addressType: String?
-    public var city: String?
+    public var addressLine1: String
+    public var addressLine2: String
+    public var addressType: String
+    public var city: String
     public var clientID: Int64
-    public var country: String?
+    public var country: String
     public var personID: Int64
-    public var postcode: String?
+    public var postcode: String
     public var projectID: Int64
-    public var state: String?
+    public var state: String
     public var teamID: Int64
 }
 
@@ -637,16 +637,16 @@ extension CloudKitInteraction
             }
             
             let tempItem = Addresses(addressID: addressID,
-                                     addressLine1: record.object(forKey: "addressLine1") as? String,
-                                     addressLine2: record.object(forKey: "addressLine2") as? String,
-                                     addressType: record.object(forKey: "addressType") as? String,
-                                     city: record.object(forKey: "city") as? String,
+                                     addressLine1: record.object(forKey: "addressLine1") as! String,
+                                     addressLine2: record.object(forKey: "addressLine2") as! String,
+                                     addressType: record.object(forKey: "addressType") as! String,
+                                     city: record.object(forKey: "city") as! String,
                                      clientID: clientID,
-                                     country: record.object(forKey: "country") as? String,
+                                     country: record.object(forKey: "country") as! String,
                                      personID: personID,
-                                     postcode: record.object(forKey: "postcode") as? String,
+                                     postcode: record.object(forKey: "postcode") as! String,
                                      projectID: projectID,
-                                     state: record.object(forKey: "state") as? String,
+                                     state: record.object(forKey: "state") as! String,
                                      teamID: teamID)
             
             tempArray.append(tempItem)

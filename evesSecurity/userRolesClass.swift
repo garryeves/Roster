@@ -39,7 +39,7 @@ public class userRoles: NSObject, Identifiable
             
             for myItem in (currentUser.currentTeam?.userRoles)!
             {
-                let myObject = userRoleItem(userID: myItem.userID, teamID: myItem.teamID, roleType: myItem.roleType!, accessLevel: myItem.accessLevel!, roleID: myItem.roleID)
+                let myObject = userRoleItem(userID: myItem.userID, teamID: myItem.teamID, roleType: myItem.roleType, accessLevel: myItem.accessLevel, roleID: myItem.roleID)
                 
                 myUserRoles.append(myObject)
             }
@@ -175,9 +175,9 @@ public class userRoleItem: NSObject, Identifiable
 }
 
 public struct UserRoles {
-    public var accessLevel: String?
+    public var accessLevel: String
     public var roleID: Int64
-    public var roleType: String?
+    public var roleType: String
     public var teamID: Int64
     public var userID: Int64
 }
@@ -208,9 +208,9 @@ extension CloudKitInteraction
                 roleID = record.object(forKey: "roleID") as! Int64
             }
             
-            let tempItem = UserRoles(accessLevel: record.object(forKey: "accessLevel") as? String,
+            let tempItem = UserRoles(accessLevel: record.object(forKey: "accessLevel") as! String,
                                      roleID: roleID,
-                                     roleType: record.object(forKey: "roleType") as? String,
+                                     roleType: record.object(forKey: "roleType") as! String,
                                      teamID: teamID,
                                      userID: userID)
             
@@ -287,7 +287,7 @@ extension CloudKitInteraction
     {
         let sem = DispatchSemaphore(value: 0)
         
-        let predicate = NSPredicate(format: "(userID == \(sourceRecord.userID)) AND (roleType == \"\(sourceRecord.roleType!)\") AND (teamID == \(sourceRecord.teamID))") // better be accurate to get only the record you need
+        let predicate = NSPredicate(format: "(userID == \(sourceRecord.userID)) AND (roleType == \"\(sourceRecord.roleType)\") AND (teamID == \(sourceRecord.teamID))") // better be accurate to get only the record you need
         let query = CKQuery(recordType: "UserRoles", predicate: predicate)
         publicDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
             if error != nil

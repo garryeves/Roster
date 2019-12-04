@@ -42,11 +42,11 @@ public class eventTemplates: NSObject, Identifiable
         for myItem in workingArray
         {
             let myObject = eventTemplate(eventID: myItem.eventID,
-                                         role: myItem.role!,
+                                         role: myItem.role,
                                          numRequired: myItem.numRequired,
                                          dateModifier: myItem.dateModifier,
-                                         startTime: myItem.startTime! as Date,
-                                         endTime: myItem.endTime! as Date,
+                                         startTime: myItem.startTime,
+                                         endTime: myItem.endTime,
                                          teamID: myItem.teamID)
             
             myEventTemplate.append(myObject)
@@ -492,11 +492,11 @@ public class eventTemplate: NSObject, Identifiable, ObservableObject
 
 public struct EventTemplate {
     public var dateModifier: Int64
-    public var endTime: Date?
+    public var endTime: Date
     public var eventID: Int64
     public var numRequired: Int64
-    public var role: String?
-    public var startTime: Date?
+    public var role: String
+    public var startTime: Date
     public var teamID: Int64
 }
 
@@ -548,7 +548,7 @@ extension CloudKitInteraction
                                          endTime: endTime,
                                          eventID: eventID,
                                          numRequired: numRequired,
-                                         role: record.object(forKey: "role") as? String,
+                                         role: record.object(forKey: "role") as! String,
                                          startTime: startTime,
                                          teamID: teamID)
             
@@ -638,7 +638,7 @@ extension CloudKitInteraction
     {
         let sem = DispatchSemaphore(value: 0)
         
-        let predicate = NSPredicate(format: "(teamID == \(sourceRecord.teamID)) AND (role == \"\(sourceRecord.role!)\") AND (eventID == \(sourceRecord.eventID)) AND (dateModifier == \(sourceRecord.dateModifier)) AND (startTime == %@) AND (endTime == %@)", sourceRecord.startTime! as CVarArg, sourceRecord.endTime! as CVarArg) // better be accurate to get only the record you need
+        let predicate = NSPredicate(format: "(teamID == \(sourceRecord.teamID)) AND (role == \"\(sourceRecord.role)\") AND (eventID == \(sourceRecord.eventID)) AND (dateModifier == \(sourceRecord.dateModifier)) AND (startTime == %@) AND (endTime == %@)", sourceRecord.startTime as CVarArg, sourceRecord.endTime as CVarArg) // better be accurate to get only the record you need
         let query = CKQuery(recordType: "eventTemplate", predicate: predicate)
         publicDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
             if error != nil

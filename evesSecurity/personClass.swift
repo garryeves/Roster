@@ -25,6 +25,7 @@ public class people: NSObject, Identifiable
 {
     public let id = UUID()
     public var myPeople:[person] = Array()
+    fileprivate var myRawData: [Person] = Array()
     
     public init(teamID: Int64, isActive: Bool)
     {
@@ -37,41 +38,41 @@ public class people: NSObject, Identifiable
         
         for myItem in (currentUser.currentTeam?.peopleList)!
         {
-            let dob: Date = myItem.dob! as Date
+            let dob: Date = myItem.dob
             
             var tempFirstName: String = ""
             var tempTitle: String = ""
-            if myItem.firstName == nil
-            {
-                tempFirstName = ""
-            }
-            else
-            {
-                tempFirstName = myItem.firstName!
-            }
-            if myItem.title == nil
-            {
-                tempTitle = ""
-            }
-            else
-            {
-                tempTitle = myItem.title!
-            }
+//            if myItem.firstName == nil
+//            {
+//                tempFirstName = ""
+//            }
+//            else
+//            {
+                tempFirstName = myItem.firstName
+//            }
+//            if myItem.title == nil
+//            {
+//                tempTitle = ""
+//            }
+//            else
+//            {
+                tempTitle = myItem.title
+//            }
             
             let myObject = person(personID: myItem.personID,
-                                  name: myItem.name!,
+                                  name: myItem.name,
                                   dob: dob,
                                   teamID: myItem.teamID,
-                                  gender: myItem.gender!,
-                                  note: myItem.note!,
+                                  gender: myItem.gender,
+                                  note: myItem.note,
                                   clientID: myItem.clientID,
                                   projectID: myItem.projectID,
-                                  canRoster: myItem.canRoster!,
+                                  canRoster: myItem.canRoster,
                                   firstName: tempFirstName,
                                   title: tempTitle,
                                   emailOptIn: myItem.emailOptIn,
-                                  isActive: myItem.isActive!,
-                                  useAllowanceHours: myItem.useAllowanceHours!
+                                  isActive: myItem.isActive,
+                                  useAllowanceHours: myItem.useAllowanceHours
             )
             myPeople.append(myObject)
         }
@@ -142,7 +143,7 @@ public class people: NSObject, Identifiable
         {
             if canRoster
             {
-                if (item.canRoster!)
+                if (item.canRoster)
                 {
                     workingArray.append(item)
                 }
@@ -155,40 +156,40 @@ public class people: NSObject, Identifiable
         
         for myItem in workingArray
         {
-            let dob: Date = myItem.dob! as Date
+            let dob: Date = myItem.dob
             
             var tempFirstName: String = ""
             var tempTitle: String = ""
-            if myItem.firstName == nil
-            {
-                tempFirstName = ""
-            }
-            else
-            {
-                tempFirstName = myItem.firstName!
-            }
-            if myItem.title == nil
-            {
-                tempTitle = ""
-            }
-            else
-            {
-                tempTitle = myItem.title!
-            }
+//            if myItem.firstName == nil
+//            {
+//                tempFirstName = ""
+//            }
+//            else
+//            {
+                tempFirstName = myItem.firstName
+ //           }
+//            if myItem.title == nil
+//            {
+//                tempTitle = ""
+//            }
+//            else
+//            {
+                tempTitle = myItem.title
+  //          }
             let myObject = person(personID: myItem.personID,
-                                  name: myItem.name!,
+                                  name: myItem.name,
                                   dob: dob,
                                   teamID: myItem.teamID,
-                                  gender: myItem.gender!,
-                                  note: myItem.note!,
+                                  gender: myItem.gender,
+                                  note: myItem.note,
                                   clientID: myItem.clientID,
                                   projectID: myItem.projectID,
-                                  canRoster: myItem.canRoster!,
+                                  canRoster: myItem.canRoster,
                                   firstName: tempFirstName,
                                   title: tempTitle,
                                   emailOptIn: myItem.emailOptIn,
                                   isActive: true,
-                                  useAllowanceHours: myItem.useAllowanceHours!
+                                  useAllowanceHours: myItem.useAllowanceHours
             )
             myPeople.append(myObject)
         }
@@ -216,41 +217,41 @@ public class people: NSObject, Identifiable
         
         for myItem in workingArray
         {
-            let dob: Date = myItem.dob! as Date
+            let dob: Date = myItem.dob
             
             var tempFirstName: String = ""
             var tempTitle: String = ""
-            if myItem.firstName == nil
-            {
-                tempFirstName = ""
-            }
-            else
-            {
-                tempFirstName = myItem.firstName!
-            }
-            if myItem.title == nil
-            {
-                tempTitle = ""
-            }
-            else
-            {
-                tempTitle = myItem.title!
-            }
+//            if myItem.firstName == nil
+//            {
+//                tempFirstName = ""
+//            }
+//            else
+//            {
+                tempFirstName = myItem.firstName
+ //           }
+//            if myItem.title == nil
+//            {
+//                tempTitle = ""
+//            }
+//            else
+//            {
+                tempTitle = myItem.title
+ //           }
             
             let myObject = person(personID: myItem.personID,
-                                  name: myItem.name!,
+                                  name: myItem.name,
                                   dob: dob,
                                   teamID: myItem.teamID,
-                                  gender: myItem.gender!,
-                                  note: myItem.note!,
+                                  gender: myItem.gender,
+                                  note: myItem.note,
                                   clientID: myItem.clientID,
                                   projectID: myItem.projectID,
-                                  canRoster: myItem.canRoster!,
+                                  canRoster: myItem.canRoster,
                                   firstName: tempFirstName,
                                   title: tempTitle,
                                   emailOptIn: myItem.emailOptIn,
-                                  isActive: myItem.isActive!,
-                                  useAllowanceHours: myItem.useAllowanceHours!
+                                  isActive: myItem.isActive,
+                                  useAllowanceHours: myItem.useAllowanceHours
             )
             myPeople.append(myObject)
         }
@@ -278,45 +279,75 @@ public class people: NSObject, Identifiable
         
         for myItem in workingArray
         {
-            let dob: Date = myItem.dob! as Date
+            let dob: Date = myItem.dob
             
             var tempFirstName: String = ""
             var tempTitle: String = ""
-            if myItem.firstName == nil
-            {
-                tempFirstName = ""
-            }
-            else
-            {
-                tempFirstName = myItem.firstName!
-            }
-            if myItem.title == nil
-            {
-                tempTitle = ""
-            }
-            else
-            {
-                tempTitle = myItem.title!
-            }
+//            if myItem.firstName == nil
+//            {
+//                tempFirstName = ""
+//            }
+//            else
+//            {
+                tempFirstName = myItem.firstName
+//            }
+//            if myItem.title == nil
+//            {
+//                tempTitle = ""
+//            }
+//            else
+//            {
+                tempTitle = myItem.title
+//            }
             
             let myObject = person(personID: myItem.personID,
-                                  name: myItem.name!,
+                                  name: myItem.name,
                                   dob: dob,
                                   teamID: myItem.teamID,
-                                  gender: myItem.gender!,
-                                  note: myItem.note!,
+                                  gender: myItem.gender,
+                                  note: myItem.note,
                                   clientID: myItem.clientID,
                                   projectID: myItem.projectID,
-                                  canRoster: myItem.canRoster!,
+                                  canRoster: myItem.canRoster,
                                   firstName: tempFirstName,
                                   title: tempTitle,
                                   emailOptIn: myItem.emailOptIn,
-                                  isActive: myItem.isActive!,
-                                  useAllowanceHours: myItem.useAllowanceHours!
+                                  isActive: myItem.isActive,
+                                  useAllowanceHours: myItem.useAllowanceHours
             )
             myPeople.append(myObject)
         }
         sortArray()
+    }
+    
+    public init(peopleList: [Int64], teamID: Int64) {
+        myRawData = myCloudDB.getPeople(peopleList: peopleList, teamID: teamID)
+        
+        if myRawData.count > 0 {
+            myRawData.sort {
+                    if $0.fullName == $1.fullName {
+                        return $0.name < $1.name
+                    }
+                    else {
+                        return $0.fullName < $1.fullName
+                    }
+            }
+//
+//            myRawData.sort {
+//                    if $0.fullName == $1.fullName {
+//                        return $0.name ?? "" < $1.name  ?? ""
+//                    }
+//                    else {
+//                        return $0.fullName < $1.fullName
+//                    }
+//            }
+        }
+    }
+    
+    var rawData: [Person] {
+        get {
+            return myRawData
+        }
     }
     
     public func sortArray()
@@ -366,6 +397,37 @@ public class people: NSObject, Identifiable
         {
             return myPeople
         }
+    }
+    
+    func checkShifts(shiftList: shifts) -> [person] {
+        var workingArray: [person] = Array()
+
+        // get list of shifts for the month
+
+        for myItem in myPeople {
+            // See if the person has any shifts in the month
+
+            for myShift in shiftList.shifts {
+                if myShift.personID == myItem.personID {
+                    workingArray.append(myItem)
+                    break
+                }
+            }
+        }
+
+        if workingArray.count > 0 {
+            workingArray.sort {
+                    // Because workdate has time it throws everything out
+                    
+                    if $0.name == $1.name {
+                        return $0.dob < $1.dob
+                    } else {
+                        return $0.name < $1.name
+                    }
+            }
+        }
+        
+        return workingArray
     }
 }
 
@@ -794,65 +856,65 @@ public class person: NSObject, Identifiable, ObservableObject
         if myItem != nil
         {
             myPersonID = myItem.personID
-            if myItem.name == nil
-            {
-                myName = ""
-            }
-            else
-            {
-                myName = myItem.name!
-            }
+//            if myItem.name == nil
+//            {
+//                myName = ""
+//            }
+//            else
+//            {
+                myName = myItem.name
+  //          }
             
-            myDob = myItem.dob! as Date
+            myDob = myItem.dob
             myTeamID = myItem.teamID
-            if myItem.gender == nil
-            {
-                myGender = ""
-            }
-            else
-            {
-                myGender = myItem.gender!
-            }
+//            if myItem.gender == nil
+//            {
+//                myGender = ""
+//            }
+//            else
+//            {
+                myGender = myItem.gender
+ //           }
             
-            if myItem.note == nil
-            {
-                myNote = ""
-            }
-            else
-            {
-                myNote = myItem.note!
-            }
+//            if myItem.note == nil
+//            {
+//                myNote = ""
+//            }
+//            else
+//            {
+                myNote = myItem.note
+ //           }
             
             myClientID = myItem.clientID
             myProjectID = myItem.projectID
-            if myItem.canRoster == nil
-            {
-                myCanRoster = true
-            }
-            else
-            {
-                myCanRoster = myItem.canRoster!
-            }
+//            if myItem.canRoster == nil
+//            {
+//                myCanRoster = true
+//            }
+//            else
+//            {
+                myCanRoster = myItem.canRoster
+//            }
             
-            if myItem.firstName == nil
-            {
-                myFirstName = ""
-            }
-            else
-            {
-                myFirstName = myItem.firstName!
-            }
-            if myItem.title == nil
-            {
-                myTitle = ""
-            }
-            else
-            {
-                myTitle = myItem.title!
-            }
+//            if myItem.firstName == nil
+//            {
+//                myFirstName = ""
+//            }
+//            else
+//            {
+                myFirstName = myItem.firstName
+ //           }
+//            if myItem.title == nil
+//            {
+//                myTitle = ""
+//            }
+//            else
+//            {
+                myTitle = myItem.title
+//            }
             myEmailOptIn = myItem.emailOptIn
-            myIsActive = myItem.isActive!
-            myuseAllowanceHours = myItem.useAllowanceHours!
+            myIsActive = myItem.isActive
+            myuseAllowanceHours = myItem.useAllowanceHours
             
             myAddresses = nil
             myContacts = nil
@@ -894,33 +956,33 @@ public class person: NSObject, Identifiable, ObservableObject
         if myItem != nil
         {
             myPersonID = myItem.personID
-            myName = myItem.name!
-            myDob = myItem.dob! as Date
+            myName = myItem.name
+            myDob = myItem.dob
             myTeamID = myItem.teamID
-            myGender = myItem.gender!
-            myNote = myItem.note!
+            myGender = myItem.gender
+            myNote = myItem.note
             myClientID = myItem.clientID
             myProjectID = myItem.projectID
-            myCanRoster = myItem.canRoster!
-            myIsActive = myItem.isActive!
-            myuseAllowanceHours = myItem.useAllowanceHours!
+            myCanRoster = myItem.canRoster
+            myIsActive = myItem.isActive
+            myuseAllowanceHours = myItem.useAllowanceHours
             
-            if myItem.firstName == nil
-            {
-                myFirstName = ""
-            }
-            else
-            {
-                myFirstName = myItem.firstName!
-            }
-            if myItem.title == nil
-            {
-                myTitle = ""
-            }
-            else
-            {
-                myTitle = myItem.title!
-            }
+//            if myItem.firstName == nil
+//            {
+//                myFirstName = ""
+//            }
+//            else
+//            {
+                myFirstName = myItem.firstName
+//            }
+//            if myItem.title == nil
+//            {
+//                myTitle = ""
+//            }
+//            else
+//            {
+                myTitle = myItem.title
+//            }
             myEmailOptIn = myItem.emailOptIn
         }
     }
@@ -966,7 +1028,7 @@ public class person: NSObject, Identifiable, ObservableObject
         let temp = Person(canRoster: myCanRoster, clientID: myClientID, dob: dob, gender: myGender, name: myName, note: myNote, personID: myPersonID, projectID: myProjectID, teamID: myTeamID,
                           firstName: myFirstName,
                           title: myTitle,
-                          emailOptIn: myEmailOptIn, isActive: myIsActive, useAllowanceHours: myuseAllowanceHours)
+                          emailOptIn: myEmailOptIn, isActive: myIsActive, useAllowanceHours: myuseAllowanceHours, fullName: "\(myFirstName) \(myName)")
         
         myCloudDB.savePersonRecordToCloudKit(temp)
         //    }
@@ -1067,7 +1129,7 @@ public class person: NSObject, Identifiable, ObservableObject
     }
     
     func shareMonthlyRoster () -> String {
-        var returnString = ""
+        var returnString = "\(currentUser.currentTeam!.name) - Roster for \(name)\n\n"
         
         for item in shiftArray {
             returnString += "\(item.workDateString) \(item.startTimeString) - \(item.endTimeString) \(item.projectName)\n\n"
@@ -1096,20 +1158,21 @@ extension alerts
 }
 
 public struct Person {
-    public var canRoster: Bool?
+    public var canRoster: Bool
     public var clientID: Int64
-    public var dob: Date?
-    public var gender: String?
-    public var name: String?
-    public var note: String?
+    public var dob: Date
+    public var gender: String
+    public var name: String
+    public var note: String
     public var personID: Int64
     public var projectID: Int64
     public var teamID: Int64
-    public var firstName: String?
-    public var title: String?
+    public var firstName: String
+    public var title: String
     public var emailOptIn: Bool
-    public var isActive: Bool?
-    public var useAllowanceHours: Bool?
+    public var isActive: Bool
+    public var useAllowanceHours: Bool
+    public var fullName: String
 }
 
 extension CloudKitInteraction
@@ -1187,20 +1250,40 @@ extension CloudKitInteraction
                 }
             }
             
+            var displayFullName = record.object(forKey: "name") as! String
+            var firstName = ""
+          
+            if record.object(forKey: "firstName") != nil {
+                firstName = record.object(forKey: "firstName") as! String
+                
+                if firstName == "" || firstName == " " {
+                    let _ = 1
+                } else {
+                    displayFullName = "\(firstName) \(record.object(forKey: "name") as! String)"
+                }
+            }
+            
+            var personTitle = ""
+            
+            if record.object(forKey: "title") != nil {
+                personTitle = record.object(forKey: "title") as! String
+            }
+            
             let tempItem = Person(canRoster: canRoster,
                                   clientID: clientID,
                                   dob: dob,
-                                  gender: record.object(forKey: "gender") as? String,
-                                  name: record.object(forKey: "name") as? String,
-                                  note: record.object(forKey: "note") as? String,
+                                  gender: record.object(forKey: "gender") as! String,
+                                  name: record.object(forKey: "name") as! String,
+                                  note: record.object(forKey: "note") as! String,
                                   personID: personID,
                                   projectID: projectID,
                                   teamID: teamID,
-                                  firstName: record.object(forKey: "firstName") as? String,
-                                  title: record.object(forKey: "title") as? String,
+                                  firstName: firstName,
+                                  title: personTitle,
                                   emailOptIn: emailOptIn,
                                   isActive: active,
-                                  useAllowanceHours: useAllowanceHours
+                                  useAllowanceHours: useAllowanceHours,
+                                  fullName: displayFullName
             )
             
             tempArray.append(tempItem)
@@ -1271,6 +1354,35 @@ extension CloudKitInteraction
         
         return shiftArray
     }
+    
+    func getPeople(peopleList: [Int64], teamID: Int64)->[Person] {
+        if peopleList.count > 0 {
+            var queryList = ""
+            
+            for item in peopleList {
+                if queryList == "" {
+                    queryList = "\(item)"
+                } else {
+                    queryList += ", \(item)"
+                }
+            }
+            
+            let predicate = NSPredicate(format: "(personID IN {\(queryList)}) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
+            
+            let query = CKQuery(recordType: "Person", predicate: predicate)
+            let sem = DispatchSemaphore(value: 0)
+            fetchServices(query: query, sem: sem, completion: nil)
+            
+            sem.wait()
+            
+            let shiftArray: [Person] = populatePerson(returnArray)
+            
+            return shiftArray
+        } else {
+            return []
+        }
+    }
+    
     
     func getPeopleForClient(clientID: Int64, teamID: Int64, onlyActive: Bool)->[Person]
     {
@@ -1405,7 +1517,7 @@ extension CloudKitInteraction
                         record!.setValue("False", forKey: "emailOptIn")
                     }
                     
-                    if sourceRecord.isActive!
+                    if sourceRecord.isActive
                     {
                         record!.setValue("true", forKey: "isActive")
                     }
@@ -1414,7 +1526,7 @@ extension CloudKitInteraction
                         record!.setValue("false", forKey: "isActive")
                     }
                     
-                    if sourceRecord.canRoster!
+                    if sourceRecord.canRoster
                     {
                         record!.setValue("true", forKey: "canRoster")
                     }
@@ -1423,7 +1535,7 @@ extension CloudKitInteraction
                         record!.setValue("false", forKey: "canRoster")
                     }
                     
-                    if sourceRecord.useAllowanceHours!
+                    if sourceRecord.useAllowanceHours
                     {
                         record!.setValue("true", forKey: "useAllowanceHours")
                     }
@@ -1463,7 +1575,7 @@ extension CloudKitInteraction
                     record.setValue(sourceRecord.firstName, forKey: "firstName")
                     record.setValue(sourceRecord.title , forKey: "title")
                     
-                    if sourceRecord.canRoster!
+                    if sourceRecord.canRoster
                     {
                         record.setValue("true", forKey: "canRoster")
                     }
@@ -1481,7 +1593,7 @@ extension CloudKitInteraction
                         record.setValue("False", forKey: "emailOptIn")
                     }
                     
-                    if sourceRecord.isActive!
+                    if sourceRecord.isActive
                     {
                         record.setValue("true", forKey: "isActive")
                     }
@@ -1490,7 +1602,7 @@ extension CloudKitInteraction
                         record.setValue("false", forKey: "isActive")
                     }
                     
-                    if sourceRecord.useAllowanceHours!
+                    if sourceRecord.useAllowanceHours
                     {
                         record.setValue("true", forKey: "useAllowanceHours")
                     }

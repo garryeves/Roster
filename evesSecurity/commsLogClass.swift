@@ -27,13 +27,13 @@ public class commLogList: NSObject, Identifiable
         for myItem in (currentUser.currentTeam?.commsLog)!
         {
             let myObject = commsLogEntry(clientID: myItem.clientID,
-                                         convTime: myItem.convTime!,
-                                         notes: myItem.notes!,
+                                         convTime: myItem.convTime,
+                                         notes: myItem.notes,
                                          personID: myItem.personID,
                                          projectID: myItem.projectID,
-                                         summary: myItem.summary!,
+                                         summary: myItem.summary,
                                          teamID: myItem.teamID,
-                                         type: myItem.type!,
+                                         type: myItem.type,
                                          leadID: myItem.leadID)
             myEntries.append(myObject)
         }
@@ -52,13 +52,13 @@ public class commLogList: NSObject, Identifiable
         for myItem in (currentUser.currentTeam?.commsLog)!
         {
             let myObject = commsLogEntry(clientID: myItem.clientID,
-                                         convTime: myItem.convTime!,
-                                         notes: myItem.notes!,
+                                         convTime: myItem.convTime,
+                                         notes: myItem.notes,
                                          personID: myItem.personID,
                                          projectID: myItem.projectID,
-                                         summary: myItem.summary!,
+                                         summary: myItem.summary,
                                          teamID: myItem.teamID,
-                                         type: myItem.type!,
+                                         type: myItem.type,
                                          leadID: myItem.leadID)
             myEntries.append(myObject)
         }
@@ -77,13 +77,13 @@ public class commLogList: NSObject, Identifiable
         for myItem in (currentUser.currentTeam?.commsLog)!
         {
             let myObject = commsLogEntry(clientID: myItem.clientID,
-                                         convTime: myItem.convTime!,
-                                         notes: myItem.notes!,
+                                         convTime: myItem.convTime,
+                                         notes: myItem.notes,
                                          personID: myItem.personID,
                                          projectID: myItem.projectID,
-                                         summary: myItem.summary!,
+                                         summary: myItem.summary,
                                          teamID: myItem.teamID,
-                                         type: myItem.type!,
+                                         type: myItem.type,
                                          leadID: myItem.leadID)
             myEntries.append(myObject)
         }
@@ -102,13 +102,13 @@ public class commLogList: NSObject, Identifiable
         for myItem in (currentUser.currentTeam?.commsLog)!
         {
             let myObject = commsLogEntry(clientID: myItem.clientID,
-                                         convTime: myItem.convTime!,
-                                         notes: myItem.notes!,
+                                         convTime: myItem.convTime,
+                                         notes: myItem.notes,
                                          personID: myItem.personID,
                                          projectID: myItem.projectID,
-                                         summary: myItem.summary!,
+                                         summary: myItem.summary,
                                          teamID: myItem.teamID,
-                                         type: myItem.type!,
+                                         type: myItem.type,
                                          leadID: myItem.leadID)
             myEntries.append(myObject)
         }
@@ -127,13 +127,13 @@ public class commLogList: NSObject, Identifiable
         for myItem in (currentUser.currentTeam?.commsLog)!
         {
             let myObject = commsLogEntry(clientID: myItem.clientID,
-                                         convTime: myItem.convTime!,
-                                         notes: myItem.notes!,
+                                         convTime: myItem.convTime,
+                                         notes: myItem.notes,
                                          personID: myItem.personID,
                                          projectID: myItem.projectID,
-                                         summary: myItem.summary!,
+                                         summary: myItem.summary,
                                          teamID: myItem.teamID,
-                                         type: myItem.type!,
+                                         type: myItem.type,
                                          leadID: myItem.leadID)
             myEntries.append(myObject)
         }
@@ -339,13 +339,13 @@ public class commsLogEntry: NSObject, Identifiable
 
 public struct CommsLog {
     public var clientID: Int64
-    public var convTime: Date?
-    public var notes: String?
+    public var convTime: Date
+    public var notes: String
     public var personID: Int64
     public var projectID: Int64
-    public var summary: String?
+    public var summary: String
     public var teamID: Int64
-    public var type: String?
+    public var type: String
     public var leadID: Int64
 }
 
@@ -395,12 +395,12 @@ extension CloudKitInteraction
             
             let tempItem = CommsLog(clientID: clientID,
                                     convTime: convTime,
-                                    notes: record.object(forKey: "notes") as? String,
+                                    notes: record.object(forKey: "notes") as! String,
                                     personID: personID,
                                     projectID: projectID,
-                                    summary: record.object(forKey: "summary") as? String,
+                                    summary: record.object(forKey: "summary") as! String,
                                     teamID: teamID,
-                                    type: record.object(forKey: "type") as? String,
+                                    type: record.object(forKey: "type") as! String,
                                     leadID: leadID)
             
             tempArray.append(tempItem)
@@ -487,7 +487,7 @@ extension CloudKitInteraction
     func saveCommsLogRecordToCloudKit(_ sourceRecord: CommsLog)
     {
         let sem = DispatchSemaphore(value: 0)
-        let predicate = NSPredicate(format: "(convTime == %@) AND (teamID == \(sourceRecord.teamID))", sourceRecord.convTime! as CVarArg) // better be accurate to get only the record you need
+        let predicate = NSPredicate(format: "(convTime == %@) AND (teamID == \(sourceRecord.teamID))", sourceRecord.convTime as CVarArg) // better be accurate to get only the record you need
         let query = CKQuery(recordType: "CommsLog", predicate: predicate)
         publicDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
             if error != nil

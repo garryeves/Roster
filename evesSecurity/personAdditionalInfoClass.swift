@@ -26,8 +26,8 @@ public class personAdditionalInfos: NSObject, Identifiable
         for myItem in (currentUser.currentTeam?.personAdditionalInfo)!
         {
             let myObject = personAdditionalInfo(addInfoID: myItem.addInfoID,
-                                                addInfoName: myItem.addInfoName!,
-                                                addInfoType: myItem.addInfoType!,
+                                                addInfoName: myItem.addInfoName,
+                                                addInfoType: myItem.addInfoType,
                                                 teamID: myItem.teamID
             )
             myAdditional.append(myObject)
@@ -119,8 +119,8 @@ public class personAdditionalInfo: NSObject, Identifiable
         if myItem != nil
         {
             myAddInfoID = myItem.addInfoID
-            myAddInfoName = myItem.addInfoName!
-            myAddInfoType = myItem.addInfoType!
+            myAddInfoName = myItem.addInfoName
+            myAddInfoType = myItem.addInfoType
             myTeamID = myItem.teamID
         }
     }
@@ -335,8 +335,8 @@ public class personAdditionalInfo: NSObject, Identifiable
 
 public struct PersonAdditionalInfo {
     public var addInfoID: Int64
-    public var addInfoName: String?
-    public var addInfoType: String?
+    public var addInfoName: String
+    public var addInfoType: String
     public var teamID: Int64
 }
 
@@ -361,8 +361,8 @@ extension CloudKitInteraction
             }
             
             let tempItem = PersonAdditionalInfo(addInfoID: addInfoID,
-                                                addInfoName: record.object(forKey: "addInfoName") as? String,
-                                                addInfoType: record.object(forKey: "addInfoType") as? String,
+                                                addInfoName: record.object(forKey: "addInfoName") as! String,
+                                                addInfoType: record.object(forKey: "addInfoType") as! String,
                                                 teamID: teamID)
             
             tempArray.append(tempItem)

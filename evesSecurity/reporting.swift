@@ -146,62 +146,62 @@ public class reports: NSObject, Identifiable
         for myReport in workingArray
         {
             let reportInstance = report(reportID: myReport.reportID,
-                                        reportTitle: myReport.reportTitle!,
-                                        reportDescription: myReport.reportDescription!,
-                                        reportType: myReport.reportType!,
+                                        reportTitle: myReport.reportTitle,
+                                        reportDescription: myReport.reportDescription,
+                                        reportType: myReport.reportType,
                                         systemReport: myReport.systemReport,
                                         teamID: myReport.teamID,
-                                        orientation: myReport.orientation!,
-                                        columnTitle1: myReport.columnTitle1!,
-                                        columnSource1: myReport.columnSource1!,
+                                        orientation: myReport.orientation,
+                                        columnTitle1: myReport.columnTitle1,
+                                        columnSource1: myReport.columnSource1,
                                         columnWidth1: myReport.columnWidth1,
-                                        columnTitle2: myReport.columnTitle2!,
-                                        columnSource2: myReport.columnSource2!,
+                                        columnTitle2: myReport.columnTitle2,
+                                        columnSource2: myReport.columnSource2,
                                         columnWidth2: myReport.columnWidth2,
-                                        columnTitle3: myReport.columnTitle3!,
-                                        columnSource3: myReport.columnSource3!,
+                                        columnTitle3: myReport.columnTitle3,
+                                        columnSource3: myReport.columnSource3,
                                         columnWidth3: myReport.columnWidth3,
-                                        columnTitle4: myReport.columnTitle4!,
-                                        columnSource4: myReport.columnSource4!,
+                                        columnTitle4: myReport.columnTitle4,
+                                        columnSource4: myReport.columnSource4,
                                         columnWidth4: myReport.columnWidth4,
-                                        columnTitle5: myReport.columnTitle5!,
-                                        columnSource5: myReport.columnSource5!,
+                                        columnTitle5: myReport.columnTitle5,
+                                        columnSource5: myReport.columnSource5,
                                         columnWidth5: myReport.columnWidth5,
-                                        columnTitle6: myReport.columnTitle6!,
-                                        columnSource6: myReport.columnSource6!,
+                                        columnTitle6: myReport.columnTitle6,
+                                        columnSource6: myReport.columnSource6,
                                         columnWidth6: myReport.columnWidth6,
-                                        columnTitle7: myReport.columnTitle7!,
-                                        columnSource7: myReport.columnSource7!,
+                                        columnTitle7: myReport.columnTitle7,
+                                        columnSource7: myReport.columnSource7,
                                         columnWidth7: myReport.columnWidth7,
-                                        columnTitle8: myReport.columnTitle8!,
-                                        columnSource8: myReport.columnSource8!,
+                                        columnTitle8: myReport.columnTitle8,
+                                        columnSource8: myReport.columnSource8,
                                         columnWidth8: myReport.columnWidth8,
-                                        columnTitle9: myReport.columnTitle9!,
-                                        columnSource9: myReport.columnSource9!,
+                                        columnTitle9: myReport.columnTitle9,
+                                        columnSource9: myReport.columnSource9,
                                         columnWidth9: myReport.columnWidth9,
-                                        columnTitle10: myReport.columnTitle10!,
-                                        columnSource10: myReport.columnSource10!,
+                                        columnTitle10: myReport.columnTitle10,
+                                        columnSource10: myReport.columnSource10,
                                         columnWidth10: myReport.columnWidth10,
-                                        columnTitle11: myReport.columnTitle11!,
-                                        columnSource11: myReport.columnSource11!,
+                                        columnTitle11: myReport.columnTitle11,
+                                        columnSource11: myReport.columnSource11,
                                         columnWidth11: myReport.columnWidth11,
-                                        columnTitle12: myReport.columnTitle12!,
-                                        columnSource12: myReport.columnSource12!,
+                                        columnTitle12: myReport.columnTitle12,
+                                        columnSource12: myReport.columnSource12,
                                         columnWidth12: myReport.columnWidth12,
-                                        columnTitle13: myReport.columnTitle13!,
-                                        columnSource13: myReport.columnSource13!,
+                                        columnTitle13: myReport.columnTitle13,
+                                        columnSource13: myReport.columnSource13,
                                         columnWidth13: myReport.columnWidth13,
                                         columnWidth14: myReport.columnWidth14,
-                                        columnTitle14: myReport.columnTitle14!,
-                                        columnSource14: myReport.columnSource14!,
-                                        selectionCriteria1: myReport.selectionCriteria1!,
-                                        selectionCriteria2: myReport.selectionCriteria2!,
-                                        selectionCriteria3: myReport.selectionCriteria3!,
-                                        selectionCriteria4: myReport.selectionCriteria4!,
-                                        sortOrder1: myReport.sortOrder1!,
-                                        sortOrder2: myReport.sortOrder2!,
-                                        sortOrder3: myReport.sortOrder3!,
-                                        sortOrder4: myReport.sortOrder4!)
+                                        columnTitle14: myReport.columnTitle14,
+                                        columnSource14: myReport.columnSource14,
+                                        selectionCriteria1: myReport.selectionCriteria1,
+                                        selectionCriteria2: myReport.selectionCriteria2,
+                                        selectionCriteria3: myReport.selectionCriteria3,
+                                        selectionCriteria4: myReport.selectionCriteria4,
+                                        sortOrder1: myReport.sortOrder1,
+                                        sortOrder2: myReport.sortOrder2,
+                                        sortOrder3: myReport.sortOrder3,
+                                        sortOrder4: myReport.sortOrder4)
             
             myReports.append(reportInstance)
         }
@@ -219,62 +219,62 @@ public class reports: NSObject, Identifiable
         for myReport in (currentUser.currentTeam?.reportsData)!
         {
             let reportInstance = report(reportID: myReport.reportID,
-                                        reportTitle: myReport.reportTitle!,
-                                        reportDescription: myReport.reportDescription!,
-                                        reportType: myReport.reportType!,
+                                        reportTitle: myReport.reportTitle,
+                                        reportDescription: myReport.reportDescription,
+                                        reportType: myReport.reportType,
                                         systemReport: myReport.systemReport,
                                         teamID: myReport.teamID,
-                                        orientation: myReport.orientation!,
-                                        columnTitle1: myReport.columnTitle1!,
-                                        columnSource1: myReport.columnSource1!,
+                                        orientation: myReport.orientation,
+                                        columnTitle1: myReport.columnTitle1,
+                                        columnSource1: myReport.columnSource1,
                                         columnWidth1: myReport.columnWidth1,
-                                        columnTitle2: myReport.columnTitle2!,
-                                        columnSource2: myReport.columnSource2!,
+                                        columnTitle2: myReport.columnTitle2,
+                                        columnSource2: myReport.columnSource2,
                                         columnWidth2: myReport.columnWidth2,
-                                        columnTitle3: myReport.columnTitle3!,
-                                        columnSource3: myReport.columnSource3!,
+                                        columnTitle3: myReport.columnTitle3,
+                                        columnSource3: myReport.columnSource3,
                                         columnWidth3: myReport.columnWidth3,
-                                        columnTitle4: myReport.columnTitle4!,
-                                        columnSource4: myReport.columnSource4!,
+                                        columnTitle4: myReport.columnTitle4,
+                                        columnSource4: myReport.columnSource4,
                                         columnWidth4: myReport.columnWidth4,
-                                        columnTitle5: myReport.columnTitle5!,
-                                        columnSource5: myReport.columnSource5!,
+                                        columnTitle5: myReport.columnTitle5,
+                                        columnSource5: myReport.columnSource5,
                                         columnWidth5: myReport.columnWidth5,
-                                        columnTitle6: myReport.columnTitle6!,
-                                        columnSource6: myReport.columnSource6!,
+                                        columnTitle6: myReport.columnTitle6,
+                                        columnSource6: myReport.columnSource6,
                                         columnWidth6: myReport.columnWidth6,
-                                        columnTitle7: myReport.columnTitle7!,
-                                        columnSource7: myReport.columnSource7!,
+                                        columnTitle7: myReport.columnTitle7,
+                                        columnSource7: myReport.columnSource7,
                                         columnWidth7: myReport.columnWidth7,
-                                        columnTitle8: myReport.columnTitle8!,
-                                        columnSource8: myReport.columnSource8!,
+                                        columnTitle8: myReport.columnTitle8,
+                                        columnSource8: myReport.columnSource8,
                                         columnWidth8: myReport.columnWidth8,
-                                        columnTitle9: myReport.columnTitle9!,
-                                        columnSource9: myReport.columnSource9!,
+                                        columnTitle9: myReport.columnTitle9,
+                                        columnSource9: myReport.columnSource9,
                                         columnWidth9: myReport.columnWidth9,
-                                        columnTitle10: myReport.columnTitle10!,
-                                        columnSource10: myReport.columnSource10!,
+                                        columnTitle10: myReport.columnTitle10,
+                                        columnSource10: myReport.columnSource10,
                                         columnWidth10: myReport.columnWidth10,
-                                        columnTitle11: myReport.columnTitle11!,
-                                        columnSource11: myReport.columnSource11!,
+                                        columnTitle11: myReport.columnTitle11,
+                                        columnSource11: myReport.columnSource11,
                                         columnWidth11: myReport.columnWidth11,
-                                        columnTitle12: myReport.columnTitle12!,
-                                        columnSource12: myReport.columnSource12!,
+                                        columnTitle12: myReport.columnTitle12,
+                                        columnSource12: myReport.columnSource12,
                                         columnWidth12: myReport.columnWidth12,
-                                        columnTitle13: myReport.columnTitle13!,
-                                        columnSource13: myReport.columnSource13!,
+                                        columnTitle13: myReport.columnTitle13,
+                                        columnSource13: myReport.columnSource13,
                                         columnWidth13: myReport.columnWidth13,
                                         columnWidth14: myReport.columnWidth14,
-                                        columnTitle14: myReport.columnTitle14!,
-                                        columnSource14: myReport.columnSource14!,
-                                        selectionCriteria1: myReport.selectionCriteria1!,
-                                        selectionCriteria2: myReport.selectionCriteria2!,
-                                        selectionCriteria3: myReport.selectionCriteria3!,
-                                        selectionCriteria4: myReport.selectionCriteria4!,
-                                        sortOrder1: myReport.sortOrder1!,
-                                        sortOrder2: myReport.sortOrder2!,
-                                        sortOrder3: myReport.sortOrder3!,
-                                        sortOrder4: myReport.sortOrder4!)
+                                        columnTitle14: myReport.columnTitle14,
+                                        columnSource14: myReport.columnSource14,
+                                        selectionCriteria1: myReport.selectionCriteria1,
+                                        selectionCriteria2: myReport.selectionCriteria2,
+                                        selectionCriteria3: myReport.selectionCriteria3,
+                                        selectionCriteria4: myReport.selectionCriteria4,
+                                        sortOrder1: myReport.sortOrder1,
+                                        sortOrder2: myReport.sortOrder2,
+                                        sortOrder3: myReport.sortOrder3,
+                                        sortOrder4: myReport.sortOrder4)
             
             myReports.append(reportInstance)
         }
@@ -1319,62 +1319,62 @@ public class report: NSObject, Identifiable
         if myRecord != nil
         {
             myReportID = myRecord.reportID
-            myReportName = myRecord.reportTitle!
-            myReportName = myRecord.reportDescription!
-            myReportType = myRecord.reportType!
+            myReportName = myRecord.reportTitle
+            myReportName = myRecord.reportDescription
+            myReportType = myRecord.reportType
             mySystemReport = myRecord.systemReport
             myTeamID = myRecord.teamID
-            myPaperOrientation = myRecord.orientation!
-            myColumnTitle1 = myRecord.columnTitle1!
-            myColumnSource1 = myRecord.columnSource1!
+            myPaperOrientation = myRecord.orientation
+            myColumnTitle1 = myRecord.columnTitle1
+            myColumnSource1 = myRecord.columnSource1
             myColumnWidth1 = CGFloat(myRecord.columnWidth1)
-            myColumnTitle2 = myRecord.columnTitle2!
-            myColumnSource2 = myRecord.columnSource2!
+            myColumnTitle2 = myRecord.columnTitle2
+            myColumnSource2 = myRecord.columnSource2
             myColumnWidth2 = CGFloat(myRecord.columnWidth2)
-            myColumnTitle3 = myRecord.columnTitle3!
-            myColumnSource3 = myRecord.columnSource3!
+            myColumnTitle3 = myRecord.columnTitle3
+            myColumnSource3 = myRecord.columnSource3
             myColumnWidth3 = CGFloat(myRecord.columnWidth3)
-            myColumnTitle4 = myRecord.columnTitle4!
-            myColumnSource4 = myRecord.columnSource4!
+            myColumnTitle4 = myRecord.columnTitle4
+            myColumnSource4 = myRecord.columnSource4
             myColumnWidth4 = CGFloat(myRecord.columnWidth4)
-            myColumnTitle5 = myRecord.columnTitle5!
-            myColumnSource5 = myRecord.columnSource5!
+            myColumnTitle5 = myRecord.columnTitle5
+            myColumnSource5 = myRecord.columnSource5
             myColumnWidth5 = CGFloat(myRecord.columnWidth5)
-            myColumnTitle6 = myRecord.columnTitle6!
-            myColumnSource6 = myRecord.columnSource6!
+            myColumnTitle6 = myRecord.columnTitle6
+            myColumnSource6 = myRecord.columnSource6
             myColumnWidth6 = CGFloat(myRecord.columnWidth6)
-            myColumnTitle7 = myRecord.columnTitle7!
-            myColumnSource7 = myRecord.columnSource7!
+            myColumnTitle7 = myRecord.columnTitle7
+            myColumnSource7 = myRecord.columnSource7
             myColumnWidth7 = CGFloat(myRecord.columnWidth7)
-            myColumnTitle8 = myRecord.columnTitle8!
-            myColumnSource8 = myRecord.columnSource8!
+            myColumnTitle8 = myRecord.columnTitle8
+            myColumnSource8 = myRecord.columnSource8
             myColumnWidth8 = CGFloat(myRecord.columnWidth8)
-            myColumnTitle9 = myRecord.columnTitle9!
-            myColumnSource9 = myRecord.columnSource9!
+            myColumnTitle9 = myRecord.columnTitle9
+            myColumnSource9 = myRecord.columnSource9
             myColumnWidth9 = CGFloat(myRecord.columnWidth9)
-            myColumnTitle10 = myRecord.columnTitle10!
-            myColumnSource10 = myRecord.columnSource10!
+            myColumnTitle10 = myRecord.columnTitle10
+            myColumnSource10 = myRecord.columnSource10
             myColumnWidth10 = CGFloat(myRecord.columnWidth10)
-            myColumnTitle11 = myRecord.columnTitle11!
-            myColumnSource11 = myRecord.columnSource11!
+            myColumnTitle11 = myRecord.columnTitle11
+            myColumnSource11 = myRecord.columnSource11
             myColumnWidth11 = CGFloat(myRecord.columnWidth11)
-            myColumnTitle12 = myRecord.columnTitle12!
-            myColumnSource12 = myRecord.columnSource12!
+            myColumnTitle12 = myRecord.columnTitle12
+            myColumnSource12 = myRecord.columnSource12
             myColumnWidth12 = CGFloat(myRecord.columnWidth12)
-            myColumnTitle13 = myRecord.columnTitle13!
-            myColumnSource13 = myRecord.columnSource13!
+            myColumnTitle13 = myRecord.columnTitle13
+            myColumnSource13 = myRecord.columnSource13
             myColumnWidth13 = CGFloat(myRecord.columnWidth13)
             myColumnWidth14 = CGFloat(myRecord.columnWidth14)
-            myColumnTitle14 = myRecord.columnTitle14!
-            myColumnSource14 = myRecord.columnSource14!
-            mySelectionCriteria1 = myRecord.selectionCriteria1!
-            mySelectionCriteria2 = myRecord.selectionCriteria2!
-            mySelectionCriteria3 = myRecord.selectionCriteria3!
-            mySelectionCriteria4 = myRecord.selectionCriteria4!
-            mySortOrder1 = myRecord.sortOrder1!
-            mySortOrder2 = myRecord.sortOrder2!
-            mySortOrder3 = myRecord.sortOrder3!
-            mySortOrder4 = myRecord.sortOrder4!
+            myColumnTitle14 = myRecord.columnTitle14
+            myColumnSource14 = myRecord.columnSource14
+            mySelectionCriteria1 = myRecord.selectionCriteria1
+            mySelectionCriteria2 = myRecord.selectionCriteria2
+            mySelectionCriteria3 = myRecord.selectionCriteria3
+            mySelectionCriteria4 = myRecord.selectionCriteria4
+            mySortOrder1 = myRecord.sortOrder1
+            mySortOrder2 = myRecord.sortOrder2
+            mySortOrder3 = myRecord.sortOrder3
+            mySortOrder4 = myRecord.sortOrder4
             
             if myPaperOrientation == "Landscape"
             {
@@ -2397,34 +2397,34 @@ public class reportLine: NSObject, Identifiable
 }
 
 public struct Reports {
-    public var columnSource1: String?
-    public var columnSource2: String?
-    public var columnSource3: String?
-    public var columnSource4: String?
-    public var columnSource5: String?
-    public var columnSource6: String?
-    public var columnSource7: String?
-    public var columnSource8: String?
-    public var columnSource9: String?
-    public var columnSource10: String?
-    public var columnSource11: String?
-    public var columnSource12: String?
-    public var columnSource13: String?
-    public var columnSource14: String?
-    public var columnTitle1: String?
-    public var columnTitle2: String?
-    public var columnTitle3: String?
-    public var columnTitle4: String?
-    public var columnTitle5: String?
-    public var columnTitle6: String?
-    public var columnTitle7: String?
-    public var columnTitle8: String?
-    public var columnTitle9: String?
-    public var columnTitle10: String?
-    public var columnTitle11: String?
-    public var columnTitle12: String?
-    public var columnTitle13: String?
-    public var columnTitle14: String?
+    public var columnSource1: String
+    public var columnSource2: String
+    public var columnSource3: String
+    public var columnSource4: String
+    public var columnSource5: String
+    public var columnSource6: String
+    public var columnSource7: String
+    public var columnSource8: String
+    public var columnSource9: String
+    public var columnSource10: String
+    public var columnSource11: String
+    public var columnSource12: String
+    public var columnSource13: String
+    public var columnSource14: String
+    public var columnTitle1: String
+    public var columnTitle2: String
+    public var columnTitle3: String
+    public var columnTitle4: String
+    public var columnTitle5: String
+    public var columnTitle6: String
+    public var columnTitle7: String
+    public var columnTitle8: String
+    public var columnTitle9: String
+    public var columnTitle10: String
+    public var columnTitle11: String
+    public var columnTitle12: String
+    public var columnTitle13: String
+    public var columnTitle14: String
     public var columnWidth1: Double
     public var columnWidth2: Double
     public var columnWidth3: Double
@@ -2439,19 +2439,19 @@ public struct Reports {
     public var columnWidth12: Double
     public var columnWidth13: Double
     public var columnWidth14: Double
-    public var orientation: String?
-    public var reportDescription: String?
+    public var orientation: String
+    public var reportDescription: String
     public var reportID: Int64
-    public var reportTitle: String?
-    public var reportType: String?
-    public var selectionCriteria1: String?
-    public var selectionCriteria2: String?
-    public var selectionCriteria3: String?
-    public var selectionCriteria4: String?
-    public var sortOrder1: String?
-    public var sortOrder2: String?
-    public var sortOrder3: String?
-    public var sortOrder4: String?
+    public var reportTitle: String
+    public var reportType: String
+    public var selectionCriteria1: String
+    public var selectionCriteria2: String
+    public var selectionCriteria3: String
+    public var selectionCriteria4: String
+    public var sortOrder1: String
+    public var sortOrder2: String
+    public var sortOrder3: String
+    public var sortOrder4: String
     public var systemReport: Bool
     public var teamID: Int64
 }
@@ -2569,34 +2569,34 @@ extension CloudKitInteraction
                 }
             }
             
-            let tempItem = Reports(columnSource1: record.object(forKey: "columnSource1") as? String,
-                                   columnSource2: record.object(forKey: "columnSource2") as? String,
-                                   columnSource3: record.object(forKey: "columnSource3") as? String,
-                                   columnSource4: record.object(forKey: "columnSource4") as? String,
-                                   columnSource5: record.object(forKey: "columnSource5") as? String,
-                                   columnSource6: record.object(forKey: "columnSource6") as? String,
-                                   columnSource7: record.object(forKey: "columnSource7") as? String,
-                                   columnSource8: record.object(forKey: "columnSource8") as? String,
-                                   columnSource9: record.object(forKey: "columnSource9") as? String,
-                                   columnSource10: record.object(forKey: "columnSource10") as? String,
-                                   columnSource11: record.object(forKey: "columnSource11") as? String,
-                                   columnSource12: record.object(forKey: "columnSource12") as? String,
-                                   columnSource13: record.object(forKey: "columnSource13") as? String,
-                                   columnSource14: record.object(forKey: "columnSource14") as? String,
-                                   columnTitle1: record.object(forKey: "columnTitle1") as? String,
-                                   columnTitle2: record.object(forKey: "columnTitle2") as? String,
-                                   columnTitle3: record.object(forKey: "columnTitle3") as? String,
-                                   columnTitle4: record.object(forKey: "columnTitle4") as? String,
-                                   columnTitle5: record.object(forKey: "columnTitle5") as? String,
-                                   columnTitle6: record.object(forKey: "columnTitle6") as? String,
-                                   columnTitle7: record.object(forKey: "columnTitle7") as? String,
-                                   columnTitle8: record.object(forKey: "columnTitle8") as? String,
-                                   columnTitle9: record.object(forKey: "columnTitle9") as? String,
-                                   columnTitle10: record.object(forKey: "columnTitle10") as? String,
-                                   columnTitle11: record.object(forKey: "columnTitle11") as? String,
-                                   columnTitle12: record.object(forKey: "columnTitle12") as? String,
-                                   columnTitle13: record.object(forKey: "columnTitle13") as? String,
-                                   columnTitle14: record.object(forKey: "columnTitle14") as? String,
+            let tempItem = Reports(columnSource1: record.object(forKey: "columnSource1") as! String,
+                                   columnSource2: record.object(forKey: "columnSource2") as! String,
+                                   columnSource3: record.object(forKey: "columnSource3") as! String,
+                                   columnSource4: record.object(forKey: "columnSource4") as! String,
+                                   columnSource5: record.object(forKey: "columnSource5") as! String,
+                                   columnSource6: record.object(forKey: "columnSource6") as! String,
+                                   columnSource7: record.object(forKey: "columnSource7") as! String,
+                                   columnSource8: record.object(forKey: "columnSource8") as! String,
+                                   columnSource9: record.object(forKey: "columnSource9") as! String,
+                                   columnSource10: record.object(forKey: "columnSource10") as! String,
+                                   columnSource11: record.object(forKey: "columnSource11") as! String,
+                                   columnSource12: record.object(forKey: "columnSource12") as! String,
+                                   columnSource13: record.object(forKey: "columnSource13") as! String,
+                                   columnSource14: record.object(forKey: "columnSource14") as! String,
+                                   columnTitle1: record.object(forKey: "columnTitle1") as! String,
+                                   columnTitle2: record.object(forKey: "columnTitle2") as! String,
+                                   columnTitle3: record.object(forKey: "columnTitle3") as! String,
+                                   columnTitle4: record.object(forKey: "columnTitle4") as! String,
+                                   columnTitle5: record.object(forKey: "columnTitle5") as! String,
+                                   columnTitle6: record.object(forKey: "columnTitle6") as! String,
+                                   columnTitle7: record.object(forKey: "columnTitle7") as! String,
+                                   columnTitle8: record.object(forKey: "columnTitle8") as! String,
+                                   columnTitle9: record.object(forKey: "columnTitle9") as! String,
+                                   columnTitle10: record.object(forKey: "columnTitle10") as! String,
+                                   columnTitle11: record.object(forKey: "columnTitle11") as! String,
+                                   columnTitle12: record.object(forKey: "columnTitle12") as! String,
+                                   columnTitle13: record.object(forKey: "columnTitle13") as! String,
+                                   columnTitle14: record.object(forKey: "columnTitle14") as! String,
                                    columnWidth1: columnWidth1,
                                    columnWidth2: columnWidth2,
                                    columnWidth3: columnWidth3,
@@ -2611,19 +2611,19 @@ extension CloudKitInteraction
                                    columnWidth12: columnWidth12,
                                    columnWidth13: columnWidth13,
                                    columnWidth14: columnWidth14,
-                                   orientation: record.object(forKey: "orientation") as? String,
-                                   reportDescription: record.object(forKey: "reportDescription") as? String,
+                                   orientation: record.object(forKey: "orientation") as! String,
+                                   reportDescription: record.object(forKey: "reportDescription") as! String,
                                    reportID: reportID,
-                                   reportTitle: record.object(forKey: "reportTitle") as? String,
-                                   reportType: record.object(forKey: "reportType") as? String,
-                                   selectionCriteria1: record.object(forKey: "selectionCriteria1") as? String,
-                                   selectionCriteria2: record.object(forKey: "selectionCriteria2") as? String,
-                                   selectionCriteria3: record.object(forKey: "selectionCriteria3") as? String,
-                                   selectionCriteria4: record.object(forKey: "selectionCriteria4") as? String,
-                                   sortOrder1: record.object(forKey: "sortOrder1") as? String,
-                                   sortOrder2: record.object(forKey: "sortOrder2") as? String,
-                                   sortOrder3: record.object(forKey: "sortOrder3") as? String,
-                                   sortOrder4: record.object(forKey: "sortOrder4") as? String,
+                                   reportTitle: record.object(forKey: "reportTitle") as! String,
+                                   reportType: record.object(forKey: "reportType") as! String,
+                                   selectionCriteria1: record.object(forKey: "selectionCriteria1") as! String,
+                                   selectionCriteria2: record.object(forKey: "selectionCriteria2") as! String,
+                                   selectionCriteria3: record.object(forKey: "selectionCriteria3") as! String,
+                                   selectionCriteria4: record.object(forKey: "selectionCriteria4") as! String,
+                                   sortOrder1: record.object(forKey: "sortOrder1") as! String,
+                                   sortOrder2: record.object(forKey: "sortOrder2") as! String,
+                                   sortOrder3: record.object(forKey: "sortOrder3") as! String,
+                                   sortOrder4: record.object(forKey: "sortOrder4") as! String,
                                    systemReport: systemReport,
                                    teamID: teamID)
             

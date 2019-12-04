@@ -28,7 +28,7 @@ public class eventTemplateHeads: NSObject, Identifiable
         for myItem in (currentUser.currentTeam?.eventTemplateHeadsList)!
         {
             let myObject = eventTemplateHead(eventID: myItem.eventID,
-                                             eventName: myItem.eventName!,
+                                             eventName: myItem.eventName,
                                              teamID: myItem.teamID)
             
             myEventTemplateHead.append(myObject)
@@ -141,7 +141,7 @@ public class eventTemplateHead: NSObject, Identifiable
         if myItem != nil
         {
             myTemplateID = myItem.eventID
-            myTemplateName = myItem.eventName!
+            myTemplateName = myItem.eventName
             myTeamID = myItem.teamID
         }
     }
@@ -353,7 +353,7 @@ public class eventTemplateHead: NSObject, Identifiable
 
 public struct EventTemplateHead {
     public var eventID: Int64
-    public var eventName: String?
+    public var eventName: String
     public var teamID: Int64
 }
 
@@ -378,7 +378,7 @@ extension CloudKitInteraction
             }
             
             let tempItem = EventTemplateHead(eventID: eventID,
-                                             eventName: record.object(forKey: "eventName") as? String,
+                                             eventName: record.object(forKey: "eventName") as! String,
                                              teamID: teamID)
             
             tempArray.append(tempItem)

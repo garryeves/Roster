@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import CloudKit
 import SwiftUI
 import EventKit
 

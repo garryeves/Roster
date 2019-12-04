@@ -16,33 +16,31 @@ public class rates: NSObject, Identifiable
     public let id = UUID()
     fileprivate var myRates:[rate] = Array()
     
-    public init(clientID: Int64, teamID: Int64, isActive: Bool = false)
-    {
-//        if currentUser.currentTeam!.rates == nil
-//        {
-            currentUser.currentTeam!.rates = myCloudDB.getRates(teamID: teamID, isActive: isActive)
-//        }
+    public init(clientID: Int64, teamID: Int64, isActive: Bool = false) {
+        currentUser.currentTeam!.rates = myCloudDB.getRates(teamID: teamID, isActive: isActive)
         
-        for item in (currentUser.currentTeam?.rates)!
-        {
-            if item.clientID == clientID
-            {
+        for item in (currentUser.currentTeam?.rates)! {
+            if item.clientID == clientID {
+                var rateNameText = "Issue with rate name.  Please restart"
+                
+          //      if item.rateName != nil {
+                    rateNameText = item.rateName
+            //    }
+                
                 let myObject = rate(rateID: item.rateID,
                                     clientID: item.clientID,
-                                    rateName: item.rateName!,
+                                    rateName: rateNameText,
                                     rateAmount: item.rateAmount,
                                     chargeAmount: item.chargeAmount,
-                                    startDate: item.startDate! as Date,
+                                    startDate: item.startDate,
                                     teamID: item.teamID,
                                     active: item.active)
                 myRates.append(myObject)
             }
         }
         
-        if myRates.count > 0
-        {
-            myRates.sort
-                {
+        if myRates.count > 0 {
+            myRates.sort {
                     if $0.isActive == $1.isActive
                     {
                         if $0.startDate == $1.startDate
@@ -64,19 +62,22 @@ public class rates: NSObject, Identifiable
     
     public init(teamID: Int64, isActive: Bool = false)
     {
-//        if currentUser.currentTeam?.rates == nil
-//        {
-            currentUser.currentTeam?.rates = myCloudDB.getRates(teamID: teamID, isActive: isActive)
- //       }
+        currentUser.currentTeam?.rates = myCloudDB.getRates(teamID: teamID, isActive: isActive)
         
         for myItem in (currentUser.currentTeam?.rates)!
         {
+            var rateText = "Error with loaging rate name, please reload app"
+        
+      //      if myItem.rateName != nil {
+                rateText = myItem.rateName
+       //     }
+            
             let myObject = rate(rateID: myItem.rateID,
                                 clientID: myItem.clientID,
-                                rateName: myItem.rateName!,
+                                rateName: rateText,
                                 rateAmount: myItem.rateAmount,
                                 chargeAmount: myItem.chargeAmount,
-                                startDate: myItem.startDate! as Date,
+                                startDate: myItem.startDate,
                                 teamID: myItem.teamID,
                                 active: myItem.active)
             myRates.append(myObject)
@@ -298,10 +299,10 @@ public class rate: NSObject, Identifiable
         {
             myRateID = myItem.rateID
             myClientID = myItem.clientID
-            myRateName = myItem.rateName!
+            myRateName = myItem.rateName
             myRateAmount = myItem.rateAmount
             myChargeAmount = myItem.chargeAmount
-            myStartDate = myItem.startDate! as Date
+            myStartDate = myItem.startDate
             myTeamID = myItem.teamID
             myActive = myItem.active
         }
@@ -349,207 +350,15 @@ public class rate: NSObject, Identifiable
     }
 }
 
-//extension coreDatabase
-//{
-//    func saveRates(_ rateID: Int,
-//                   clientID: Int,
-//                   rateName: String,
-//                   rateAmount: Double,
-//                   chargeAmount: Double,
-//                   startDate: Date,
-//                   teamID: Int,
-//                     updateTime: Date =  Date(), updateType: String = "CODE")
-//    {
-//        var myItem: Rates!
-//
-//        let myReturn = getRatesDetails(rateID, teamID: teamID)
-//
-//        if myReturn.count == 0
-//        { // Add
-//            myItem = Rates(context: objectContext)
-//            myItem.rateID = Int64(rateID)
-//            myItem.clientID = Int64(clientID)
-//            myItem.rateName = rateName
-//            myItem.rateAmount = rateAmount
-//            myItem.chargeAmount = chargeAmount
-//            myItem.startDate = startDate
-//            myItem.teamID = Int64(teamID)
-//
-//            if updateType == "CODE"
-//            {
-//                myItem.updateTime =  Date()
-//
-//                myItem.updateType = "Add"
-//            }
-//            else
-//            {
-//                myItem.updateTime = updateTime
-//                myItem.updateType = updateType
-//            }
-//        }
-//        else
-//        {
-//            myItem = myReturn[0]
-//            myItem.clientID = Int64(clientID)
-//            myItem.rateName = rateName
-//            myItem.rateAmount = rateAmount
-//            myItem.chargeAmount = chargeAmount
-//            myItem.startDate = startDate
-//
-//            if updateType == "CODE"
-//            {
-//                myItem.updateTime =  Date()
-//                if myItem.updateType != "Add"
-//                {
-//                    myItem.updateType = "Update"
-//                }
-//            }
-//            else
-//            {
-//                myItem.updateTime = updateTime
-//                myItem.updateType = updateType
-//            }
-//        }
-//
-//        saveContext()
-//
-//        self.recordsProcessed += 1
-//    }
-//
-//    func restoreRate(_ rateID: Int, teamID: Int)
-//    {
-//        for myItem in getRatesDetails(rateID, teamID: teamID)
-//        {
-//            myItem.updateType = "Update"
-//            myItem.updateTime = Date()
-//        }
-//        saveContext()
-//    }
-//
-//    func resetAllRates()
-//    {
-//        let fetchRequest = NSFetchRequest<Rates>(entityName: "Rates")
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults = try objectContext.fetch(fetchRequest)
-//            for myItem in fetchResults
-//            {
-//                myItem.updateTime =  Date()
-//                myItem.updateType = "Delete"
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: \(error)")
-//        }
-//
-//        saveContext()
-//    }
-//
-//    func clearDeletedRates(predicate: NSPredicate)
-//    {
-//        let fetchRequest2 = NSFetchRequest<Rates>(entityName: "Rates")
-//
-//        // Set the predicate on the fetch request
-//        fetchRequest2.predicate = predicate
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-//            for myItem2 in fetchResults2
-//            {
-//                objectContext.delete(myItem2 as NSManagedObject)
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: \(error)")
-//        }
-//        saveContext()
-//    }
-//
-//    func clearSyncedRates(predicate: NSPredicate)
-//    {
-//        let fetchRequest2 = NSFetchRequest<Rates>(entityName: "Rates")
-//
-//        // Set the predicate on the fetch request
-//        fetchRequest2.predicate = predicate
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-//            for myItem2 in fetchResults2
-//            {
-//                myItem2.updateType = ""
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: \(error)")
-//        }
-//
-//        saveContext()
-//    }
-//
-//    func getRatesForSync(_ syncDate: Date) -> [Rates]
-//    {
-//        let fetchRequest = NSFetchRequest<Rates>(entityName: "Rates")
-//
-//        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
-//
-//        // Set the predicate on the fetch request
-//
-//        fetchRequest.predicate = predicate
-//        // Execute the fetch request, and cast the results to an array of  objects
-//        do
-//        {
-//            let fetchResults = try objectContext.fetch(fetchRequest)
-//
-//            return fetchResults
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: \(error)")
-//            return []
-//        }
-//    }
-//
-//    func deleteAllRates()
-//    {
-//        let fetchRequest2 = NSFetchRequest<Rates>(entityName: "Rates")
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-//            for myItem2 in fetchResults2
-//            {
-//                self.objectContext.delete(myItem2 as NSManagedObject)
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: \(error)")
-//        }
-//
-//        saveContext()
-//    }
-//}
-//
-
 public struct Rates {
     public var chargeAmount: Double
     public var clientID: Int64
     public var rateAmount: Double
     public var rateID: Int64
-    public var rateName: String?
-    public var startDate: Date?
+    public var rateName: String
+    public var startDate: Date
     public var teamID: Int64
-    public var active: Bool!
+    public var active: Bool
 }
 
 extension CloudKitInteraction
@@ -605,11 +414,17 @@ extension CloudKitInteraction
                 teamID = record.object(forKey: "teamID") as! Int64
             }
             
+            var rateName = ""
+            
+            if record.object(forKey: "rateName") != nil {
+                rateName = record.object(forKey: "rateName") as! String
+            }
+            
             let tempItem = Rates(chargeAmount: chargeAmount,
                                  clientID: clientID,
                                  rateAmount: rateAmount,
                                  rateID: rateID,
-                                 rateName: record.object(forKey: "rateName") as? String,
+                                 rateName: rateName,
                                  startDate: startDate,
                                  teamID: teamID,
                                  active: active)

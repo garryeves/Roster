@@ -35,10 +35,10 @@ public class personAddInfoEntries: NSObject, Identifiable
         
         for myItem in workingArray
         {
-            let myObject = personAddInfoEntry(addInfoName: myItem.addInfoName!,
-                                              dateValue: myItem.dateValue! as Date,
+            let myObject = personAddInfoEntry(addInfoName: myItem.addInfoName,
+                                              dateValue: myItem.dateValue,
                                               personID: myItem.personID,
-                                              stringValue: myItem.stringValue!,
+                                              stringValue: myItem.stringValue,
                                               teamID: myItem.teamID
             )
             myPersonAddEntries.append(myObject)
@@ -64,10 +64,10 @@ public class personAddInfoEntries: NSObject, Identifiable
         
         for myItem in myCloudDB.getPersonAddInfoEntryList(addInfoName, teamID: teamID)
         {
-            let myObject = personAddInfoEntry(addInfoName: myItem.addInfoName!,
-                                              dateValue: myItem.dateValue! as Date,
+            let myObject = personAddInfoEntry(addInfoName: myItem.addInfoName,
+                                              dateValue: myItem.dateValue,
                                               personID: myItem.personID,
-                                              stringValue: myItem.stringValue!,
+                                              stringValue: myItem.stringValue,
                                               teamID: myItem.teamID
             )
             myPersonAddEntries.append(myObject)
@@ -93,10 +93,10 @@ public class personAddInfoEntries: NSObject, Identifiable
         
         for myItem in workingArray
         {
-            let myObject = personAddInfoEntry(addInfoName: myItem.addInfoName!,
-                                              dateValue: myItem.dateValue! as Date,
+            let myObject = personAddInfoEntry(addInfoName: myItem.addInfoName,
+                                              dateValue: myItem.dateValue,
                                               personID: myItem.personID,
-                                              stringValue: myItem.stringValue!,
+                                              stringValue: myItem.stringValue,
                                               teamID: myItem.teamID
             )
             myPersonAddEntries.append(myObject)
@@ -206,10 +206,10 @@ public class personAddInfoEntry: NSObject, Identifiable
         
         if myItem != nil
         {
-            myAddInfoName = myItem.addInfoName!
-            myDateValue = myItem.dateValue! as Date
+            myAddInfoName = myItem.addInfoName
+            myDateValue = myItem.dateValue
             myPersonID = myItem.personID
-            myStringValue = myItem.stringValue!
+            myStringValue = myItem.stringValue
             myTeamID = myItem.teamID
         }
     }
@@ -437,10 +437,10 @@ public class personAddInfoEntry: NSObject, Identifiable
 //
 
 public struct PersonAddInfoEntry {
-    public var addInfoName: String?
-    public var dateValue: Date?
+    public var addInfoName: String
+    public var dateValue: Date
     public var personID: Int64
-    public var stringValue: String?
+    public var stringValue: String
     public var teamID: Int64
 }
 
@@ -470,10 +470,10 @@ extension CloudKitInteraction
                 teamID = record.object(forKey: "teamID") as! Int64
             }
             
-            let tempItem = PersonAddInfoEntry(addInfoName: record.object(forKey: "addInfoName") as? String,
+            let tempItem = PersonAddInfoEntry(addInfoName: record.object(forKey: "addInfoName") as! String,
                                               dateValue: dateValue,
                                               personID: personID,
-                                              stringValue: record.object(forKey: "stringValue") as? String,
+                                              stringValue: record.object(forKey: "stringValue") as! String,
                                               teamID: teamID)
             
             tempArray.append(tempItem)
@@ -572,7 +572,7 @@ extension CloudKitInteraction
     {
         let sem = DispatchSemaphore(value: 0)
         
-        let predicate = NSPredicate(format: "(addInfoName == \"\(sourceRecord.addInfoName!)\") AND (personID == \(sourceRecord.personID)) AND (teamID == \(sourceRecord.teamID))") // better be accurate to get only the record you need
+        let predicate = NSPredicate(format: "(addInfoName == \"\(sourceRecord.addInfoName)\") AND (personID == \(sourceRecord.personID)) AND (teamID == \(sourceRecord.teamID))") // better be accurate to get only the record you need
         let query = CKQuery(recordType: "PersonAddInfoEntry", predicate: predicate)
         publicDB.perform(query, inZoneWith: nil, completionHandler: { (records, error) in
             if error != nil
