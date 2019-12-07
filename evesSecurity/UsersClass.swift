@@ -131,30 +131,6 @@ public class userItem: NSObject, Identifiable, ObservableObject
         }
     }
     
-//    public var name: String
-//    {
-//        get
-//        {
-//            return myName
-//        }
-//        set
-//        {
-//            myName = newValue
-//        }
-//    }
-    
-//    public var email: String
-//    {
-//        get
-//        {
-//            return myEmail
-//        }
-//        set
-//        {
-//            myEmail = newValue
-//        }
-//    }
-    
     public var personID: Int64
     {
         get
@@ -167,18 +143,6 @@ public class userItem: NSObject, Identifiable, ObservableObject
         }
     }
     
-//    public var phraseDate: Date
-//    {
-//        get
-//        {
-//            return myPhraseDate
-//        }
-//        set
-//        {
-//            myPhraseDate = newValue
-//        }
-//    }
-    
     public var phraseDateText: String
     {
         get
@@ -190,18 +154,6 @@ public class userItem: NSObject, Identifiable, ObservableObject
             return dateFormatter.string(from: phraseDate)
         }
     }
-    
-//    public var passPhrase: String
-//    {
-//        get
-//        {
-//            return myPassPhrase
-//        }
-//        set
-//        {
-//            myPassPhrase = newValue
-//        }
-//    }
     
     public var currentTeam: team?
     {
@@ -267,7 +219,6 @@ public class userItem: NSObject, Identifiable, ObservableObject
         }
     }
     
-  //  public var teamList: userTeams
     public var teamList: [team]
     {
         get {
@@ -286,8 +237,7 @@ public class userItem: NSObject, Identifiable, ObservableObject
     
     public var loadAlerts = true
     
-    public init(currentTeam: team, userName: String, userEmail: String)
-    {
+    public init(currentTeam: team, userName: String, userEmail: String) {
         super.init()
         
         // Create a new user
@@ -297,39 +247,31 @@ public class userItem: NSObject, Identifiable, ObservableObject
         email = userEmail
         
         let returnArray = myCloudDB.checkExistingUser(email: email)
-        if returnArray.count > 0
-        {
-            if returnArray[0].userID > 0
-            {
+        if returnArray.count > 0 {
+            if returnArray[0].userID > 0 {
                 myUserID = returnArray[0].userID
             }
-        }
-        else
-        {
+        } else {
             // Create a user record
             myUserID = myCloudDB.getAllUserCount() + 1
             
             // Now lets call to create the team in cloudkit
             
-            if myCloudDB.createNewUser(myUserID, name: name, email: email)
-            {
+            if myCloudDB.createNewUser(myUserID, name: name, email: email) {
                 myAuthorised = true
                 
                 // Check to see if already a member of the team
                 
                 var teamFound: Bool = false
                 
-                for myItem in userTeams(userID: myUserID).UserTeams
-                {
-                    if myItem.teamID == myCurrentTeam.teamID
-                    {
+                for myItem in userTeams(userID: myUserID).UserTeams {
+                    if myItem.teamID == myCurrentTeam.teamID {
                         teamFound = true
                         break
                     }
                 }
                 
-                if !teamFound
-                {
+                if !teamFound {
                     addTeamToUser(myCurrentTeam)
                 }
             }
@@ -816,29 +758,10 @@ public class userItem: NSObject, Identifiable, ObservableObject
         return retString
     }
     
-    public func addInitialUserRoles()
-    {
-        var recordCount: Int64 = 0
-        
-        // Check to see if this is a new team - this is done by seeing if there any roles entries yet
-        
-        let basePermission = writePermission
-        
-        let processRecords = currentUser.currentTeam!.getRoleTypes()
-        
-        for myItem in processRecords
-        {
-            if recordCount == processRecords.count - 1
-            {
-                addRoleToUser(roleType: myItem, accessLevel: basePermission)
-                usleep(500)
-            }
-            else
-            {
-                addRoleToUser(roleType: myItem, accessLevel: basePermission)
-                recordCount += 1
-                usleep(500)
-            }
+    public func addInitialUserRoles() {
+        for item in currentUser.currentTeam!.getRoleTypes() {
+            addRoleToUser(roleType: item, accessLevel: writePermission)
+            usleep(5000)
         }
         
         loadRoles()
@@ -865,38 +788,13 @@ extension CloudKitInteraction
         
         for record in records
         {
-            var teamID: Int64 = 0
-            if record.object(forKey: "teamID") != nil
-            {
-                teamID = record.object(forKey: "teamID") as! Int64
-            }
-            
-            var userID: Int64 = 0
-            if record.object(forKey: "userID") != nil
-            {
-                userID = record.object(forKey: "userID") as! Int64
-            }
-            
-            var phraseDate: Date = getDefaultDate()
-            if record.object(forKey: "phraseDate") != nil
-            {
-                phraseDate = record.object(forKey: "phraseDate") as! Date
-            }
-
-            var defaultCalendar = ""
-            if record.object(forKey: "defaultCalendar") != nil
-            {
-                defaultCalendar = record.object(forKey: "defaultCalendar") as! String
-            }
-
-            
-            let tempItem = Users(email: record.object(forKey: "email") as! String,
-                                 name: record.object(forKey: "name") as! String,
-                                 teamID: teamID,
-                                 userID: userID,
-                                 passPhrase: record.object(forKey: "passPhrase") as! String,
-                                 phraseDate: phraseDate,
-                                 defaultCalendar: defaultCalendar
+            let tempItem = Users(email: decodeString(record.object(forKey: "email")),
+                                 name: decodeString(record.object(forKey: "name")),
+                                 teamID: decodeInt64(record.object(forKey: "teamID")),
+                                 userID: decodeInt64(record.object(forKey: "userID")),
+                                 passPhrase: decodeString(record.object(forKey: "passPhrase")),
+                                 phraseDate: decodeDefaultDate(record.object(forKey: "phraseDate")),
+                                 defaultCalendar: decodeString(record.object(forKey: "defaultCalendar"))
             )
             
             tempArray.append(tempItem)
@@ -908,9 +806,8 @@ extension CloudKitInteraction
     func getUserCount() -> Int64
     {
         //let predicate: NSPredicate = NSPredicate(value: true)
-        let workingTeamID: Int64 = (currentUser.currentTeam?.teamID)!
         
-        let predicate: NSPredicate = NSPredicate(format: "teamID == \(workingTeamID)")
+        let predicate: NSPredicate = NSPredicate(format: "teamID == \(currentUser.currentTeam!.teamID)")
         let query: CKQuery = CKQuery(recordType: "DBUsers", predicate: predicate)
         
         let sem = DispatchSemaphore(value: 0)

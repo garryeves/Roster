@@ -1951,8 +1951,8 @@ public class shift: NSObject, Identifiable, ObservableObject
                                   newtype: self.myType,
                                   newweekEndDate: self.myWeekEndDate,
                                   newworkDate: self.myWorkDate,
-                                  newsignInTime: self.signInTime!,
-                                  newsignOutTime: self.signOutTime!,
+                                  newsignInTime: self.signInTime,
+                                  newsignOutTime: self.signOutTime,
                                   newrecordID: nil)
                 
                 let newRecordID = myCloudDB.saveShiftsRecordToCloudKit(temp, recordID: self.myRecordID)
@@ -1994,8 +1994,8 @@ public class shift: NSObject, Identifiable, ObservableObject
                                   newtype: self.myType,
                                   newweekEndDate: self.myWeekEndDate,
                                   newworkDate: self.myWorkDate,
-                                  newsignInTime: self.mysignInTime!,
-                                  newsignOutTime: self.mysignOutTime!,
+                                  newsignInTime: self.mysignInTime,
+                                  newsignOutTime: self.mysignOutTime,
                                   newrecordID: nil)
                 myCloudDB.addSaveRecord(temp)
             }

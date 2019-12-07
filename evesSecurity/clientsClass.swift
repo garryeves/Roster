@@ -12,6 +12,8 @@ import SwiftUI
 
 public let alertClientNoProject = "client no project"
 public let alertClientNoRates = "client no rate"
+public let alertClientInvoiceUnapproved = "Invoices that have not been Approved"
+public let alertClientInvoiceUnpaid = "Invoices that have not been Paid"
 
 public class clients: NSObject, Identifiable
 {
@@ -306,6 +308,10 @@ public class client: NSObject, Identifiable, ObservableObject
         
         currentUser.currentTeam?.clients = nil
         
+        myShifts = nil
+        
+        myInvoices = nil
+        
         save()
     }
     
@@ -336,6 +342,10 @@ public class client: NSObject, Identifiable, ObservableObject
             myClientNote = myItem.note
             myIsActive = myItem.isActive
         }
+        
+        myShifts = nil
+        
+        myInvoices = nil
     }
     
     public func loadComms()
@@ -390,13 +400,11 @@ public class client: NSObject, Identifiable, ObservableObject
 
 extension alerts
 {
-    public func clientAlerts(_ teamID: Int64)
-    {
+    public func clientAlerts(_ teamID: Int64) {
         // check for clients with no projects
         var recordCount: Int = 0
 
-        for myItem in clients(alertQuery: alertClientNoProject, teamID: teamID, isActive: true).clients
-        {
+        for myItem in clients(alertQuery: alertClientNoProject, teamID: teamID, isActive: true).clients {
             let alertEntry = alertItem()
             
             alertEntry.displayText = "Client has no Contracts"
@@ -419,8 +427,7 @@ extension alerts
  //       notificationCenter.post(name: NotificationAlertUpdate, object: nil)
         // check for clients with no projects
  
-        for myItem in clients(alertQuery: alertClientNoRates, teamID: teamID, isActive: true).clients
-        {
+        for myItem in clients(alertQuery: alertClientNoRates, teamID: teamID, isActive: true).clients {
             let alertEntry = alertItem()
             
             alertEntry.displayText = "Client has no Rates"
