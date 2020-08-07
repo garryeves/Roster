@@ -282,22 +282,10 @@ extension CloudKitInteraction
         
         for record in records
         {
-            var teamID: Int64 = 0
-            if record.object(forKey: "teamID") != nil
-            {
-                teamID = record.object(forKey: "teamID") as! Int64
-            }
-            
-            var order: Int64 = 0
-            if record.object(forKey: "order") != nil
-            {
-                order = record.object(forKey: "order") as! Int64
-            }
-            
-            let tempItem = Dropdowns(dropDownType: record.object(forKey: "dropDownType") as! String,
-                                     dropDownValue: record.object(forKey: "dropDownValue") as! String,
-                                     teamID: teamID,
-                                     order: order)
+            let tempItem = Dropdowns(dropDownType: decodeString(record.object(forKey: "dropDownType")),
+                                     dropDownValue: decodeString(record.object(forKey: "dropDownValue")),
+                                     teamID: decodeInt64(record.object(forKey: "teamID")),
+                                     order: decodeInt64(record.object(forKey: "order")))
             
             tempArray.append(tempItem)
         }

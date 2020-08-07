@@ -10,7 +10,6 @@ import Foundation
 //import CoreData
 import CloudKit
 import SwiftUI
-import Combine
 
 public protocol shiftLoadDelegate
 {
@@ -113,7 +112,7 @@ class shifts: NSObject, Identifiable, ObservableObject
         let endDate = startDate.add(.day, amount: 1)  // calendar.date(byAdding: .day, value: 1, to: startDate)!
         
         var returnArray: [Shifts] = Array()
-        
+
         for item in myCloudDB.getShifts(teamID: teamID, WEDate: WEDate, type: type) {
             let tempEnd = item.weekEndDate.add(.hour, amount: 1).startOfDay
             
@@ -369,6 +368,62 @@ class shifts: NSObject, Identifiable, ObservableObject
 //
 //        sortArray()
     }
+    
+
+    init(projectID: Int64, fromDate: Date, toDate: Date, teamID: Int64) {
+        super.init()
+        myTeamID = teamID
+        myWeeklyShifts.removeAll()
+
+//        var returnArray: [Shifts] = Array()
+//
+//        for item in myCloudDB.getShifts(projectID: projectID, searchFrom: fromDate, searchTo: toDate, teamID: teamID) {
+//            if (item.projectID == projectID) && (item.workDate >= startDate) && (item.workDate <= endDate)
+//            {
+//                returnArray.append(item)
+//            }
+//        }
+//        
+//        var returnArray: [Shifts] = Array()
+//
+//        for item in myCloudDB.getShifts(projectID: projectID, searchFrom: fromDate, searchTo: toDate, teamID: teamID) {
+//            if (item.projectID == projectID) && (item.workDate >= startDate) && (item.workDate <= endDate)
+//            {
+//                returnArray.append(item)
+//            }
+//        }
+
+        for myItem in myCloudDB.getShifts(projectID: projectID, searchFrom: fromDate, searchTo: toDate, teamID: teamID) {
+            let myObject = shift(shiftID: myItem.shiftID,
+                                 projectID: myItem.projectID,
+                                 personID: myItem.personID,
+                                 workDate: myItem.workDate,
+                                 shiftDescription: myItem.shiftDescription,
+                                 startTime: myItem.startTime,
+                                 endTime: myItem.endTime,
+                                 teamID: myItem.teamID,
+                                 weekEndDate: myItem.weekEndDate,
+                                 status: myItem.status,
+                                 shiftLineID: myItem.shiftLineID,
+                                 rateID: myItem.rateID,
+                                 type: myItem.type,
+                                 clientInvoiceNumber: myItem.clientInvoiceNumber,
+                                 personInvoiceNumber: myItem.personInvoiceNumber,
+                                 signInTime: myItem.signInTime,
+                                 signOutTime: myItem.signOutTime,
+                                 recordID: myItem.recordID
+            )
+            myShifts.append(myObject)
+        }
+
+        if myShifts.count > 0 {
+            createWeeklyArray()
+        }
+
+        sortArray()
+    }
+    
+    
     
     init(projectID: Int64, month: Int64, year: Int64, teamID: Int64) {
         super.init()
@@ -2338,13 +2393,13 @@ extension report
         myLines.append(newTotalTotalLine)
     }
     
-    public func reportWagesForMonth(month: String, year: String, teamID: Int64)
+    public func reportWagesForMonth(month: Int64, year: Int64, teamID: Int64)
     {
         myLines.removeAll()
         
         // Get the shifts for the month
 
-        let workingShifts = shifts(teamID: teamID, month: month.monthNum, year: Int64(year)!)
+        let workingShifts = shifts(teamID: teamID, month: month, year: year)
         
         var peopleArray: [Int64] = Array()
 
@@ -2383,7 +2438,7 @@ extension report
         }
     }
     
-    private func getFinancials(shiftList: shifts, personID: Int64, month: String, year: String) -> monthlyPersonFinancialsStruct
+    private func getFinancials(shiftList: shifts, personID: Int64, month: Int64, year: Int64) -> monthlyPersonFinancialsStruct
     {
         var wage: Double = 0.0
         var hours: Double = 0.0
@@ -2406,7 +2461,7 @@ extension report
         return retVal
     }
     
-    public func reportContractForYear(year: String)
+    public func reportContractForYear(year: Int64)
     {
         var janTotalAmount: Double = 0.0
         var febTotalAmount: Double = 0.0
@@ -2423,7 +2478,7 @@ extension report
         
         myLines.removeAll()
         
-        let workingShifts = shifts(teamID: currentUser.currentTeam!.teamID, year: Int64(year)!)
+        let workingShifts = shifts(teamID: currentUser.currentTeam!.teamID, year: year)
         
         for myClient in clients(teamID: currentUser.currentTeam!.teamID, isActive: true).clients {
             var janShowTotal: Bool = false
@@ -2472,73 +2527,73 @@ extension report
                 
                 let projectShifts = workingShifts.rawShiftList.filter { $0.projectID == myProject.projectID }
                 
-                myProject.loadFinancials(month: "January", year: year, shiftData: projectShifts, rateList: clientRates)
+                myProject.loadFinancials(month: 1, year: year, shiftData: projectShifts, rateList: clientRates)
                 let janAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0 {
                     janShow = true
                 }
                 
-                myProject.loadFinancials(month: "February", year: year, shiftData: projectShifts, rateList: clientRates)
+                myProject.loadFinancials(month: 2, year: year, shiftData: projectShifts, rateList: clientRates)
                 let febAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0 {
                     febShow = true
                 }
                 
-                myProject.loadFinancials(month: "March", year: year, shiftData: projectShifts, rateList: clientRates)
+                myProject.loadFinancials(month: 3, year: year, shiftData: projectShifts, rateList: clientRates)
                 let marAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0 {
                     marShow = true
                 }
                 
-                myProject.loadFinancials(month: "April", year: year, shiftData: projectShifts, rateList: clientRates)
+                myProject.loadFinancials(month: 4, year: year, shiftData: projectShifts, rateList: clientRates)
                 let aprAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0 {
                     aprShow = true
                 }
                 
-                myProject.loadFinancials(month: "May", year: year, shiftData: projectShifts, rateList: clientRates)
+                myProject.loadFinancials(month: 5, year: year, shiftData: projectShifts, rateList: clientRates)
                 let mayAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0 {
                     mayShow = true
                 }
                 
-                myProject.loadFinancials(month: "June", year: year, shiftData: projectShifts, rateList: clientRates)
+                myProject.loadFinancials(month: 6, year: year, shiftData: projectShifts, rateList: clientRates)
                 let junAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0 {
                     junShow = true
                 }
                 
-                myProject.loadFinancials(month: "July", year: year, shiftData: projectShifts, rateList: clientRates)
+                myProject.loadFinancials(month: 7, year: year, shiftData: projectShifts, rateList: clientRates)
                 let julAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0 {
                     julShow = true
                 }
                 
-                myProject.loadFinancials(month: "August", year: year, shiftData: projectShifts, rateList: clientRates)
+                myProject.loadFinancials(month: 8, year: year, shiftData: projectShifts, rateList: clientRates)
                 let augAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0 {
                     augShow = true
                 }
                 
-                myProject.loadFinancials(month: "September", year: year, shiftData: projectShifts, rateList: clientRates)
+                myProject.loadFinancials(month: 9, year: year, shiftData: projectShifts, rateList: clientRates)
                 let sepAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0 {
                     sepShow = true
                 }
                 
-                myProject.loadFinancials(month: "October", year: year, shiftData: projectShifts, rateList: clientRates)
+                myProject.loadFinancials(month: 10, year: year, shiftData: projectShifts, rateList: clientRates)
                 let octAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0 {
                     octShow = true
                 }
                 
-                myProject.loadFinancials(month: "November", year: year, shiftData: projectShifts, rateList: clientRates)
+                myProject.loadFinancials(month: 11, year: year, shiftData: projectShifts, rateList: clientRates)
                 let novAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0 {
                     novShow = true
                 }
                 
-                myProject.loadFinancials(month: "December", year: year, shiftData: projectShifts, rateList: clientRates)
+                myProject.loadFinancials(month: 12, year: year, shiftData: projectShifts, rateList: clientRates)
                 let decAmount = myProject.financials[0].income - myProject.financials[0].expense
                 if myProject.financials[0].income != 0 || myProject.financials[0].expense != 0 {
                     decShow = true
@@ -2782,13 +2837,12 @@ extension projects
         
         // get the projects for the team
         
-        for workingProject in projectList
-        {
+        for workingProject in projectList {
             workingProject.loadFinancials(startDate: startDate, endDate: endDate)
         }
     }
     
-    public func loadFinancials(month: String, year: String)
+    public func loadFinancials(month: Int64, year: Int64)
     {
         // Need to get the
 
@@ -2809,10 +2863,10 @@ extension projects
 
 extension project
 {
-    func loadFinancials(month: String, year: String, shiftData: [Shifts], rateList: rates) {
+    func loadFinancials(month: Int64, year: Int64, shiftData: [Shifts], rateList: rates) {
         var financeArray: [monthlyFinancialsStruct] = Array()
         
-        let yearInt = Int64(year)
+  //      let yearInt = Int64(year)
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd/MM/yyyy"
@@ -2832,7 +2886,7 @@ extension project
 //
 //            financeArray.append(processMonth(shiftArray: shiftArray, month: month.monthNum, year: yearInt!))
 
-        financeArray.append(processMonth(shiftArray: shiftArray, month: month.monthNum, year: yearInt!, rateList: rateList))
+        financeArray.append(processMonth(shiftArray: shiftArray, month: month, year: year, rateList: rateList))
 
         
         financials = financeArray
@@ -3029,68 +3083,6 @@ extension person
     }
 }
 
-//public class Shifts: Identifiable {
-//    public let id = UUID()
-//    public var clientInvoiceNumber: Int64
-//    public var endTime: Date?
-//    public var personID: Int64
-//    public var personInvoiceNumber: Int64
-//    public var projectID: Int64
-//    public var rateID: Int64
-//    public var shiftDescription: String?
-//    public var shiftID: Int64
-//    public var shiftLineID: Int64
-//    public var startTime: Date?
-//    public var status: String?
-//    public var teamID: Int64
-//    public var type: String?
-//    public var weekEndDate: Date?
-//    public var workDate: Date?
-//    public var signInTime: Date?
-//    public var signOutTime: Date?
-//    public var recordID: CKRecord.ID?
-//
-//    public init(newclientInvoiceNumber: Int64,
-//                newendTime: Date?,
-//                newpersonID: Int64,
-//                newpersonInvoiceNumber: Int64,
-//                newprojectID: Int64,
-//                newrateID: Int64,
-//                newshiftDescription: String?,
-//                newshiftID: Int64,
-//                newshiftLineID: Int64,
-//                newstartTime: Date?,
-//                newstatus: String?,
-//                newteamID: Int64,
-//                newtype: String?,
-//                newweekEndDate: Date?,
-//                newworkDate: Date?,
-//                newsignInTime: Date?,
-//                newsignOutTime: Date?,
-//                newrecordID: CKRecord.ID?)
-//    {
-//        clientInvoiceNumber = newclientInvoiceNumber
-//        endTime = newendTime
-//        personID = newpersonID
-//        personInvoiceNumber = newpersonInvoiceNumber
-//        projectID = newprojectID
-//        rateID = newrateID
-//        shiftDescription = newshiftDescription
-//        shiftID = newshiftID
-//        shiftLineID = newshiftLineID
-//        startTime = newstartTime
-//        status = newstatus
-//        teamID = newteamID
-//        type = newtype
-//        weekEndDate = newweekEndDate
-//        workDate = newworkDate
-//        signInTime = newsignInTime
-//        signOutTime = newsignOutTime
-//        recordID = newrecordID
-//    }
-//}
-
-
 public class Shifts: Identifiable {
     public let id = UUID()
     public var clientInvoiceNumber: Int64
@@ -3160,107 +3152,23 @@ extension CloudKitInteraction
         var tempArray: [Shifts] = Array()
         for record in records
         {
-            var shiftID: Int64 = 0
-            if record.object(forKey: "shiftID") != nil
-            {
-                shiftID = record.object(forKey: "shiftID") as! Int64
-            }
-            
-            var rateID: Int64 = 0
-            if record.object(forKey: "rateID") != nil
-            {
-                rateID = record.object(forKey: "rateID") as! Int64
-            }
-            
-            var shiftLineID: Int64 = 0
-            if record.object(forKey: "shiftLineID") != nil
-            {
-                shiftLineID = record.object(forKey: "shiftLineID") as! Int64
-            }
-            
-            var projectID: Int64 = 0
-            if record.object(forKey: "projectID") != nil
-            {
-                projectID = record.object(forKey: "projectID") as! Int64
-            }
-            
-            var personID: Int64 = 0
-            if record.object(forKey: "personID") != nil
-            {
-                personID = record.object(forKey: "personID") as! Int64
-            }
-            
-            var workDate = Date()
-            if record.object(forKey: "workDate") != nil
-            {
-                workDate = record.object(forKey: "workDate") as! Date
-            }
-            
-            var startTime = Date()
-            if record.object(forKey: "startTime") != nil
-            {
-                startTime = record.object(forKey: "startTime") as! Date
-            }
-            
-            var endTime = Date()
-            if record.object(forKey: "endTime") != nil
-            {
-                endTime = record.object(forKey: "endTime") as! Date
-            }
-            
-            var weekEndDate = Date()
-            if record.object(forKey: "weekEndDate") != nil
-            {
-                weekEndDate = record.object(forKey: "weekEndDate") as! Date
-            }
-            
-            var teamID: Int64 = 0
-            if record.object(forKey: "teamID") != nil
-            {
-                teamID = record.object(forKey: "teamID") as! Int64
-            }
-            
-            var clientInvoiceNumber: Int64 = 0
-            if record.object(forKey: "clientInvoiceNumber") != nil
-            {
-                clientInvoiceNumber = record.object(forKey: "clientInvoiceNumber") as! Int64
-            }
-            
-            var personInvoiceNumber: Int64 = 0
-            if record.object(forKey: "personInvoiceNumber") != nil
-            {
-                personInvoiceNumber = record.object(forKey: "personInvoiceNumber") as! Int64
-            }
-            
-            var signInTime: Date!
-            if record.object(forKey: "signInTime") != nil
-            {
-                signInTime = record.object(forKey: "signInTime") as? Date
-            }
-            
-            var signOutTime: Date!
-            if record.object(forKey: "signOutTime") != nil
-            {
-                signOutTime = record.object(forKey: "signOutTime") as? Date
-            }
-            
-            let tempItem = Shifts(newclientInvoiceNumber: clientInvoiceNumber,
-                                  newendTime: endTime,
-                                  newpersonID: personID,
-                                  newpersonInvoiceNumber: personInvoiceNumber,
-                                  newprojectID: projectID,
-                                  newrateID: rateID,
-                                  newshiftDescription: record.object(forKey: "shiftDescription") as! String,
-                                  newshiftID: shiftID,
-                                  newshiftLineID: shiftLineID,
-                                  newstartTime: startTime,
-                                  newstatus: record.object(forKey: "status") as! String,
-                                  newteamID: teamID,
-                                  newtype: record.object(forKey: "type") as! String,
-                                  newweekEndDate: weekEndDate,
-                                  newworkDate: workDate,
-                                  newsignInTime: signInTime,
-                                  newsignOutTime: signOutTime,
+            let tempItem = Shifts(newclientInvoiceNumber: decodeInt64(record.object(forKey: "clientInvoiceNumber")),
+                                  newendTime: decodeDate(record.object(forKey: "endTime")),
+                                  newpersonID: decodeInt64(record.object(forKey: "personID")),
+                                  newpersonInvoiceNumber: decodeInt64(record.object(forKey: "personInvoiceNumber")),
+                                  newprojectID: decodeInt64(record.object(forKey: "projectID")),
+                                  newrateID: decodeInt64(record.object(forKey: "rateID") ),
+                                  newshiftDescription: decodeString(record.object(forKey: "shiftDescription")),
+                                  newshiftID: decodeInt64(record.object(forKey: "shiftID")),
+                                  newshiftLineID: decodeInt64(record.object(forKey: "shiftLineID")),
+                                  newstartTime: decodeDate(record.object(forKey: "startTime")),
+                                  newstatus: decodeString(record.object(forKey: "status")),
+                                  newteamID: decodeInt64(record.object(forKey: "teamID")),
+                                  newtype: decodeString(record.object(forKey: "type")),
+                                  newweekEndDate: decodeDate(record.object(forKey: "weekEndDate")),
+                                  newworkDate: decodeDate(record.object(forKey: "workDate")),
+                                  newsignInTime: decodeDate(record.object(forKey: "signInTime")),
+                                  newsignOutTime: decodeDate(record.object(forKey: "signOutTime")),
                                   newrecordID: record.recordID)
             
             tempArray.append(tempItem)

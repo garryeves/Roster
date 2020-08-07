@@ -508,49 +508,13 @@ extension CloudKitInteraction
         
         for record in records
         {
-            var eventID: Int64 = 0
-            if record.object(forKey: "eventID") != nil
-            {
-                eventID = record.object(forKey: "eventID") as! Int64
-            }
-            
-            var numRequired: Int64 = 0
-            if record.object(forKey: "numRequired") != nil
-            {
-                numRequired = record.object(forKey: "numRequired") as! Int64
-            }
-            
-            var dateModifier: Int64 = 0
-            if record.object(forKey: "dateModifier") != nil
-            {
-                dateModifier = record.object(forKey: "dateModifier") as! Int64
-            }
-            
-            var startTime = Date()
-            if record.object(forKey: "startTime") != nil
-            {
-                startTime = record.object(forKey: "startTime") as! Date
-            }
-            
-            var endTime = Date()
-            if record.object(forKey: "endTime") != nil
-            {
-                endTime = record.object(forKey: "endTime") as! Date
-            }
-            
-            var teamID: Int64 = 0
-            if record.object(forKey: "teamID") != nil
-            {
-                teamID = record.object(forKey: "teamID") as! Int64
-            }
-            
-            let tempItem = EventTemplate(dateModifier: dateModifier,
-                                         endTime: endTime,
-                                         eventID: eventID,
-                                         numRequired: numRequired,
-                                         role: record.object(forKey: "role") as! String,
-                                         startTime: startTime,
-                                         teamID: teamID)
+            let tempItem = EventTemplate(dateModifier: decodeInt64(record.object(forKey: "dateModifier")),
+                                         endTime: decodeDate(record.object(forKey: "endTime")),
+                                         eventID: decodeInt64(record.object(forKey: "eventID")),
+                                         numRequired: decodeInt64(record.object(forKey: "numRequired")),
+                                         role: decodeString(record.object(forKey: "role")),
+                                         startTime: decodeDate(record.object(forKey: "startTime")),
+                                         teamID: decodeInt64(record.object(forKey: "teamID")))
             
             tempArray.append(tempItem)
         }

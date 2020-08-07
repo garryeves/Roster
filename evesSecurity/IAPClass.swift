@@ -11,6 +11,7 @@ import StoreKit
 
 let NotificationIAPSListed = Notification.Name("NotificationIAPSListed")
 let NotificationIAPSPurchased = Notification.Name("NotificationIAPSPurchased")
+let NotificationIAPSStarted = Notification.Name("NotificationIAPSStarted")
 
 let sessionIdSetNotification = Notification.Name("SubscriptionServiceSessionIdSetNotification")
 let optionsLoadedNotification = Notification.Name("SubscriptionServiceOptionsLoadedNotification")
@@ -242,6 +243,7 @@ public class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransacti
     
     public func purchaseProduct(_ indexItem: Int)
     {
+//print("Garry purchase product")
         let product = iapProducts[indexItem]
         let payment = SKPayment(product: product)
         SKPaymentQueue.default().add(self)
@@ -256,7 +258,7 @@ public class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransacti
         {
             iapProducts = response.products
         }
-        
+
         notificationCenter.post(name: NotificationIAPSListed, object: nil)
     }
     
@@ -269,6 +271,7 @@ public class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransacti
     
     public func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction])
     {
+//print("Garry paymentQueue")
         for transaction in transactions
         {
             if let trans = transaction as SKPaymentTransaction?
@@ -276,6 +279,7 @@ public class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransacti
                 switch trans.transactionState
                 {
                     case .purchased:
+//print("Garry purchased")
                         SKPaymentQueue.default().finishTransaction(transaction)
                         
                         uploadReceipt { (success) in
@@ -289,6 +293,17 @@ public class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransacti
                         break
                         
                     case .failed:
+//print("Garry failed")
+                        if let error = transaction.error as? SKError {
+                            if error.code != .paymentCancelled {
+                                print("Error = \(error)")
+//                                onBuyProductHandler?(.failure(error))
+                            } else {
+                               print("IAP Cancelled") //onBuyProductHandler?(.failure(IAPManagerError.paymentWasCancelled))
+                            }
+                            print("IAP Error:", error.localizedDescription)
+                        }
+
                         SKPaymentQueue.default().finishTransaction(transaction)
                         myPuchasedExpiryDate = Date()
                         myPurchasedUsers = 1
@@ -296,6 +311,7 @@ public class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransacti
                         
                         break
                     case .restored:
+//print("Garry restored")
                         SKPaymentQueue.default().finishTransaction(transaction)
                         myPuchasedExpiryDate = Date()
                         myPurchasedUsers = 1
@@ -304,6 +320,7 @@ public class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransacti
                         break
                     
                     default:
+//print("Garry default")
                         break
                 }
             }
@@ -312,9 +329,10 @@ public class IAPHandler: NSObject, SKProductsRequestDelegate, SKPaymentTransacti
     
     public func processSuccess()
     {
+//print("Garry processSuccess")
         if currentSubscription != nil
         {
-print("product = \(currentSubscription!.productId) purchase date = \(currentSubscription!.purchaseDate) expires date = \(currentSubscription!.expiresDate) isactive = \(currentSubscription!.isActive)")
+//print("product = \(currentSubscription!.productId) purchase date = \(currentSubscription!.purchaseDate) expires date = \(currentSubscription!.expiresDate) isactive = \(currentSubscription!.isActive)")
         
             switch currentSubscription!.productId
             {
@@ -354,7 +372,7 @@ print("product = \(currentSubscription!.productId) purchase date = \(currentSubs
                     myPuchasedExpiryDate = Date()
                     myPurchasedUsers = 1
                     
-                    print("processSuccess - unknown product ID = \(currentSubscription!.productId)")
+ //                   print("processSuccess - unknown product ID = \(currentSubscription!.productId)")
             }
      
         //    myPuchasedExpiryDate = Date().add(.day, amount: 7)
@@ -364,6 +382,7 @@ print("product = \(currentSubscription!.productId) purchase date = \(currentSubs
     
     public func checkReceipt()
     {
+//print("Garry checkReceipt")
         uploadReceipt { (success) in
             DispatchQueue.main.async
             {
@@ -374,6 +393,7 @@ print("product = \(currentSubscription!.productId) purchase date = \(currentSubs
     
     public func uploadReceipt(completion: ((_ success: Bool) -> Void)? = nil)
     {
+//print("Garry uploadReceipt")
         if let receiptData = loadReceipt()
         {
             upload(receipt: receiptData) { [weak self] (result) in
@@ -395,6 +415,7 @@ print("product = \(currentSubscription!.productId) purchase date = \(currentSubs
     
     private func loadReceipt() -> Data?
     {
+//print("Garry loadReceipt")
         guard let url = Bundle.main.appStoreReceiptURL else {
             return nil
         }
@@ -414,6 +435,7 @@ print("product = \(currentSubscription!.productId) purchase date = \(currentSubs
     /// Trade receipt for session id
     public func upload(receipt data: Data, completion: @escaping UploadReceiptCompletion)
     {
+//print("Garry upload")
         let body = [
             "receipt-data": data.base64EncodedString(),
             "password": sharedSecret

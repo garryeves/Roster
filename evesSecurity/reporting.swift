@@ -2464,168 +2464,63 @@ extension CloudKitInteraction
         
         for record in records
         {
-            var columnWidth1: Double = 0.0
-            if record.object(forKey: "columnWidth1") != nil
-            {
-                columnWidth1 = record.object(forKey: "columnWidth1") as! Double
-            }
-            
-            var columnWidth2: Double = 0.0
-            if record.object(forKey: "columnWidth2") != nil
-            {
-                columnWidth2 = record.object(forKey: "columnWidth2") as! Double
-            }
-            
-            var columnWidth3: Double = 0.0
-            if record.object(forKey: "columnWidth3") != nil
-            {
-                columnWidth3 = record.object(forKey: "columnWidth3") as! Double
-            }
-            
-            var columnWidth4: Double = 0.0
-            if record.object(forKey: "columnWidth4") != nil
-            {
-                columnWidth4 = record.object(forKey: "columnWidth4") as! Double
-            }
-            
-            var columnWidth5: Double = 0.0
-            if record.object(forKey: "columnWidth5") != nil
-            {
-                columnWidth5 = record.object(forKey: "columnWidth5") as! Double
-            }
-            
-            var columnWidth6: Double = 0.0
-            if record.object(forKey: "columnWidth6") != nil
-            {
-                columnWidth6 = record.object(forKey: "columnWidth6") as! Double
-            }
-            
-            var columnWidth7: Double = 0.0
-            if record.object(forKey: "columnWidth7") != nil
-            {
-                columnWidth7 = record.object(forKey: "columnWidth7") as! Double
-            }
-            
-            var columnWidth8: Double = 0.0
-            if record.object(forKey: "columnWidth8") != nil
-            {
-                columnWidth8 = record.object(forKey: "columnWidth8") as! Double
-            }
-            
-            var columnWidth9: Double = 0.0
-            if record.object(forKey: "columnWidth9") != nil
-            {
-                columnWidth9 = record.object(forKey: "columnWidth9") as! Double
-            }
-            
-            var columnWidth10: Double = 0.0
-            if record.object(forKey: "columnWidth10") != nil
-            {
-                columnWidth10 = record.object(forKey: "columnWidth10") as! Double
-            }
-            
-            var columnWidth11: Double = 0.0
-            if record.object(forKey: "columnWidth11") != nil
-            {
-                columnWidth11 = record.object(forKey: "columnWidth11") as! Double
-            }
-            
-            var columnWidth12: Double = 0.0
-            if record.object(forKey: "columnWidth12") != nil
-            {
-                columnWidth12 = record.object(forKey: "columnWidth12") as! Double
-            }
-            
-            var columnWidth13: Double = 0.0
-            if record.object(forKey: "columnWidth13") != nil
-            {
-                columnWidth13 = record.object(forKey: "columnWidth13") as! Double
-            }
-            
-            var columnWidth14: Double = 0.0
-            if record.object(forKey: "columnWidth14") != nil
-            {
-                columnWidth14 = record.object(forKey: "columnWidth14") as! Double
-            }
-            
-            var reportID: Int64 = 0
-            if record.object(forKey: "reportID") != nil
-            {
-                reportID = record.object(forKey: "reportID") as! Int64
-            }
-            
-            var teamID: Int64 = 0
-            if record.object(forKey: "teamID") != nil
-            {
-                teamID = record.object(forKey: "teamID") as! Int64
-            }
-            
-            var systemReport: Bool = false
-            if record.object(forKey: "systemReport") != nil
-            {
-                if record.object(forKey: "systemReport") as? String == "True"
-                {
-                    systemReport = true
-                }
-            }
-            
-            let tempItem = Reports(columnSource1: record.object(forKey: "columnSource1") as! String,
-                                   columnSource2: record.object(forKey: "columnSource2") as! String,
-                                   columnSource3: record.object(forKey: "columnSource3") as! String,
-                                   columnSource4: record.object(forKey: "columnSource4") as! String,
-                                   columnSource5: record.object(forKey: "columnSource5") as! String,
-                                   columnSource6: record.object(forKey: "columnSource6") as! String,
-                                   columnSource7: record.object(forKey: "columnSource7") as! String,
-                                   columnSource8: record.object(forKey: "columnSource8") as! String,
-                                   columnSource9: record.object(forKey: "columnSource9") as! String,
-                                   columnSource10: record.object(forKey: "columnSource10") as! String,
-                                   columnSource11: record.object(forKey: "columnSource11") as! String,
-                                   columnSource12: record.object(forKey: "columnSource12") as! String,
-                                   columnSource13: record.object(forKey: "columnSource13") as! String,
-                                   columnSource14: record.object(forKey: "columnSource14") as! String,
-                                   columnTitle1: record.object(forKey: "columnTitle1") as! String,
-                                   columnTitle2: record.object(forKey: "columnTitle2") as! String,
-                                   columnTitle3: record.object(forKey: "columnTitle3") as! String,
-                                   columnTitle4: record.object(forKey: "columnTitle4") as! String,
-                                   columnTitle5: record.object(forKey: "columnTitle5") as! String,
-                                   columnTitle6: record.object(forKey: "columnTitle6") as! String,
-                                   columnTitle7: record.object(forKey: "columnTitle7") as! String,
-                                   columnTitle8: record.object(forKey: "columnTitle8") as! String,
-                                   columnTitle9: record.object(forKey: "columnTitle9") as! String,
-                                   columnTitle10: record.object(forKey: "columnTitle10") as! String,
-                                   columnTitle11: record.object(forKey: "columnTitle11") as! String,
-                                   columnTitle12: record.object(forKey: "columnTitle12") as! String,
-                                   columnTitle13: record.object(forKey: "columnTitle13") as! String,
-                                   columnTitle14: record.object(forKey: "columnTitle14") as! String,
-                                   columnWidth1: columnWidth1,
-                                   columnWidth2: columnWidth2,
-                                   columnWidth3: columnWidth3,
-                                   columnWidth4: columnWidth4,
-                                   columnWidth5: columnWidth5,
-                                   columnWidth6: columnWidth6,
-                                   columnWidth7: columnWidth7,
-                                   columnWidth8: columnWidth8,
-                                   columnWidth9: columnWidth9,
-                                   columnWidth10: columnWidth10,
-                                   columnWidth11: columnWidth11,
-                                   columnWidth12: columnWidth12,
-                                   columnWidth13: columnWidth13,
-                                   columnWidth14: columnWidth14,
-                                   orientation: record.object(forKey: "orientation") as! String,
-                                   reportDescription: record.object(forKey: "reportDescription") as! String,
-                                   reportID: reportID,
-                                   reportTitle: record.object(forKey: "reportTitle") as! String,
-                                   reportType: record.object(forKey: "reportType") as! String,
-                                   selectionCriteria1: record.object(forKey: "selectionCriteria1") as! String,
-                                   selectionCriteria2: record.object(forKey: "selectionCriteria2") as! String,
-                                   selectionCriteria3: record.object(forKey: "selectionCriteria3") as! String,
-                                   selectionCriteria4: record.object(forKey: "selectionCriteria4") as! String,
-                                   sortOrder1: record.object(forKey: "sortOrder1") as! String,
-                                   sortOrder2: record.object(forKey: "sortOrder2") as! String,
-                                   sortOrder3: record.object(forKey: "sortOrder3") as! String,
-                                   sortOrder4: record.object(forKey: "sortOrder4") as! String,
-                                   systemReport: systemReport,
-                                   teamID: teamID)
+            let tempItem = Reports(columnSource1: decodeString(record.object(forKey: "columnSource1")),
+                                   columnSource2: decodeString(record.object(forKey: "columnSource2")),
+                                   columnSource3: decodeString(record.object(forKey: "columnSource3")),
+                                   columnSource4: decodeString(record.object(forKey: "columnSource4")),
+                                   columnSource5: decodeString(record.object(forKey: "columnSource5")),
+                                   columnSource6: decodeString(record.object(forKey: "columnSource6")),
+                                   columnSource7: decodeString(record.object(forKey: "columnSource7")),
+                                   columnSource8: decodeString(record.object(forKey: "columnSource8")),
+                                   columnSource9: decodeString(record.object(forKey: "columnSource9")),
+                                   columnSource10: decodeString(record.object(forKey: "columnSource10")),
+                                   columnSource11: decodeString(record.object(forKey: "columnSource11")),
+                                   columnSource12: decodeString(record.object(forKey: "columnSource12")),
+                                   columnSource13: decodeString(record.object(forKey: "columnSource13")),
+                                   columnSource14: decodeString(record.object(forKey: "columnSource14")),
+                                   columnTitle1: decodeString(record.object(forKey: "columnTitle1")),
+                                   columnTitle2: decodeString(record.object(forKey: "columnTitle2")),
+                                   columnTitle3: decodeString(record.object(forKey: "columnTitle3")),
+                                   columnTitle4: decodeString(record.object(forKey: "columnTitle4")),
+                                   columnTitle5: decodeString(record.object(forKey: "columnTitle5")),
+                                   columnTitle6: decodeString(record.object(forKey: "columnTitle6")),
+                                   columnTitle7: decodeString(record.object(forKey: "columnTitle7")),
+                                   columnTitle8: decodeString(record.object(forKey: "columnTitle8")),
+                                   columnTitle9: decodeString(record.object(forKey: "columnTitle9")),
+                                   columnTitle10: decodeString(record.object(forKey: "columnTitle10")),
+                                   columnTitle11: decodeString(record.object(forKey: "columnTitle11")),
+                                   columnTitle12: decodeString(record.object(forKey: "columnTitle12")),
+                                   columnTitle13: decodeString(record.object(forKey: "columnTitle13")),
+                                   columnTitle14: decodeString(record.object(forKey: "columnTitle14")),
+                                   columnWidth1: decodeDouble(record.object(forKey: "columnWidth1")),
+                                   columnWidth2: decodeDouble(record.object(forKey: "columnWidth2")),
+                                   columnWidth3: decodeDouble(record.object(forKey: "columnWidth3")),
+                                   columnWidth4: decodeDouble(record.object(forKey: "columnWidth4")),
+                                   columnWidth5: decodeDouble(record.object(forKey: "columnWidth5")),
+                                   columnWidth6: decodeDouble(record.object(forKey: "columnWidth6")),
+                                   columnWidth7: decodeDouble(record.object(forKey: "columnWidth7")),
+                                   columnWidth8: decodeDouble(record.object(forKey: "columnWidth8")),
+                                   columnWidth9: decodeDouble(record.object(forKey: "columnWidth9")),
+                                   columnWidth10: decodeDouble(record.object(forKey: "columnWidth10")),
+                                   columnWidth11: decodeDouble(record.object(forKey: "columnWidth11")),
+                                   columnWidth12: decodeDouble(record.object(forKey: "columnWidth12")),
+                                   columnWidth13: decodeDouble(record.object(forKey: "columnWidth13")),
+                                   columnWidth14: decodeDouble(record.object(forKey: "columnWidth14")),
+                                   orientation: decodeString(record.object(forKey: "orientation")),
+                                   reportDescription: decodeString(record.object(forKey: "reportDescription")),
+                                   reportID: decodeInt64(record.object(forKey: "reportID")),
+                                   reportTitle: decodeString(record.object(forKey: "reportTitle")),
+                                   reportType: decodeString(record.object(forKey: "reportType")),
+                                   selectionCriteria1: decodeString(record.object(forKey: "selectionCriteria1")),
+                                   selectionCriteria2: decodeString(record.object(forKey: "selectionCriteria2")),
+                                   selectionCriteria3: decodeString(record.object(forKey: "selectionCriteria3")),
+                                   selectionCriteria4: decodeString(record.object(forKey: "selectionCriteria4")),
+                                   sortOrder1: decodeString(record.object(forKey: "sortOrder1")),
+                                   sortOrder2: decodeString(record.object(forKey: "sortOrder2")),
+                                   sortOrder3: decodeString(record.object(forKey: "sortOrder3")),
+                                   sortOrder4: decodeString(record.object(forKey: "sortOrder4")),
+                                   systemReport: decodeBool(record.object(forKey: "systemReport"), defaultReturn: false),
+                                   teamID: decodeInt64(record.object(forKey: "teamID")))
             
             tempArray.append(tempItem)
         }

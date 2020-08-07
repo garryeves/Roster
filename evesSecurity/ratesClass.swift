@@ -369,65 +369,14 @@ extension CloudKitInteraction
         
         for record in records
         {
-            var rateID: Int64 = 0
-            if record.object(forKey: "rateID") != nil
-            {
-                rateID = record.object(forKey: "rateID") as! Int64
-            }
-            
-            var clientID: Int64 = 0
-            if record.object(forKey: "clientID") != nil
-            {
-                clientID = record.object(forKey: "clientID") as! Int64
-            }
-            
-            var rateAmount: Double = 0.0
-            if record.object(forKey: "rateAmount") != nil
-            {
-                rateAmount = record.object(forKey: "rateAmount") as! Double
-            }
-            
-            var chargeAmount: Double = 0.0
-            if record.object(forKey: "chargeAmount") != nil
-            {
-                chargeAmount = record.object(forKey: "chargeAmount") as! Double
-            }
-            
-            var startDate: Date = getDefaultDate()
-            if record.object(forKey: "startDate") != nil
-            {
-                startDate = record.object(forKey: "startDate") as! Date
-            }
-            
-            var active: Bool = true
-            if record.object(forKey: "active") != nil
-            {
-                if record.object(forKey: "active") as? String == "false"
-                {
-                    active = false
-                }
-            }
-            
-            var teamID: Int64 = 0
-            if record.object(forKey: "teamID") != nil
-            {
-                teamID = record.object(forKey: "teamID") as! Int64
-            }
-            
-            var rateName = ""
-            
-            if record.object(forKey: "rateName") != nil {
-                rateName = record.object(forKey: "rateName") as! String
-            }
-            
-            let tempItem = Rates(chargeAmount: chargeAmount,
-                                 clientID: clientID,
-                                 rateAmount: rateAmount,
-                                 rateID: rateID,
-                                 rateName: rateName,
-                                 startDate: startDate,
-                                 teamID: teamID,
-                                 active: active)
+            let tempItem = Rates(chargeAmount: decodeDouble(record.object(forKey: "chargeAmount")),
+                                 clientID: decodeInt64(record.object(forKey: "clientID")),
+                                 rateAmount: decodeDouble(record.object(forKey: "rateAmount")),
+                                 rateID: decodeInt64(record.object(forKey: "rateID")),
+                                 rateName: decodeString(record.object(forKey: "rateName")),
+                                 startDate: decodeDefaultDate(record.object(forKey: "startDate")),
+                                 teamID: decodeInt64(record.object(forKey: "teamID")),
+                                 active: decodeBool(record.object(forKey: "active"), defaultReturn: true))
             
             tempArray.append(tempItem)
         }

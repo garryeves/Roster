@@ -606,48 +606,18 @@ extension CloudKitInteraction
         
         for record in records
         {
-            var addressID: Int64 = 0
-            if record.object(forKey: "addressID") != nil
-            {
-                addressID = record.object(forKey: "addressID") as! Int64
-            }
-            
-            var clientID: Int64 = 0
-            if record.object(forKey: "clientID") != nil
-            {
-                clientID = record.object(forKey: "clientID") as! Int64
-            }
-            
-            var personID: Int64 = 0
-            if record.object(forKey: "personID") != nil
-            {
-                personID = record.object(forKey: "personID") as! Int64
-            }
-            
-            var projectID: Int64 = 0
-            if record.object(forKey: "projectID") != nil
-            {
-                projectID = record.object(forKey: "projectID") as! Int64
-            }
-            
-            var teamID: Int64 = 0
-            if record.object(forKey: "teamID") != nil
-            {
-                teamID = record.object(forKey: "teamID") as! Int64
-            }
-            
-            let tempItem = Addresses(addressID: addressID,
-                                     addressLine1: record.object(forKey: "addressLine1") as! String,
-                                     addressLine2: record.object(forKey: "addressLine2") as! String,
-                                     addressType: record.object(forKey: "addressType") as! String,
-                                     city: record.object(forKey: "city") as! String,
-                                     clientID: clientID,
-                                     country: record.object(forKey: "country") as! String,
-                                     personID: personID,
-                                     postcode: record.object(forKey: "postcode") as! String,
-                                     projectID: projectID,
-                                     state: record.object(forKey: "state") as! String,
-                                     teamID: teamID)
+            let tempItem = Addresses(addressID: decodeInt64(record.object(forKey: "addressID")),
+                                     addressLine1: decodeString(record.object(forKey: "addressLine1")),
+                                     addressLine2: decodeString(record.object(forKey: "addressLine2")),
+                                     addressType: decodeString(record.object(forKey: "addressType")),
+                                     city: decodeString(record.object(forKey: "city")),
+                                     clientID: decodeInt64(record.object(forKey: "clientID")),
+                                     country: decodeString(record.object(forKey: "country")),
+                                     personID: decodeInt64(record.object(forKey: "personID")),
+                                     postcode: decodeString(record.object(forKey: "postcode")),
+                                     projectID: decodeInt64(record.object(forKey: "projectID")),
+                                     state: decodeString(record.object(forKey: "state")),
+                                     teamID: decodeInt64(record.object(forKey: "teamID")))
             
             tempArray.append(tempItem)
         }

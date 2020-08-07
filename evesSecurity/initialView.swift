@@ -38,7 +38,38 @@ struct initialView : View {
         }
     }
     
+    @State var passwordEntry = ""
+    @State var passwordCorrect = false
+    
     var body: some View {
-        return securityInitialView()
+        return VStack {
+            if readDefaultString(userDefaultPassword) == "" || passwordCorrect {
+                securityInitialView()
+            } else {
+                Spacer()
+                
+                VStack (alignment: .center) {
+                    HStack {
+                        Text("Password required")
+                            .padding()
+                        
+                        TextField("Please enter your password", text: $passwordEntry)
+                        .padding()
+                    }
+                }
+                .padding()
+                
+                if passwordEntry != "" {
+                    Button("Validate Password") {
+                        if self.passwordEntry == readDefaultString(userDefaultPassword) {
+                            self.passwordCorrect = true
+                        } else {
+                            self.passwordEntry = ""
+                        }
+                    }
+                }
+                Spacer()
+            }
+        }
     }
 }

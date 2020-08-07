@@ -13,8 +13,8 @@ import SwiftUI
 
 public struct monthlyPersonFinancialsStruct
 {
-    var month: String
-    var year: String
+    var month: Int64
+    var year: Int64
     var wage: Double
     var hours: Double
 }
@@ -1183,73 +1183,6 @@ extension CloudKitInteraction
         
         for record in records
         {
-            var personID: Int64 = 0
-            if record.object(forKey: "personID") != nil
-            {
-                personID = record.object(forKey: "personID") as! Int64
-            }
-            
-            var dob = Date()
-            if record.object(forKey: "dob") != nil
-            {
-                dob = record.object(forKey: "dob") as! Date
-            }
-            
-            var teamID: Int64 = 0
-            
-            if record.object(forKey: "teamID") != nil
-            {
-                teamID = record.object(forKey: "teamID") as! Int64
-            }
-            
-            var clientID: Int64 = 0
-            if record.object(forKey: "clientID") != nil
-            {
-                clientID = record.object(forKey: "clientID") as! Int64
-            }
-            
-            var projectID: Int64 = 0
-            if record.object(forKey: "projectID") != nil
-            {
-                projectID = record.object(forKey: "projectID") as! Int64
-            }
-            
-            var emailOptIn: Bool = false
-            if record.object(forKey: "emailOptIn") != nil
-            {
-                if record.object(forKey: "emailOptIn") as? String == "True"
-                {
-                    emailOptIn = true
-                }
-            }
-            
-            var active: Bool = true
-            if record.object(forKey: "isActive") != nil
-            {
-                if record.object(forKey: "isActive") as? String == "false"
-                {
-                    active = false
-                }
-            }
-            
-            var canRoster: Bool = true
-            if record.object(forKey: "canRoster") != nil
-            {
-                if record.object(forKey: "canRoster") as? String == "false"
-                {
-                    canRoster = false
-                }
-            }
-            
-            var useAllowanceHours: Bool = false
-            if record.object(forKey: "useAllowanceHours") != nil
-            {
-                if record.object(forKey: "useAllowanceHours") as? String == "true"
-                {
-                    useAllowanceHours = true
-                }
-            }
-            
             var displayFullName = record.object(forKey: "name") as! String
             var firstName = ""
           
@@ -1263,26 +1196,20 @@ extension CloudKitInteraction
                 }
             }
             
-            var personTitle = ""
-            
-            if record.object(forKey: "title") != nil {
-                personTitle = record.object(forKey: "title") as! String
-            }
-            
-            let tempItem = Person(canRoster: canRoster,
-                                  clientID: clientID,
-                                  dob: dob,
-                                  gender: record.object(forKey: "gender") as! String,
-                                  name: record.object(forKey: "name") as! String,
-                                  note: record.object(forKey: "note") as! String,
-                                  personID: personID,
-                                  projectID: projectID,
-                                  teamID: teamID,
+            let tempItem = Person(canRoster: decodeBool(record.object(forKey: "canRoster"), defaultReturn: true),
+                                  clientID: decodeInt64(record.object(forKey: "clientID")),
+                                  dob: decodeDate(record.object(forKey: "dob")),
+                                  gender: decodeString(record.object(forKey: "gender")),
+                                  name: decodeString(record.object(forKey: "name")),
+                                  note: decodeString(record.object(forKey: "note")),
+                                  personID: decodeInt64(record.object(forKey: "personID")),
+                                  projectID: decodeInt64(record.object(forKey: "projectID")),
+                                  teamID: decodeInt64(record.object(forKey: "teamID")),
                                   firstName: firstName,
-                                  title: personTitle,
-                                  emailOptIn: emailOptIn,
-                                  isActive: active,
-                                  useAllowanceHours: useAllowanceHours,
+                                  title: decodeString(record.object(forKey: "title")),
+                                  emailOptIn: decodeBool(record.object(forKey: "emailOptIn"), defaultReturn: false),
+                                  isActive: decodeBool(record.object(forKey: "isActive"), defaultReturn: true),
+                                  useAllowanceHours: decodeBool(record.object(forKey: "useAllowanceHours"), defaultReturn: false),
                                   fullName: displayFullName
             )
             

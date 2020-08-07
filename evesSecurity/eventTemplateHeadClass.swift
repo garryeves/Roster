@@ -365,21 +365,9 @@ extension CloudKitInteraction
         
         for record in records
         {
-            var eventID: Int64 = 0
-            if record.object(forKey: "eventID") != nil
-            {
-                eventID = record.object(forKey: "eventID") as! Int64
-            }
-            
-            var teamID: Int64 = 0
-            if record.object(forKey: "teamID") != nil
-            {
-                teamID = record.object(forKey: "teamID") as! Int64
-            }
-            
-            let tempItem = EventTemplateHead(eventID: eventID,
-                                             eventName: record.object(forKey: "eventName") as! String,
-                                             teamID: teamID)
+            let tempItem = EventTemplateHead(eventID: decodeInt64(record.object(forKey: "eventID")),
+                                             eventName: decodeString(record.object(forKey: "eventName")),
+                                             teamID: decodeInt64(record.object(forKey: "teamID")))
             
             tempArray.append(tempItem)
         }

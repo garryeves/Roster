@@ -92,9 +92,9 @@ public class userItem: NSObject, Identifiable, ObservableObject
     fileprivate var myRoles: userRoles!
     fileprivate var myTeams: [team] = Array()
     fileprivate var myAuthorised: Bool = false
-    @Published var name: String = ""
+    @Published var name: String = "tbd"
     var phraseDate: Date = getDefaultDate()
-    @Published var email: String = ""
+    @Published var email: String = "tbd"
     @Published var passPhrase: String = ""
     fileprivate var myCurrentTeam: team!
     fileprivate var myPersonID: Int64 = 0
@@ -294,6 +294,26 @@ public class userItem: NSObject, Identifiable, ObservableObject
         if currentTeam != nil
         {
             loadRoles()
+        }
+    }
+    
+    func createUser(_ teamEntry: team) {
+        myUserID = myCloudDB.getAllUserCount() + 1
+        
+        // Now lets call to create the team in cloudkit
+        
+        if myCloudDB.createNewUser(myUserID, name: name, email: email) {
+            myAuthorised = true
+            
+            // Check to see if already a member of the team
+            
+            myCurrentTeam = teamEntry
+
+            addTeamToUser(myCurrentTeam)
+            
+            generatePassPhrase()
+            
+            addInitialUserRoles()
         }
     }
     
@@ -588,10 +608,21 @@ public class userItem: NSObject, Identifiable, ObservableObject
                     let clientInvoiceList = clients(teamID: currentUser.currentTeam!.teamID, isActive: true)
 
                     let coachingInvoiceList = coachingClients(teamID: currentUser.currentTeam!.teamID, isActive: true)
+
+                    // Get list of active invoices
+                    
+                    let activeInvoice = clientInvoices(teamID: currentUser.currentTeam!.teamID, isActive: true)
                     
                     for item in clientInvoiceList.clients {
-                        let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuClientInvoices, indexx: item.clientID, IDx: menuID, parentIDx: clientInvoiceID, displayx: false, alertColourx: true)
-                        myMenuOptions.append(tempItem)
+                        let tempArray = activeInvoice.invoices.filter { $0.clientID == item.clientID }
+                        
+                        if tempArray.count == 0 {
+                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuClientInvoices, indexx: item.clientID, IDx: menuID, parentIDx: clientInvoiceID, displayx: false, alertColourx: false)
+                            myMenuOptions.append(tempItem)
+                        } else {
+                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuClientInvoices, indexx: item.clientID, IDx: menuID, parentIDx: clientInvoiceID, displayx: false, alertColourx: true)
+                            myMenuOptions.append(tempItem)
+                        }
                         menuID += 1
                     }
                     
@@ -925,56 +956,14 @@ extension CloudKitInteraction
         
         for record in returnArray
         {
-            var storedUserID: Int64 = 0
-            if record.object(forKey: "userID") != nil
-            {
-                storedUserID = record.object(forKey: "userID") as! Int64
-            }
-            
-            var personID: Int64 = 0
-            if record.object(forKey: "personID") != nil
-            {
-                personID = record.object(forKey: "personID") as! Int64
-            }
-            
-            var phraseDate = getDefaultDate()
-            if record.object(forKey: "phraseDate") != nil
-            {
-                phraseDate = record.object(forKey: "phraseDate") as! Date
-            }
-            
-            var name: String = ""
-            if record.object(forKey: "name") != nil
-            {
-                name = record.object(forKey: "name") as! String
-            }
-            
-            var passPhrase: String = ""
-            if record.object(forKey: "passPhrase") != nil
-            {
-                passPhrase = record.object(forKey: "passPhrase") as! String
-            }
-            
-            var email: String = ""
-            if record.object(forKey: "email") != nil
-            {
-                email = record.object(forKey: "email") as! String
-            }
-            
-            var defaultCalendar: String = ""
-            if record.object(forKey: "defaultCalendar") != nil
-            {
-                defaultCalendar = record.object(forKey: "defaultCalendar") as! String
-            }
-            
             self.returnUserEntry = returnUser(
-                userID: storedUserID,
-                name: name,
-                passPhrase: passPhrase,
-                phraseDate: phraseDate,
-                email: email,
-                personID: personID,
-                defaultCalendar: defaultCalendar)
+                userID: decodeInt64(record.object(forKey: "userID")),
+                name: decodeString(record.object(forKey: "name")),
+                passPhrase: decodeString(record.object(forKey: "passPhrase")),
+                phraseDate: decodeDefaultDate(record.object(forKey: "phraseDate")),
+                email: decodeString(record.object(forKey: "email")),
+                personID: decodeInt64(record.object(forKey: "personID")),
+                defaultCalendar: decodeString(record.object(forKey: "defaultCalendar")))
         }
         
         return returnUserEntry
@@ -1109,56 +1098,14 @@ extension CloudKitInteraction
     
     private func processUserList(_ sourceRecord: CKRecord)
     {
-        var storedUserID: Int64 = 0
-        if sourceRecord.object(forKey: "userID") != nil
-        {
-            storedUserID = sourceRecord.object(forKey: "userID") as! Int64
-        }
-        
-        var personID: Int64 = 0
-        if sourceRecord.object(forKey: "personID") != nil
-        {
-            personID = sourceRecord.object(forKey: "personID") as! Int64
-        }
-        
-        var phraseDate = getDefaultDate()
-        if sourceRecord.object(forKey: "phraseDate") != nil
-        {
-            phraseDate = sourceRecord.object(forKey: "phraseDate") as! Date
-        }
-        
-        var name: String = ""
-        if sourceRecord.object(forKey: "name") != nil
-        {
-            name = sourceRecord.object(forKey: "name") as! String
-        }
-        
-        var passPhrase: String = ""
-        if sourceRecord.object(forKey: "passPhrase") != nil
-        {
-            passPhrase = sourceRecord.object(forKey: "passPhrase") as! String
-        }
-        
-        var email: String = ""
-        if sourceRecord.object(forKey: "email") != nil
-        {
-            email = sourceRecord.object(forKey: "email") as! String
-        }
-        
-        var defaultCalendar: String = ""
-        if sourceRecord.object(forKey: "defaultCalendar") != nil
-        {
-            defaultCalendar = sourceRecord.object(forKey: "defaultCalendar") as! String
-        }
-        
         let returnUserEntry = returnUser(
-            userID: storedUserID,
-            name: name,
-            passPhrase: passPhrase,
-            phraseDate: phraseDate,
-            email: email,
-            personID: personID,
-            defaultCalendar: defaultCalendar)
+            userID: decodeInt64(sourceRecord.object(forKey: "userID")),
+            name: decodeString(sourceRecord.object(forKey: "name")),
+            passPhrase: decodeString(sourceRecord.object(forKey: "passPhrase")),
+            phraseDate: decodeDefaultDate(sourceRecord.object(forKey: "phraseDate")),
+            email: decodeString(sourceRecord.object(forKey: "email")),
+            personID: decodeInt64(sourceRecord.object(forKey: "personID")),
+            defaultCalendar: decodeString(sourceRecord.object(forKey: "defaultCalendar")))
         
         returnUserArray.append(returnUserEntry)
     }

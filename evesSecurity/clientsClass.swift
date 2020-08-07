@@ -363,9 +363,9 @@ public class client: NSObject, Identifiable, ObservableObject
         myShifts = shifts(clientID: myClientID, month: month, year: year, teamID: myTeamID)
     }
     
-    func calculateInvoice(month: Int64, year: Int64) {
-        
-    }
+//    func calculateInvoice(month: Int64, year: Int64) {
+//
+//    }
     
     public func save()
     {
@@ -466,51 +466,12 @@ extension CloudKitInteraction
         
         for record in records
         {
-            var clientContact: Int64 = 0
-            if record.object(forKey: "clientContact") != nil
-            {
-                clientContact = record.object(forKey: "clientContact") as! Int64
-            }
-            
-            var clientID: Int64 = 0
-            if record.object(forKey: "clientID") != nil
-            {
-                clientID = record.object(forKey: "clientID") as! Int64
-            }
-            
-            var teamID: Int64 = 0
-            if record.object(forKey: "teamID") != nil
-            {
-                teamID = record.object(forKey: "teamID") as! Int64
-            }
-            
-            var active: Bool = true
-            if record.object(forKey: "isActive") != nil
-            {
-                if record.object(forKey: "isActive") as? String == "false"
-                {
-                    active = false
-                }
-            }
-            
-            var tempClientName: String = ""
-            if record.object(forKey: "clientName") != nil
-            {
-                tempClientName = record.object(forKey: "clientName") as! String
-            }
-            
-            var tempNote: String = ""
-            if record.object(forKey: "note") != nil
-            {
-                tempNote = record.object(forKey: "note") as! String
-            }
-
-            let tempItem = Clients(clientContact: clientContact,
-                                   clientID: clientID,
-                                   clientName: tempClientName,
-                                   note: tempNote,
-                                   teamID: teamID,
-                                   isActive: active)
+            let tempItem = Clients(clientContact: decodeInt64(record.object(forKey: "clientContact")),
+                                   clientID: decodeInt64(record.object(forKey: "clientID")),
+                                   clientName: decodeString(record.object(forKey: "clientName")),
+                                   note: decodeString(record.object(forKey: "note")),
+                                   teamID: decodeInt64(record.object(forKey: "teamID")),
+                                   isActive: decodeBool(record.object(forKey: "isActive"), defaultReturn: true))
             
             tempArray.append(tempItem)
         }

@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		340A02AB1F00B97C00E425C9 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 340A02AA1F00B97C00E425C9 /* StoreKit.framework */; };
-		341854F522DD909900076003 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 341854F322DD909900076003 /* Main.storyboard */; };
+		342ABCCA23E654A000F2ADCF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 342ABCC823E654A000F2ADCF /* Main.storyboard */; };
 		342DBDE42086F9B0001C687C /* evesShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 342DBDE32086F9B0001C687C /* evesShared.framework */; };
 		342DBDED20871C0F001C687C /* evesShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 34D21D252086E9FA0069DB7A /* evesShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		347BCEC61EC56DAC006B95BA /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 347BCEC51EC56DAC006B95BA /* CloudKit.framework */; };
@@ -72,7 +72,7 @@
 
 /* Begin PBXFileReference section */
 		340A02AA1F00B97C00E425C9 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		341854F422DD909900076003 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		342ABCC923E654A000F2ADCF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		342DBDE32086F9B0001C687C /* evesShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = evesShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		345DF51E2088257900F6579E /* DLRadioButton.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = DLRadioButton.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		347BCEC41EC56DA7006B95BA /* evesSecurity.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = evesSecurity.entitlements; sourceTree = "<group>"; };
@@ -129,7 +129,7 @@
 		349652FD1EC1E5B800210A46 /* evesSecurity */ = {
 			isa = PBXGroup;
 			children = (
-				34CAA81C206E470000895983 /* data classes */,
+				342ABCC823E654A000F2ADCF /* Main.storyboard */,
 				347BCEC41EC56DA7006B95BA /* evesSecurity.entitlements */,
 				349653311EC1F0BA00210A46 /* Views */,
 				349653081EC1E5B800210A46 /* Assets.xcassets */,
@@ -159,20 +159,12 @@
 		349653311EC1F0BA00210A46 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				341854F322DD909900076003 /* Main.storyboard */,
 				3496530A1EC1E5B800210A46 /* LaunchScreen.storyboard */,
 				349652FE1EC1E5B800210A46 /* AppDelegate.swift */,
 				34A04F4E22D96D5C00BD6A41 /* SceneDelegate.swift */,
 				34A04F4A22D96D0200BD6A41 /* initialView.swift */,
 			);
 			name = Views;
-			sourceTree = "<group>";
-		};
-		34CAA81C206E470000895983 /* data classes */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "data classes";
 			sourceTree = "<group>";
 		};
 		FF3209C55564F5826792BA74 /* Frameworks */ = {
@@ -267,7 +259,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				341854F522DD909900076003 /* Main.storyboard in Resources */,
+				342ABCCA23E654A000F2ADCF /* Main.storyboard in Resources */,
 				3496530C1EC1E5B800210A46 /* LaunchScreen.storyboard in Resources */,
 				349653091EC1E5B800210A46 /* Assets.xcassets in Resources */,
 			);
@@ -289,10 +281,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		341854F322DD909900076003 /* Main.storyboard */ = {
+		342ABCC823E654A000F2ADCF /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				341854F422DD909900076003 /* Base */,
+				342ABCC923E654A000F2ADCF /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -427,19 +419,19 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				CODE_SIGN_ENTITLEMENTS = evesSecurity/evesSecurity.entitlements;
-				CURRENT_PROJECT_VERSION = 120;
+				CURRENT_PROJECT_VERSION = 134;
 				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = 76YDDNPU7W;
 				ENABLE_BITCODE = YES;
 				INFOPLIST_FILE = evesSecurity/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 2019.2;
+				MARKETING_VERSION = 2020.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.garryeves.evesSecurity;
 				PRODUCT_NAME = Roster;
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -449,19 +441,19 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				CODE_SIGN_ENTITLEMENTS = evesSecurity/evesSecurity.entitlements;
-				CURRENT_PROJECT_VERSION = 120;
+				CURRENT_PROJECT_VERSION = 134;
 				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = 76YDDNPU7W;
 				ENABLE_BITCODE = YES;
 				INFOPLIST_FILE = evesSecurity/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 2019.2;
+				MARKETING_VERSION = 2020.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.garryeves.evesSecurity;
 				PRODUCT_NAME = Roster;
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

@@ -544,35 +544,12 @@ extension CloudKitInteraction
         
         for record in records
         {
-            var personID: Int64 = 0
-            if record.object(forKey: "personID") != nil
-            {
-                personID = record.object(forKey: "personID") as! Int64
-            }
-            
-            var teamID: Int64 = 0
-            if record.object(forKey: "teamID") != nil
-            {
-                teamID = record.object(forKey: "teamID") as! Int64
-            }
-            
-            var clientID: Int64 = 0
-            if record.object(forKey: "clientID") != nil
-            {
-                clientID = record.object(forKey: "clientID") as! Int64
-            }
-            
-            var projectID: Int64 = 0
-            if record.object(forKey: "projectID") != nil
-            {
-                projectID = record.object(forKey: "projectID") as! Int64
-            }
-            let tempItem = Contacts(clientID: clientID,
-                                    contactType: record.object(forKey: "contactType") as! String,
-                                    contactValue: record.object(forKey: "contactValue") as! String,
-                                    personID: personID,
-                                    projectID: projectID,
-                                    teamID: teamID)
+            let tempItem = Contacts(clientID: decodeInt64(record.object(forKey: "clientID")),
+                                    contactType: decodeString(record.object(forKey: "contactType")),
+                                    contactValue: decodeString(record.object(forKey: "contactValue")),
+                                    personID: decodeInt64(record.object(forKey: "personID")),
+                                    projectID: decodeInt64(record.object(forKey: "projectID")),
+                                    teamID: decodeInt64(record.object(forKey: "teamID")))
             
             tempArray.append(tempItem)
         }

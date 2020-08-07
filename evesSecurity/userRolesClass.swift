@@ -190,29 +190,11 @@ extension CloudKitInteraction
         
         for record in records
         {
-            var userID: Int64 = 0
-            if record.object(forKey: "userID") != nil
-            {
-                userID = record.object(forKey: "userID") as! Int64
-            }
-            
-            var teamID: Int64 = 0
-            if record.object(forKey: "teamID") != nil
-            {
-                teamID = record.object(forKey: "teamID") as! Int64
-            }
-            
-            var roleID: Int64 = 0
-            if record.object(forKey: "roleID") != nil
-            {
-                roleID = record.object(forKey: "roleID") as! Int64
-            }
-            
-            let tempItem = UserRoles(accessLevel: record.object(forKey: "accessLevel") as! String,
-                                     roleID: roleID,
-                                     roleType: record.object(forKey: "roleType") as! String,
-                                     teamID: teamID,
-                                     userID: userID)
+            let tempItem = UserRoles(accessLevel: decodeString(record.object(forKey: "accessLevel")),
+                                     roleID: decodeInt64(record.object(forKey: "roleID")),
+                                     roleType: decodeString(record.object(forKey: "roleType")),
+                                     teamID: decodeInt64(record.object(forKey: "teamID")),
+                                     userID: decodeInt64(record.object(forKey: "userID")))
             
             tempArray.append(tempItem)
         }

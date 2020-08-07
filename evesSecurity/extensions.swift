@@ -88,6 +88,13 @@ extension String
         return selectedType
     }
     
+    public var formatStringToDate: Date
+    {
+        let myDateFormatter = DateFormatter()
+        myDateFormatter.dateFormat = "dd/MM/yyyy"
+        return myDateFormatter.date(from: self)!
+    }
+    
     public var formatStringToDateTime: Date
     {
         let myDateFormatter = DateFormatter()
@@ -608,6 +615,38 @@ public func calculateDate(month: Int64, year: Int64) -> Date
     workingDate.year = Int(year)
 
     return myCalendar.date(from: workingDate)!
+}
+
+public func calculateMonthStartDate(month: Int64, year: Int64) -> Date {
+    let myCalendar = Calendar(identifier: .gregorian)
+
+    var workingDate = DateComponents()
+    workingDate.day = 1
+    workingDate.month = Int(month)
+    workingDate.year = Int(year)
+
+    return myCalendar.date(from: workingDate)!
+}
+
+public func calculateMonthEndDate(month: Int64, year: Int64) -> Date {
+    let myCalendar = Calendar(identifier: .gregorian)
+
+    var workingDate = DateComponents()
+    workingDate.day = 1
+    
+    var workingMonth = Int(month)
+    var workingYear = Int(year)
+    
+    if workingMonth == 12 {
+        workingMonth = 1
+        workingYear += 1
+    }
+    
+    workingDate.month = workingMonth
+    workingDate.year = workingYear
+
+    let tempDate = myCalendar.date(from: workingDate)!.add(.month, amount: 1)
+    return tempDate.add(.minute, amount: -1)
 }
 
 extension Double {

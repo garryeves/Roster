@@ -357,51 +357,15 @@ extension CloudKitInteraction
         
         for record in records
         {
-            var clientID: Int64 = 0
-            if record.object(forKey: "clientID") != nil
-            {
-                clientID = record.object(forKey: "clientID") as! Int64
-            }
-            
-            var convTime: Date = getDefaultDate()
-            if record.object(forKey: "convTime") != nil
-            {
-                convTime = record.object(forKey: "convTime") as! Date
-            }
-            
-            var personID: Int64 = 0
-            if record.object(forKey: "personID") != nil
-            {
-                personID = record.object(forKey: "personID") as! Int64
-            }
-            
-            var projectID: Int64 = 0
-            if record.object(forKey: "projectID") != nil
-            {
-                projectID = record.object(forKey: "projectID") as! Int64
-            }
-            
-            var teamID: Int64 = 0
-            if record.object(forKey: "teamID") != nil
-            {
-                teamID = record.object(forKey: "teamID") as! Int64
-            }
-            
-            var leadID: Int64 = 0
-            if record.object(forKey: "leadID") != nil
-            {
-                leadID = record.object(forKey: "leadID") as! Int64
-            }
-            
-            let tempItem = CommsLog(clientID: clientID,
-                                    convTime: convTime,
-                                    notes: record.object(forKey: "notes") as! String,
-                                    personID: personID,
-                                    projectID: projectID,
-                                    summary: record.object(forKey: "summary") as! String,
-                                    teamID: teamID,
-                                    type: record.object(forKey: "type") as! String,
-                                    leadID: leadID)
+            let tempItem = CommsLog(clientID: decodeInt64(record.object(forKey: "clientID")),
+                                    convTime: decodeDefaultDate(record.object(forKey: "convTime")),
+                                    notes: decodeString(record.object(forKey: "notes")),
+                                    personID: decodeInt64(record.object(forKey: "personID")),
+                                    projectID: decodeInt64(record.object(forKey: "projectID")),
+                                    summary: decodeString(record.object(forKey: "summary")),
+                                    teamID: decodeInt64(record.object(forKey: "teamID")),
+                                    type: decodeString(record.object(forKey: "type")),
+                                    leadID: decodeInt64(record.object(forKey: "leadID")))
             
             tempArray.append(tempItem)
         }
