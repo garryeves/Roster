@@ -803,7 +803,8 @@ public class person: NSObject, Identifiable, ObservableObject
     
     public func createPerson(teamID: Int64, personName: String = "")
     {
-        myPersonID = myCloudDB.getNextID("Person", teamID: teamID)
+//        myPersonID = myCloudDB.getNextID("Person", teamID: teamID)
+        myPersonID = myCloudDB.dateAsInt()
         myTeamID = teamID
         myName = personName
             

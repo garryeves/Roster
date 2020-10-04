@@ -111,7 +111,8 @@ public class eventTemplateHead: NSObject, Identifiable
     }
     
     public func createTemplate(teamID: Int64) {
-        myTemplateID = myCloudDB.getNextID("EventTemplateHead", teamID: teamID)
+//        myTemplateID = myCloudDB.getNextID("EventTemplateHead", teamID: teamID)
+        myTemplateID = myCloudDB.dateAsInt()
         myTeamID = teamID
         myTemplateName = newTemplateName
         save()

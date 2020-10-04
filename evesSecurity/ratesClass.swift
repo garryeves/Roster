@@ -180,7 +180,8 @@ public class rate: NSObject, Identifiable
     {
         get
         {
-            return String(format: "%.1f", ((myChargeAmount - myRateAmount) / myChargeAmount) * 100.0)
+           // return String(format: "%.1f", ((myChargeAmount - myRateAmount) / myChargeAmount) * 100.0)
+            return Double(((myChargeAmount - myRateAmount) / myChargeAmount) * 100).formatPercent
         }
     }
     
@@ -246,7 +247,8 @@ public class rate: NSObject, Identifiable
     {
         super.init()
         
-        myRateID = myCloudDB.getNextID("Rates", teamID: teamID)
+//        myRateID = myCloudDB.getNextID("Rates", teamID: teamID)
+        myRateID = myCloudDB.dateAsInt()
         myClientID = clientID
         myTeamID = teamID
         
@@ -263,7 +265,8 @@ public class rate: NSObject, Identifiable
     {
         super.init()
         
-        myRateID = myCloudDB.getNextID("Rates", teamID: teamID)
+//        myRateID = myCloudDB.getNextID("Rates", teamID: teamID)
+        myRateID = myCloudDB.dateAsInt()
         myClientID = clientID
         myRateName = rateName
         myRateAmount = rateAmount

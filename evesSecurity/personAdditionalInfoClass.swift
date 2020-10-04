@@ -89,7 +89,8 @@ public class personAdditionalInfo: NSObject, Identifiable
     {
         super.init()
         
-        myAddInfoID = myCloudDB.getNextID("personAdditionalInfo", teamID: teamID)
+//        myAddInfoID = myCloudDB.getNextID("personAdditionalInfo", teamID: teamID)
+        myAddInfoID = myCloudDB.dateAsInt()
         myTeamID = teamID
         
         currentUser.currentTeam?.personAdditionalInfo = nil

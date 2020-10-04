@@ -14,26 +14,41 @@ import SwiftUI
 public let NotificationUserLoaded = Notification.Name("NotificationUserLoaded")
 public let NotificationUserListLoaded = Notification.Name("NotificationUserListLoaded")
 
-class menuArray: Identifiable
+//class menuArray: Identifiable
+class menuArrayItem: ObservableObject, Identifiable
 {
     public let id = UUID()
     var menuText: String = ""
     var menuAction: String = ""
     var index: Int64 = 0
-    var itemID: Int = 0
-    var parentID: Int = 0
-    var display: Bool = false
-    var alertColour: Bool = false
+//    var itemID: Int = 0
+//    var parentID: Int = 0
+//    var display: Bool = false
+    var alertColour: Color = .black
+    var subMenus: [menuArrayItem] = Array()
+    @Published var isExpanded = false
     
-    public init(menuTextx: String, menuActionx: String, indexx: Int64, IDx: Int, parentIDx: Int, displayx: Bool, alertColourx: Bool = false)
+    public init(menuTextx: String, menuActionx: String, indexx: Int64 = 0, alertColourx: Color = .black)
     {
         menuText = menuTextx
         menuAction = menuActionx
         index = indexx
-        itemID = IDx
-        parentID = parentIDx
-        display = displayx
+//        itemID = IDx
+//        parentID = parentIDx
+//        display = displayx
         alertColour = alertColourx
+    }
+ //   public init(menuTextx: String, menuActionx: String, indexx: Int64, IDx: Int, parentIDx: Int, displayx: Bool, alertColourx: Color = .black, subMenusx: [menuArrayItem])
+    public init(menuTextx: String, subMenusx: [menuArrayItem], menuActionx: String = "", indexx: Int64 = 0, alertColourx: Color = .black)
+    {
+        menuText = menuTextx
+        menuAction = menuActionx
+        index = indexx
+//       itemID = IDx
+//        parentID = parentIDx
+//        display = displayx
+        alertColour = alertColourx
+        subMenus = subMenusx
     }
 }
 
@@ -100,7 +115,7 @@ public class userItem: NSObject, Identifiable, ObservableObject
     fileprivate var myPersonID: Int64 = 0
     fileprivate var mydefaultCalendar: String = "Select Calendar"
     fileprivate var myTeamList: userTeams!
-    fileprivate var myMenuOptions: [menuArray] = Array()
+    fileprivate var myMenuOptions: [menuArrayItem] = Array()
     fileprivate var myMenuBuiltForActive: Bool = false
     fileprivate var myMenuMonth: Int64 = 0
     fileprivate var myMenuYear: Int64 = 0
@@ -228,10 +243,11 @@ public class userItem: NSObject, Identifiable, ObservableObject
         }
     }
     
-    var menuOptions: [menuArray]
+    var menuOptions: [menuArrayItem]
     {
         get {
-            return myMenuOptions.filter { $0.display == true }
+//            return myMenuOptions.filter { $0.display == true }
+            return myMenuOptions
         }
     }
     
@@ -457,8 +473,284 @@ public class userItem: NSObject, Identifiable, ObservableObject
         }
     }
     
-    public func loadMenu(showActive: Bool, month: Int64, year: Int64)
-    {
+//    public func loadMenu(showActive: Bool, month: Int64, year: Int64)
+//    {
+//        if currentTeam != nil {
+//            if myMenuBuiltForActive != showActive ||
+//                myMenuMonth != month ||
+//                myMenuYear != year {
+//                let clientList = clients(teamID: currentTeam!.teamID, isActive: showActive)
+//                let projectList = projects(teamID: currentTeam!.teamID, includeEvents: true, isActive: showActive)
+//                let peopleList = people(teamID: currentTeam!.teamID, isActive: showActive)
+//                let leadList = leads(teamID: currentTeam!.teamID, isActive: showActive)
+//
+//                let shiftsForMonth = shifts(teamID: currentUser.currentTeam!.teamID, month: month, year: year)
+//                let personShiftsThisMonth = peopleList.checkShifts(shiftList: shiftsForMonth)
+//
+//                myMenuOptions.removeAll()
+//                var menuID: Int = 1
+//                var parentID: Int = 0
+//
+//                let tempA = menuArray(menuTextx: "Dashboard", menuActionx: menuDashboard, indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
+//                myMenuOptions.append(tempA)
+//                menuID += 1
+//
+//                if checkReadPermission(rosteringRoleType) {
+//                    let temp5 = menuArray(menuTextx: "Rostering", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
+//                    myMenuOptions.append(temp5)
+//                    parentID = menuID
+//                    menuID += 1
+//
+//                    let temp6 = menuArray(menuTextx: "     Roster", menuActionx: menuRoster, indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
+//                    myMenuOptions.append(temp6)
+//                    menuID += 1
+//
+//                    let temp7 = menuArray(menuTextx: "     Event Planning", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
+//                    myMenuOptions.append(temp7)
+//                    let eventPlanID = menuID
+//                    menuID += 1
+//
+//                    for item in currentTeam!.activeProjectList(eventProjectType, rebuild: true).projectList {
+//                        let tempPlan = menuArray(menuTextx: "        \(item.projectName) - \(item.displayProjectStartDate)", menuActionx: menuEventPlanning, indexx: item.projectID, IDx: menuID, parentIDx: eventPlanID, displayx: false)
+//                        myMenuOptions.append(tempPlan)
+//                        menuID += 1
+//                    }
+//
+//                    let temp8 = menuArray(menuTextx: "     Event Templates", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
+//                    myMenuOptions.append(temp8)
+//                    let templatePlanID = menuID
+//                    menuID += 1
+//
+//                    for item in currentTeam!.eventTemplatesClassList.templates {
+//                        let tempTemplate = menuArray(menuTextx: "        \(item.templateName)", menuActionx: menuEventTemplates, indexx: item.templateID, IDx: menuID, parentIDx: templatePlanID, displayx: false)
+//                        myMenuOptions.append(tempTemplate)
+//                        menuID += 1
+//                    }
+//
+//                    let tempTemplate = menuArray(menuTextx: "        Add Template", menuActionx: menuEventTemplates, indexx: -1, IDx: menuID, parentIDx: templatePlanID, displayx: false)
+//                    myMenuOptions.append(tempTemplate)
+//                    menuID += 1
+//
+//                    let temp8a = menuArray(menuTextx: "     Monthly Roster", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
+//                    myMenuOptions.append(temp8a)
+//                    let monthlyRosterID = menuID
+//                    menuID += 1
+//
+//                    for item in personShiftsThisMonth {
+//                        let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuMonthlyRoster, indexx: item.personID, IDx: menuID, parentIDx: monthlyRosterID, displayx: false)
+//                        myMenuOptions.append(tempItem)
+//                        menuID += 1
+//                    }
+//
+//                    if monthlyRosterID == menuID - 1 {
+//                        let tempItem = menuArray(menuTextx: "        No Shifts Found", menuActionx: "", indexx: -1, IDx: menuID, parentIDx: monthlyRosterID, displayx: false)
+//                        myMenuOptions.append(tempItem)
+//                        menuID += 1
+//                    }
+//
+//                    let temp8c = menuArray(menuTextx: "     Monthly Bookings", menuActionx: menuMonthlyBookings, indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
+//                    myMenuOptions.append(temp8c)
+//                    menuID += 1
+//                }
+//
+//                if checkReadPermission(coachingRoleType) {
+//                    let temp8c = menuArray(menuTextx: "Coaching", menuActionx: menuCourse, indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
+//                    myMenuOptions.append(temp8c)
+//                    menuID += 1
+//                }
+//
+//                if checkReadPermission(salesRoleType) {
+//                    let temp8b = menuArray(menuTextx: "Sales", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
+//                    myMenuOptions.append(temp8b)
+//                    parentID = menuID
+//                    menuID += 1
+//
+//                    for item in leadList.leads {
+//                        let tempLead = menuArray(menuTextx: "     \(item.name)", menuActionx: menuSales, indexx: item.leadID, IDx: menuID, parentIDx: parentID, displayx: false)
+//                        myMenuOptions.append(tempLead)
+//                        menuID += 1
+//                    }
+//
+//                    let tempLead = menuArray(menuTextx: "     Add Lead", menuActionx: menuSales, indexx: -1, IDx: menuID, parentIDx: parentID, displayx: false)
+//                    myMenuOptions.append(tempLead)
+//                    menuID += 1
+//                }
+//
+//                if checkReadPermission(invoicingRoleType) {
+//                    let temp14 = menuArray(menuTextx: "Invoicing", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
+//                    myMenuOptions.append(temp14)
+//                    parentID = menuID
+//                    menuID += 1
+//
+//                    let temp15 = menuArray(menuTextx: "     Staff Invoicing", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
+//                    myMenuOptions.append(temp15)
+//                    let personInvoiceID = menuID
+//                    menuID += 1
+//
+//                    for item in personShiftsThisMonth {
+//                        // Check to see if we need to show this as an alert colour
+//
+//                        let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false)
+//                        myMenuOptions.append(tempItem)
+//
+////                        let tempInvoice = personInvoice(personID: item.personID, teamID: currentUser.currentTeam!.teamID, month: month, year: year, type: "get")
+////
+////                        if tempInvoice.invoiceID == 0 {
+////                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false, alertColourx: true)
+////                            myMenuOptions.append(tempItem)
+////                        }
+////                        else if tempInvoice.status == invoiceStatusPaid || tempInvoice.status == invoiceStatusApproved {
+////
+////                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false)
+////                            myMenuOptions.append(tempItem)
+////                        }
+////                        else {
+////                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false, alertColourx: true)
+////                            myMenuOptions.append(tempItem)
+////                        }
+//                        menuID += 1
+//                    }
+//
+//                    let temp15a = menuArray(menuTextx: "     Staff Invoices To Pay", menuActionx: menuStaffToPay, indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
+//                    myMenuOptions.append(temp15a)
+//                    menuID += 1
+//
+//                    let temp15b = menuArray(menuTextx: "     Client Invoices", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
+//                    myMenuOptions.append(temp15b)
+//                    let clientInvoiceID = menuID
+//                    menuID += 1
+//
+//
+//                    let clientInvoiceList = clients(teamID: currentUser.currentTeam!.teamID, isActive: true)
+//
+//                    let coachingInvoiceList = coachingClients(teamID: currentUser.currentTeam!.teamID, isActive: true)
+//
+//                    // Get list of active invoices
+//
+//                    let activeInvoice = clientInvoices(teamID: currentUser.currentTeam!.teamID, isActive: true)
+//
+//                    for item in clientInvoiceList.clients {
+//                        let tempArray = activeInvoice.invoices.filter { $0.clientID == item.clientID }
+//
+//                        if tempArray.count == 0 {
+//                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuClientInvoices, indexx: item.clientID, IDx: menuID, parentIDx: clientInvoiceID, displayx: false, alertColourx: .black)
+//                            myMenuOptions.append(tempItem)
+//                        } else {
+//                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuClientInvoices, indexx: item.clientID, IDx: menuID, parentIDx: clientInvoiceID, displayx: false, alertColourx: .red)
+//                            myMenuOptions.append(tempItem)
+//                        }
+//                        menuID += 1
+//                    }
+//
+//                    for item in coachingInvoiceList.clients {
+//                        let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuCoachingInvoices, indexx: item.personID, IDx: menuID, parentIDx: clientInvoiceID, displayx: false, alertColourx: .red)
+//                        myMenuOptions.append(tempItem)
+//                        menuID += 1
+//                    }
+//
+//                    let temp15c = menuArray(menuTextx: "     Invoice Settings", menuActionx: menuInvoiceSettings, indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
+//                    myMenuOptions.append(temp15c)
+//                    menuID += 1
+//                }
+//
+//                if checkReadPermission(salesRoleType) || checkReadPermission(clientRoleType)
+//                {
+//                    let temp17 = menuArray(menuTextx: "Clients", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
+//                    myMenuOptions.append(temp17)
+//                    parentID = menuID
+//                    menuID += 1
+//
+//                    for item in clientList.clients {
+//                        let tempClient = menuArray(menuTextx: "     \(item.name)", menuActionx: menuClient, indexx: item.clientID, IDx: menuID, parentIDx: parentID, displayx: false)
+//                        myMenuOptions.append(tempClient)
+//                        menuID += 1
+//                    }
+//
+//                    let tempClient = menuArray(menuTextx: "     Add Client", menuActionx: menuClient, indexx: -1, IDx: menuID, parentIDx: parentID, displayx: false)
+//                    myMenuOptions.append(tempClient)
+//                    menuID += 1
+//                }
+//
+//                if checkReadPermission(pmRoleType) {
+//                    let temp17a = menuArray(menuTextx: "Projects", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
+//                    myMenuOptions.append(temp17a)
+//                    parentID = menuID
+//                    menuID += 1
+//
+//                    for item in projectList.projectList {
+//                        var clientName: String = ""
+//
+//                        if item.clientID > 0 {
+//                            let temp = clientList.clients.filter {$0.clientID == item.clientID}
+//
+//                            if temp.count > 0 {
+//                                clientName = " - \(temp[0].name)"
+//                            }
+//                        }
+//                        let tempClient = menuArray(menuTextx: "     \(item.projectName) \(clientName) - \(item.displayProjectStartDate)", menuActionx: menuProject, indexx: item.projectID, IDx: menuID, parentIDx: parentID, displayx: false)
+//                        myMenuOptions.append(tempClient)
+//                        menuID += 1
+//                    }
+//                }
+//
+//                if checkReadPermission(hrRoleType)
+//                {
+//                    let temp17b = menuArray(menuTextx: "People", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
+//                    myMenuOptions.append(temp17b)
+//                    parentID = menuID
+//                    menuID += 1
+//
+//                    for item in peopleList.people {
+//                        let tempClient = menuArray(menuTextx: "     \(item.name)", menuActionx: menuPerson, indexx: item.personID, IDx: menuID, parentIDx: parentID, displayx: false)
+//                        myMenuOptions.append(tempClient)
+//                        menuID += 1
+//                    }
+//
+//                    let tempPerson = menuArray(menuTextx: "     Add Person", menuActionx: menuPerson, indexx: -1, IDx: menuID, parentIDx: parentID, displayx: false)
+//                    myMenuOptions.append(tempPerson)
+//                    menuID += 1
+//                }
+//
+//                let temp10 = menuArray(menuTextx: "Reports", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
+//                myMenuOptions.append(temp10)
+//
+//                parentID = menuID
+//
+//                menuID += 1
+//
+//                let temp10a = menuArray(menuTextx: "     Wages For Month", menuActionx: reportWagesForMonth, indexx: -1, IDx: menuID, parentIDx: parentID, displayx: false)
+//                myMenuOptions.append(temp10a)
+//                menuID += 1
+//
+//                let temp10b = menuArray(menuTextx: "     Contract Between Dates", menuActionx: reportContractDates, indexx: -1, IDx: menuID, parentIDx: parentID, displayx: false)
+//                myMenuOptions.append(temp10b)
+//                menuID += 1
+//
+//                let temp10c = menuArray(menuTextx: "     Contract for Month", menuActionx: reportContractForMonth, indexx: -1, IDx: menuID, parentIDx: parentID, displayx: false)
+//                myMenuOptions.append(temp10c)
+//                menuID += 1
+//
+//                let temp10d = menuArray(menuTextx: "     Contract Profit For Year", menuActionx: reportContractForYear, indexx: -1, IDx: menuID, parentIDx: parentID, displayx: false)
+//                myMenuOptions.append(temp10d)
+//                menuID += 1
+//
+//                let temp12 = menuArray(menuTextx: "New Communication", menuActionx: menuNewComms, indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
+//                myMenuOptions.append(temp12)
+//                menuID += 1
+//
+//                if checkReadPermission(adminRoleType) {
+//                    let temp16 = menuArray(menuTextx: "Settings", menuActionx: menuSettings, indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
+//                    myMenuOptions.append(temp16)
+//                    menuID += 1
+//                }
+//                myMenuBuiltForActive = showActive
+//                myMenuMonth = month
+//                myMenuYear = year
+//            }
+//        }
+//    }
+    
+    public func loadMenu(showActive: Bool, month: Int64, year: Int64) {
         if currentTeam != nil {
             if myMenuBuiltForActive != showActive ||
                 myMenuMonth != month ||
@@ -472,138 +764,116 @@ public class userItem: NSObject, Identifiable, ObservableObject
                 let personShiftsThisMonth = peopleList.checkShifts(shiftList: shiftsForMonth)
                 
                 myMenuOptions.removeAll()
-                var menuID: Int = 1
-                var parentID: Int = 0
                 
-                let tempA = menuArray(menuTextx: "Dashboard", menuActionx: menuDashboard, indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
+                let tempA = menuArrayItem(menuTextx: "Dashboard", menuActionx: menuDashboard)
                 myMenuOptions.append(tempA)
-                menuID += 1
                 
                 if checkReadPermission(rosteringRoleType) {
-                    let temp5 = menuArray(menuTextx: "Rostering", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
-                    myMenuOptions.append(temp5)
-                    parentID = menuID
-                    menuID += 1
+                    var rosteringMenu: [menuArrayItem] = Array()
+
+                    let temp6 = menuArrayItem(menuTextx: "Roster", menuActionx: menuRoster)
+                    rosteringMenu.append(temp6)
                     
-                    let temp6 = menuArray(menuTextx: "     Roster", menuActionx: menuRoster, indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
-                    myMenuOptions.append(temp6)
-                    menuID += 1
-                    
-                    let temp7 = menuArray(menuTextx: "     Event Planning", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
-                    myMenuOptions.append(temp7)
-                    let eventPlanID = menuID
-                    menuID += 1
+                    var eventPlanningMenu: [menuArrayItem] = Array()
                     
                     for item in currentTeam!.activeProjectList(eventProjectType, rebuild: true).projectList {
-                        let tempPlan = menuArray(menuTextx: "        \(item.projectName) - \(item.displayProjectStartDate)", menuActionx: menuEventPlanning, indexx: item.projectID, IDx: menuID, parentIDx: eventPlanID, displayx: false)
-                        myMenuOptions.append(tempPlan)
-                        menuID += 1
+                        let tempPlan = menuArrayItem(menuTextx: "\(item.projectName) - \(item.displayProjectStartDate)", menuActionx: menuEventPlanning, indexx: item.projectID)
+                        eventPlanningMenu.append(tempPlan)
                     }
                     
-                    let temp8 = menuArray(menuTextx: "     Event Templates", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
-                    myMenuOptions.append(temp8)
-                    let templatePlanID = menuID
-                    menuID += 1
+                    let temp7 = menuArrayItem(menuTextx: "Event Planning", subMenusx: eventPlanningMenu)
+                    rosteringMenu.append(temp7)
+                    
+                    var eventTemplateMenu: [menuArrayItem] = Array()
                     
                     for item in currentTeam!.eventTemplatesClassList.templates {
-                        let tempTemplate = menuArray(menuTextx: "        \(item.templateName)", menuActionx: menuEventTemplates, indexx: item.templateID, IDx: menuID, parentIDx: templatePlanID, displayx: false)
-                        myMenuOptions.append(tempTemplate)
-                        menuID += 1
+                        let tempTemplate = menuArrayItem(menuTextx: "\(item.templateName)", menuActionx: menuEventTemplates, indexx: item.templateID)
+                        eventTemplateMenu.append(tempTemplate)
                     }
                     
-                    let tempTemplate = menuArray(menuTextx: "        Add Template", menuActionx: menuEventTemplates, indexx: -1, IDx: menuID, parentIDx: templatePlanID, displayx: false)
-                    myMenuOptions.append(tempTemplate)
-                    menuID += 1
+                    let tempTemplate = menuArrayItem(menuTextx: "Add Template", menuActionx: menuEventTemplates, indexx: -1)
+                    eventTemplateMenu.append(tempTemplate)
                     
-                    let temp8a = menuArray(menuTextx: "     Monthly Roster", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
-                    myMenuOptions.append(temp8a)
-                    let monthlyRosterID = menuID
-                    menuID += 1
+                    let temp8 = menuArrayItem(menuTextx: "Event Templates", subMenusx: eventTemplateMenu)
+                    rosteringMenu.append(temp8)
+                    
+                    var monthlyRosterMenu: [menuArrayItem] = Array()
 
                     for item in personShiftsThisMonth {
-                        let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuMonthlyRoster, indexx: item.personID, IDx: menuID, parentIDx: monthlyRosterID, displayx: false)
-                        myMenuOptions.append(tempItem)
-                        menuID += 1
+                        let tempItem = menuArrayItem(menuTextx: "\(item.name)", menuActionx: menuMonthlyRoster, indexx: item.personID)
+                        monthlyRosterMenu.append(tempItem)
                     }
 
-                    if monthlyRosterID == menuID - 1 {
-                        let tempItem = menuArray(menuTextx: "        No Shifts Found", menuActionx: "", indexx: -1, IDx: menuID, parentIDx: monthlyRosterID, displayx: false)
-                        myMenuOptions.append(tempItem)
-                        menuID += 1
+                    if monthlyRosterMenu.count == 0 {
+                        let tempItem = menuArrayItem(menuTextx: "No Shifts Found", menuActionx: "", indexx: -1)
+                        monthlyRosterMenu.append(tempItem)
                     }
                     
-                    let temp8c = menuArray(menuTextx: "     Monthly Bookings", menuActionx: menuMonthlyBookings, indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
-                    myMenuOptions.append(temp8c)
-                    menuID += 1
+                    let temp8a = menuArrayItem(menuTextx: "Monthly Roster", subMenusx: monthlyRosterMenu)
+                    rosteringMenu.append(temp8a)
+                    
+                    let temp8c = menuArrayItem(menuTextx: "Monthly Bookings", menuActionx: menuMonthlyBookings)
+                    rosteringMenu.append(temp8c)
+                    
+                    let temp5 = menuArrayItem(menuTextx: "Rostering", subMenusx: rosteringMenu)
+                    myMenuOptions.append(temp5)
                 }
 
                 if checkReadPermission(coachingRoleType) {
-                    let temp8c = menuArray(menuTextx: "Coaching", menuActionx: menuCourse, indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
+                    let temp8c = menuArrayItem(menuTextx: "Coaching", menuActionx: menuCourse)
                     myMenuOptions.append(temp8c)
-                    menuID += 1
                 }
                 
                 if checkReadPermission(salesRoleType) {
-                    let temp8b = menuArray(menuTextx: "Sales", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
-                    myMenuOptions.append(temp8b)
-                    parentID = menuID
-                    menuID += 1
+                    var salesMenu: [menuArrayItem] = Array()
                     
                     for item in leadList.leads {
-                        let tempLead = menuArray(menuTextx: "     \(item.name)", menuActionx: menuSales, indexx: item.leadID, IDx: menuID, parentIDx: parentID, displayx: false)
-                        myMenuOptions.append(tempLead)
-                        menuID += 1
+                        let tempLead = menuArrayItem(menuTextx: "\(item.name)", menuActionx: menuSales, indexx: item.leadID)
+                        salesMenu.append(tempLead)
                     }
                     
-                    let tempLead = menuArray(menuTextx: "     Add Lead", menuActionx: menuSales, indexx: -1, IDx: menuID, parentIDx: parentID, displayx: false)
-                    myMenuOptions.append(tempLead)
-                    menuID += 1
+                    let tempLead = menuArrayItem(menuTextx: "Add Lead", menuActionx: menuSales, indexx: -1)
+                    salesMenu.append(tempLead)
+
+                    let temp8b = menuArrayItem(menuTextx: "Sales", subMenusx: salesMenu)
+                    myMenuOptions.append(temp8b)
                 }
 
                 if checkReadPermission(invoicingRoleType) {
-                    let temp14 = menuArray(menuTextx: "Invoicing", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
-                    myMenuOptions.append(temp14)
-                    parentID = menuID
-                    menuID += 1
-  
-                    let temp15 = menuArray(menuTextx: "     Staff Invoicing", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
-                    myMenuOptions.append(temp15)
-                    let personInvoiceID = menuID
-                    menuID += 1
+                    var invoicingMenu: [menuArrayItem] = Array()
+
+                    var staffInvoicingMenu: [menuArrayItem] = Array()
 
                     for item in personShiftsThisMonth {
                         // Check to see if we need to show this as an alert colour
                         
-                        let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false)
-                        myMenuOptions.append(tempItem)
+                        let tempItem = menuArrayItem(menuTextx: "\(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID)
+                        staffInvoicingMenu.append(tempItem)
                         
 //                        let tempInvoice = personInvoice(personID: item.personID, teamID: currentUser.currentTeam!.teamID, month: month, year: year, type: "get")
 //
 //                        if tempInvoice.invoiceID == 0 {
-//                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false, alertColourx: true)
+//                            let tempItem = menuArray(menuTextx: "\(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false, alertColourx: true)
 //                            myMenuOptions.append(tempItem)
 //                        }
 //                        else if tempInvoice.status == invoiceStatusPaid || tempInvoice.status == invoiceStatusApproved {
 //
-//                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false)
+//                            let tempItem = menuArray(menuTextx: "\(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false)
 //                            myMenuOptions.append(tempItem)
 //                        }
 //                        else {
-//                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false, alertColourx: true)
+//                            let tempItem = menuArray(menuTextx: "\(item.name)", menuActionx: menuStaffInvoicing, indexx: item.personID, IDx: menuID, parentIDx: personInvoiceID, displayx: false, alertColourx: true)
 //                            myMenuOptions.append(tempItem)
 //                        }
-                        menuID += 1
                     }
                     
-                    let temp15a = menuArray(menuTextx: "     Staff Invoices To Pay", menuActionx: menuStaffToPay, indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
-                    myMenuOptions.append(temp15a)
-                    menuID += 1
+                    let temp15 = menuArrayItem(menuTextx: "Staff Invoicing", subMenusx: staffInvoicingMenu)
+                    invoicingMenu.append(temp15)
                     
-                    let temp15b = menuArray(menuTextx: "     Client Invoices", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
-                    myMenuOptions.append(temp15b)
-                    let clientInvoiceID = menuID
-                    menuID += 1
-
+                    let temp15a = menuArrayItem(menuTextx: "Staff Invoices To Pay", menuActionx: menuStaffToPay)
+                    invoicingMenu.append(temp15a)
+                    
+                    var clientInvoiceMenu: [menuArrayItem] = Array()
 
                     let clientInvoiceList = clients(teamID: currentUser.currentTeam!.teamID, isActive: true)
 
@@ -617,49 +887,47 @@ public class userItem: NSObject, Identifiable, ObservableObject
                         let tempArray = activeInvoice.invoices.filter { $0.clientID == item.clientID }
                         
                         if tempArray.count == 0 {
-                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuClientInvoices, indexx: item.clientID, IDx: menuID, parentIDx: clientInvoiceID, displayx: false, alertColourx: false)
-                            myMenuOptions.append(tempItem)
+                            let tempItem = menuArrayItem(menuTextx: "\(item.name)", menuActionx: menuClientInvoices, indexx: item.clientID, alertColourx: .black)
+                            clientInvoiceMenu.append(tempItem)
                         } else {
-                            let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuClientInvoices, indexx: item.clientID, IDx: menuID, parentIDx: clientInvoiceID, displayx: false, alertColourx: true)
-                            myMenuOptions.append(tempItem)
+                            let tempItem = menuArrayItem(menuTextx: "\(item.name)", menuActionx: menuClientInvoices, indexx: item.clientID, alertColourx: .red)
+                            clientInvoiceMenu.append(tempItem)
                         }
-                        menuID += 1
                     }
                     
                     for item in coachingInvoiceList.clients {
-                        let tempItem = menuArray(menuTextx: "        \(item.name)", menuActionx: menuCoachingInvoices, indexx: item.personID, IDx: menuID, parentIDx: clientInvoiceID, displayx: false, alertColourx: true)
-                        myMenuOptions.append(tempItem)
-                        menuID += 1
+                        let tempItem = menuArrayItem(menuTextx: "\(item.name)", menuActionx: menuCoachingInvoices, indexx: item.personID, alertColourx: .red)
+                        clientInvoiceMenu.append(tempItem)
                     }
                     
-                    let temp15c = menuArray(menuTextx: "     Invoice Settings", menuActionx: menuInvoiceSettings, indexx: 0, IDx: menuID, parentIDx: parentID, displayx: false)
-                    myMenuOptions.append(temp15c)
-                    menuID += 1
+                    let temp15b = menuArrayItem(menuTextx: "Client Invoices", subMenusx: clientInvoiceMenu)
+                    invoicingMenu.append(temp15b)
+                    
+                    let temp15c = menuArrayItem(menuTextx: "Invoice Settings", menuActionx: menuInvoiceSettings)
+                    invoicingMenu.append(temp15c)
+                    
+                    let temp14 = menuArrayItem(menuTextx: "Invoicing", subMenusx: invoicingMenu)
+                    myMenuOptions.append(temp14)
                 }
 
                 if checkReadPermission(salesRoleType) || checkReadPermission(clientRoleType)
                 {
-                    let temp17 = menuArray(menuTextx: "Clients", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
-                    myMenuOptions.append(temp17)
-                    parentID = menuID
-                    menuID += 1
+                    var clientMenu: [menuArrayItem] = Array()
                     
                     for item in clientList.clients {
-                        let tempClient = menuArray(menuTextx: "     \(item.name)", menuActionx: menuClient, indexx: item.clientID, IDx: menuID, parentIDx: parentID, displayx: false)
-                        myMenuOptions.append(tempClient)
-                        menuID += 1
+                        let tempClient = menuArrayItem(menuTextx: "\(item.name)", menuActionx: menuClient, indexx: item.clientID)
+                        clientMenu.append(tempClient)
                     }
                     
-                    let tempClient = menuArray(menuTextx: "     Add Client", menuActionx: menuClient, indexx: -1, IDx: menuID, parentIDx: parentID, displayx: false)
-                    myMenuOptions.append(tempClient)
-                    menuID += 1
+                    let tempClient = menuArrayItem(menuTextx: "Add Client", menuActionx: menuClient, indexx: -1)
+                    clientMenu.append(tempClient)
+                    
+                    let temp17 = menuArrayItem(menuTextx: "Clients", subMenusx: clientMenu)
+                    myMenuOptions.append(temp17)
                 }
 
                 if checkReadPermission(pmRoleType) {
-                    let temp17a = menuArray(menuTextx: "Projects", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
-                    myMenuOptions.append(temp17a)
-                    parentID = menuID
-                    menuID += 1
+                    var projectMenu: [menuArrayItem] = Array()
                     
                     for item in projectList.projectList {
                         var clientName: String = ""
@@ -671,61 +939,53 @@ public class userItem: NSObject, Identifiable, ObservableObject
                                 clientName = " - \(temp[0].name)"
                             }
                         }
-                        let tempClient = menuArray(menuTextx: "     \(item.projectName) \(clientName) - \(item.displayProjectStartDate)", menuActionx: menuProject, indexx: item.projectID, IDx: menuID, parentIDx: parentID, displayx: false)
-                        myMenuOptions.append(tempClient)
-                        menuID += 1
+                        let tempClient = menuArrayItem(menuTextx: "\(item.projectName) \(clientName) - \(item.displayProjectStartDate)", menuActionx: menuProject, indexx: item.projectID)
+                        projectMenu.append(tempClient)
                     }
+                    
+                    let temp17a = menuArrayItem(menuTextx: "Projects", subMenusx: projectMenu)
+                    myMenuOptions.append(temp17a)
                 }
 
                 if checkReadPermission(hrRoleType)
                 {
-                    let temp17b = menuArray(menuTextx: "People", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
-                    myMenuOptions.append(temp17b)
-                    parentID = menuID
-                    menuID += 1
-                    
+                    var peopleMenu: [menuArrayItem] = Array()
+
                     for item in peopleList.people {
-                        let tempClient = menuArray(menuTextx: "     \(item.name)", menuActionx: menuPerson, indexx: item.personID, IDx: menuID, parentIDx: parentID, displayx: false)
-                        myMenuOptions.append(tempClient)
-                        menuID += 1
+                        let tempClient = menuArrayItem(menuTextx: "\(item.name)", menuActionx: menuPerson, indexx: item.personID)
+                        peopleMenu.append(tempClient)
                     }
                     
-                    let tempPerson = menuArray(menuTextx: "     Add Person", menuActionx: menuPerson, indexx: -1, IDx: menuID, parentIDx: parentID, displayx: false)
-                    myMenuOptions.append(tempPerson)
-                    menuID += 1
+                    let tempPerson = menuArrayItem(menuTextx: "Add Person", menuActionx: menuPerson, indexx: -1)
+                    peopleMenu.append(tempPerson)
+                    
+                    let temp17b = menuArrayItem(menuTextx: "People", subMenusx: peopleMenu)
+                    myMenuOptions.append(temp17b)
                 }
 
-                let temp10 = menuArray(menuTextx: "Reports", menuActionx: "", indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
-                myMenuOptions.append(temp10)
-                
-                parentID = menuID
-                    
-                menuID += 1
+                var reportMenu: [menuArrayItem] = Array()
 
-                let temp10a = menuArray(menuTextx: "     Wages For Month", menuActionx: reportWagesForMonth, indexx: -1, IDx: menuID, parentIDx: parentID, displayx: false)
-                myMenuOptions.append(temp10a)
-                menuID += 1
+                let temp10a = menuArrayItem(menuTextx: "Wages For Month", menuActionx: reportWagesForMonth, indexx: -1)
+                reportMenu.append(temp10a)
                 
-                let temp10b = menuArray(menuTextx: "     Contract Between Dates", menuActionx: reportContractDates, indexx: -1, IDx: menuID, parentIDx: parentID, displayx: false)
-                myMenuOptions.append(temp10b)
-                menuID += 1
+                let temp10b = menuArrayItem(menuTextx: "Contract Between Dates", menuActionx: reportContractDates, indexx: -1)
+                reportMenu.append(temp10b)
                 
-                let temp10c = menuArray(menuTextx: "     Contract for Month", menuActionx: reportContractForMonth, indexx: -1, IDx: menuID, parentIDx: parentID, displayx: false)
-                myMenuOptions.append(temp10c)
-                menuID += 1
+                let temp10c = menuArrayItem(menuTextx: "Contract for Month", menuActionx: reportContractForMonth, indexx: -1)
+                reportMenu.append(temp10c)
                 
-                let temp10d = menuArray(menuTextx: "     Contract Profit For Year", menuActionx: reportContractForYear, indexx: -1, IDx: menuID, parentIDx: parentID, displayx: false)
-                myMenuOptions.append(temp10d)
-                menuID += 1
+                let temp10d = menuArrayItem(menuTextx: "Contract Profit For Year", menuActionx: reportContractForYear, indexx: -1)
+                reportMenu.append(temp10d)
                 
-                let temp12 = menuArray(menuTextx: "New Communication", menuActionx: menuNewComms, indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
+                let temp10 = menuArrayItem(menuTextx: "Reports", subMenusx: reportMenu)
+                myMenuOptions.append(temp10)
+                    
+                let temp12 = menuArrayItem(menuTextx: "New Communication", menuActionx: menuNewComms)
                 myMenuOptions.append(temp12)
-                menuID += 1
 
                 if checkReadPermission(adminRoleType) {
-                    let temp16 = menuArray(menuTextx: "Settings", menuActionx: menuSettings, indexx: 0, IDx: menuID, parentIDx: 0, displayx: true)
+                    let temp16 = menuArrayItem(menuTextx: "Settings", menuActionx: menuSettings)
                     myMenuOptions.append(temp16)
-                    menuID += 1
                 }
                 myMenuBuiltForActive = showActive
                 myMenuMonth = month
@@ -733,17 +993,18 @@ public class userItem: NSObject, Identifiable, ObservableObject
             }
         }
     }
+
     
-    public func toggleSubMenus(parentID: Int)
-    {
-        for item in myMenuOptions
-        {
-            if item.parentID == parentID
-            {
-                item.display = !item.display
-            }
-        }
-    }
+//    public func toggleSubMenus(parentID: Int)
+//    {
+//        for item in myMenuOptions
+//        {
+//            if item.parentID == parentID
+//            {
+//                item.display = !item.display
+//            }
+//        }
+//    }
     
     public func save()
     {

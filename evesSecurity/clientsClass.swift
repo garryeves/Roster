@@ -302,7 +302,8 @@ public class client: NSObject, Identifiable, ObservableObject
     
     func createClient(teamID: Int64)
     {
-        myClientID = myCloudDB.getNextID("Client", teamID: teamID)
+//        myClientID = myCloudDB.getNextID("Client", teamID: teamID)
+        myClientID = myCloudDB.dateAsInt()
         
         myTeamID = teamID
         

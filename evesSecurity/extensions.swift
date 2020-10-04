@@ -11,6 +11,8 @@ import UIKit
 import SwiftUI
 import PDFKit
 
+
+
 extension String
 {
 //    var html2String:String
@@ -254,16 +256,19 @@ extension Double
     public var formatPercent: String
     {
         // Format the hours display
-        
-        if self == Double(Int(self))
-        {
-            return "\(Int(self))%"
-        }
-        else
-        {
-            let doubleStr = String(format: "%.1f", self)
-            // Need to format to only 1 decimal place
-            return "\(doubleStr)%"
+        if self > 0 {
+            if self == Double(Int(self))
+            {
+                return "\(Int(self))%"
+            }
+            else
+            {
+                let doubleStr = String(format: "%.1f", self)
+                // Need to format to only 1 decimal place
+                return "\(doubleStr)%"
+            }
+        } else {
+            return ""
         }
     }
     

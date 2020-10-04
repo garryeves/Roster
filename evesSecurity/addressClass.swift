@@ -284,7 +284,8 @@ public class address: NSObject, Identifiable
     {
         super.init()
         
-        myAddressID = myCloudDB.getNextID("Address", teamID: teamID)
+//        myAddressID = myCloudDB.getNextID("Address", teamID: teamID)
+        myAddressID = myCloudDB.dateAsInt()
         myTeamID = teamID
         myAddressType = addressType
         myPersonID = personID

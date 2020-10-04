@@ -7,7 +7,6 @@
 //
 
 import Foundation
-//import CoreData
 import CloudKit
 import SwiftUI
 
@@ -72,7 +71,6 @@ class mergedShiftList: Identifiable, ObservableObject
         sunShift = insunShift
         type = intype
     }
-
 }
 
 class rosterPerson: NSObject, Identifiable
@@ -116,7 +114,6 @@ class shifts: NSObject, Identifiable, ObservableObject
         for item in myCloudDB.getShifts(teamID: teamID, WEDate: WEDate, type: type) {
             let tempEnd = item.weekEndDate.add(.hour, amount: 1).startOfDay
             
-            //if (item.weekEndDate! >= startDate) && (item.weekEndDate! <= endDate) && (item.type! == type)
             if (tempEnd >= startDate) && (tempEnd <= endDate) && (item.type == type) {
                 returnArray.append(item)
             }
@@ -278,21 +275,14 @@ class shifts: NSObject, Identifiable, ObservableObject
         for myItem in returnArray {
             var shiftDescriptionText = "Error getting shift.  Please reload"
 
-        //    if myItem.shiftDescription != nil  {
-                shiftDescriptionText = myItem.shiftDescription
-         //   }
-
+            shiftDescriptionText = myItem.shiftDescription
             var statusDescriptionText = "Error getting status.  Please reload"
 
-       //     if myItem.status != nil  {
-                statusDescriptionText = myItem.status
-       //     }
+            statusDescriptionText = myItem.status
 
             var typeText = "Error getting shift.  Please reload"
 
-       //     if myItem.type != nil  {
-                typeText = myItem.type
-         //   }
+            typeText = myItem.type
 
             let myObject = shift(shiftID: myItem.shiftID,
                                  projectID: myItem.projectID,
@@ -325,48 +315,7 @@ class shifts: NSObject, Identifiable, ObservableObject
     
     init(projectID: Int64, startDate: Date, endDate: Date, teamID: Int64) {
         super.init()
-//        myTeamID = teamID
-//        myWeeklyShifts.removeAll()
-
-//        var returnArray: [Shifts] = Array()
-
         myRawData = myCloudDB.getShifts(projectID: projectID, searchFrom: startDate, searchTo: endDate, teamID: teamID)
-        
-//        for item in myCloudDB.getShifts(projectID: projectID, searchFrom: startDate, searchTo: endDate, teamID: teamID) {
-//            let tempEnd = item.workDate.add(.hour, amount: 1).startOfDay
-//            if (item.projectID == projectID) && (tempEnd >= startDate) && (tempEnd <= endDate) {
-//                returnArray.append(item)
-//            }
-//        }
-//
-//        for myItem in returnArray {
-//            let myObject = shift(shiftID: myItem.shiftID,
-//                                 projectID: myItem.projectID,
-//                                 personID: myItem.personID,
-//                                 workDate: myItem.workDate,
-//                                 shiftDescription: myItem.shiftDescription,
-//                                 startTime: myItem.startTime,
-//                                 endTime: myItem.endTime,
-//                                 teamID: myItem.teamID,
-//                                 weekEndDate: myItem.weekEndDate,
-//                                 status: myItem.status,
-//                                 shiftLineID: myItem.shiftLineID,
-//                                 rateID: myItem.rateID,
-//                                 type: myItem.type,
-//                                 clientInvoiceNumber: myItem.clientInvoiceNumber,
-//                                 personInvoiceNumber: myItem.personInvoiceNumber,
-//                                 signInTime: myItem.signInTime,
-//                                 signOutTime: myItem.signOutTime,
-//                                 recordID: myItem.recordID
-//            )
-//            myShifts.append(myObject)
-//        }
-//
-//        if myShifts.count > 0 {
-//            createWeeklyArray()
-//        }
-//
-//        sortArray()
     }
     
 
@@ -374,24 +323,6 @@ class shifts: NSObject, Identifiable, ObservableObject
         super.init()
         myTeamID = teamID
         myWeeklyShifts.removeAll()
-
-//        var returnArray: [Shifts] = Array()
-//
-//        for item in myCloudDB.getShifts(projectID: projectID, searchFrom: fromDate, searchTo: toDate, teamID: teamID) {
-//            if (item.projectID == projectID) && (item.workDate >= startDate) && (item.workDate <= endDate)
-//            {
-//                returnArray.append(item)
-//            }
-//        }
-//        
-//        var returnArray: [Shifts] = Array()
-//
-//        for item in myCloudDB.getShifts(projectID: projectID, searchFrom: fromDate, searchTo: toDate, teamID: teamID) {
-//            if (item.projectID == projectID) && (item.workDate >= startDate) && (item.workDate <= endDate)
-//            {
-//                returnArray.append(item)
-//            }
-//        }
 
         for myItem in myCloudDB.getShifts(projectID: projectID, searchFrom: fromDate, searchTo: toDate, teamID: teamID) {
             let myObject = shift(shiftID: myItem.shiftID,
@@ -422,8 +353,6 @@ class shifts: NSObject, Identifiable, ObservableObject
 
         sortArray()
     }
-    
-    
     
     init(projectID: Int64, month: Int64, year: Int64, teamID: Int64) {
         super.init()
@@ -1355,7 +1284,6 @@ public class shift: NSObject, Identifiable, ObservableObject
         set
         {
             myType = newValue
-//            myCloudDB.updateShiftRecord(self)
         }
     }
     
@@ -1368,7 +1296,6 @@ public class shift: NSObject, Identifiable, ObservableObject
         set
         {
             myPersonID = newValue
-//            myCloudDB.updateShiftRecord(self)
         }
     }
     
@@ -1396,7 +1323,6 @@ public class shift: NSObject, Identifiable, ObservableObject
         set
         {
             myRateID = newValue
-//            myCloudDB.updateShiftRecord(self)
         }
     }
     
@@ -1463,7 +1389,6 @@ public class shift: NSObject, Identifiable, ObservableObject
         set
         {
             myStatus = newValue
-//            myCloudDB.updateShiftRecord(self)
         }
     }
     
@@ -1541,7 +1466,6 @@ public class shift: NSObject, Identifiable, ObservableObject
         set
         {
             myShiftDescription = newValue
-//            myCloudDB.updateShiftRecord(self)
         }
     }
     
@@ -1557,7 +1481,6 @@ public class shift: NSObject, Identifiable, ObservableObject
         set
         {
             myStartTime = newValue
-//            myCloudDB.updateShiftRecord(self)
         }
     }
     
@@ -1590,7 +1513,6 @@ public class shift: NSObject, Identifiable, ObservableObject
         set
         {
             myEndTime = newValue
-//            myCloudDB.updateShiftRecord(self)
         }
     }
     
@@ -1628,7 +1550,6 @@ public class shift: NSObject, Identifiable, ObservableObject
         set
         {
             myClientInvoiceNumber = newValue
-//           myCloudDB.updateShiftRecord(self)
             save()
         }
     }
@@ -1642,7 +1563,6 @@ public class shift: NSObject, Identifiable, ObservableObject
         set
         {
             myPersonInvoiceNumber = newValue
- //           myCloudDB.updateShiftRecord(self)
             save()
         }
     }
@@ -1809,7 +1729,6 @@ public class shift: NSObject, Identifiable, ObservableObject
         {
             mysignInTime = newValue
             mysignOutTime = nil
-//            myCloudDB.updateShiftRecord(self)
             save()
         }
     }
@@ -1823,7 +1742,6 @@ public class shift: NSObject, Identifiable, ObservableObject
         set
         {
             mysignOutTime = newValue
-//            myCloudDB.updateShiftRecord(self)
             save()
         }
     }
@@ -2865,9 +2783,7 @@ extension project
 {
     func loadFinancials(month: Int64, year: Int64, shiftData: [Shifts], rateList: rates) {
         var financeArray: [monthlyFinancialsStruct] = Array()
-        
-  //      let yearInt = Int64(year)
-        
+                
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd/MM/yyyy"
         
@@ -2881,13 +2797,8 @@ extension project
         let endDate = startDate.add(.month, amount: 1)
         
         let shiftArray = shiftData.filter { $0.workDate >= startDate && $0.workDate < endDate }
-//
-//        let shiftArray = shifts(projectID: projectID, month: month.monthNum, year: yearInt!, teamID: teamID)
-//
-//            financeArray.append(processMonth(shiftArray: shiftArray, month: month.monthNum, year: yearInt!))
 
         financeArray.append(processMonth(shiftArray: shiftArray, month: month, year: year, rateList: rateList))
-
         
         financials = financeArray
     }
@@ -2978,31 +2889,6 @@ extension project
         )
     }
 }
-
-//extension people
-//{
-//    convenience init(teamID: Int64, shiftList: shifts) {
-//        self.init(teamID: teamID, isActive: true)
-//
-//        var workingArray: [person] = Array()
-//
-//        // get list of shifts for the month
-//
-//        for myItem in myPeople {
-//            // See if the person has any shifts in the month
-//
-//            for myShift in shiftList.shifts {
-//                if myShift.personID == myItem.personID {
-//                    workingArray.append(myItem)
-//                    break
-//                }
-//            }
-//        }
-//
-//        self.myPeople = workingArray
-//        self.sortArray()
-//    }
-//}
 
 extension person
 {
@@ -3198,33 +3084,7 @@ extension CloudKitInteraction
                       newsignOutTime: record.signOutTime!,
                       newrecordID: nil)
     }
-    
-//    func updateShiftRecord(_ record: shift)
-//    {
-//        for item in (currentUser.currentTeam?.ShiftList)!
-//        {
-//            if (item.projectID == record.projectID) &&
-//                (item.shiftLineID == record.shiftLineID) &&
-//                (item.teamID == record.teamID) &&
-//                (item.weekEndDate == record.weekEndDate) &&
-//                (item.workDate == record.workDate)
-//            {
-//                item.clientInvoiceNumber = record.clientInvoiceNumber
-//                item.endTime = record.endTime
-//                item.personID = record.personID
-//                item.personInvoiceNumber = record.personInvoiceNumber
-//                item.projectID = record.projectID
-//                item.rateID = record.rateID
-//                item.shiftDescription = record.shiftDescription
-//                item.startTime = record.startTime
-//                item.status = record.status
-//                item.type = record.type
-//                item.signInTime = record.signInTime
-//                item.signOutTime = record.signOutTime
-//            }
-//        }
-//    }
-    
+        
     func getShiftForRate(rateID: Int64, type: String, teamID: Int64)->[Shifts]
     {
         let predicate = NSPredicate(format: "(rateID == \(rateID)) AND (teamID == \(teamID)) AND (type == \"\(type)\") AND (updateType != \"Delete\")")
@@ -3293,41 +3153,7 @@ extension CloudKitInteraction
         
         performBulkDelete()
     }
-    
-//    public func getShiftsRecent(teamID: Int64)->[Shifts]
-//    {
-//        let workingDate = Date().add(.month, amount: -2)
-//
-//        let predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\") AND (workDate >= %@)", workingDate as CVarArg)
-//
-//        let sem = DispatchSemaphore(value: 0)
-//
-//        let query = CKQuery(recordType: "Shifts", predicate: predicate)
-//        fetchServices(query: query, sem: sem, completion: nil)
-//
-//        sem.wait()
-//
-//        let shiftArray: [Shifts] = populateShifts(returnArray)
-//        return shiftArray
-//    }
-//
-//    public func getShiftsOld(teamID: Int64)->[Shifts]
-//    {
-//        let workingDate = Date().add(.month, amount: -2)
-//
-//        let predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\") AND (workDate < %@)", workingDate as CVarArg)
-//
-//        let sem = DispatchSemaphore(value: 0)
-//
-//        let query = CKQuery(recordType: "Shifts", predicate: predicate)
-//        fetchServices(query: query, sem: sem, completion: nil)
-//
-//        sem.wait()
-//
-//        let shiftArray: [Shifts] = populateShifts(returnArray)
-//        return shiftArray
-//    }
-    
+        
     public func getShifts(personID: Int64, teamID: Int64)->[Shifts]
     {
         let predicate = NSPredicate(format: "(personID == \(personID)) AND (teamID == \(teamID)) AND (updateType != \"Delete\")")
@@ -3623,19 +3449,6 @@ extension CloudKitInteraction
         
     }
     
-//    func getShiftCountForTeam(_ teamID: Int64)->Int64
-//    {
-//        let predicate = NSPredicate(format: "(teamID == \(teamID)) AND (updateType != \"Delete\")")
-//
-//        let query = CKQuery(recordType: "Shifts", predicate: predicate)
-//        let sem = DispatchSemaphore(value: 0)
-//        fetchServices(query: query, sem: sem, completion: nil)
-//
-//        sem.wait()
-//
-//        return Int64(returnArray.count)
-//    }
-    
     public func getShifts(teamID: Int64, year: Int64)->[Shifts]
     {
         let dateFormatter = DateFormatter()
@@ -3695,13 +3508,9 @@ extension CloudKitInteraction
         record.setValue(sourceRecord.clientInvoiceNumber, forKey: "clientInvoiceNumber")
         record.setValue(sourceRecord.personInvoiceNumber, forKey: "personInvoiceNumber")
         
-   //     if sourceRecord.signInTime != nil {
-            record.setValue(sourceRecord.signInTime, forKey: "signInTime")
-//        }
+        record.setValue(sourceRecord.signInTime, forKey: "signInTime")
         
-  //      if sourceRecord.signOutTime != nil {
-            record.setValue(sourceRecord.signOutTime, forKey: "signOutTime")
-   //     }
+        record.setValue(sourceRecord.signOutTime, forKey: "signOutTime")
         
         // Save this record again
         self.publicDB.save(record, completionHandler: { (savedRecord, saveError) in
@@ -3761,13 +3570,9 @@ extension CloudKitInteraction
         record.setValue(sourceRecord.personInvoiceNumber, forKey: "personInvoiceNumber")
         record.setValue(sourceRecord.teamID, forKey: "teamID")
         
- //       if sourceRecord.signInTime != nil {
-            record.setValue(sourceRecord.signInTime, forKey: "signInTime")
- //       }
+        record.setValue(sourceRecord.signInTime, forKey: "signInTime")
         
- //       if sourceRecord.signOutTime != nil {
-            record.setValue(sourceRecord.signOutTime, forKey: "signOutTime")
- //       }
+        record.setValue(sourceRecord.signOutTime, forKey: "signOutTime")
         
         saveRecordList.append(record)
     }
@@ -3802,13 +3607,9 @@ extension CloudKitInteraction
             record.setValue(sourceRecord.personInvoiceNumber, forKey: "personInvoiceNumber")
             record.setValue(sourceRecord.teamID, forKey: "teamID")
             
- //           if sourceRecord.signInTime != nil {
-                record.setValue(sourceRecord.signInTime, forKey: "signInTime")
- //           }
-            
-  //          if sourceRecord.signOutTime != nil {
-                record.setValue(sourceRecord.signOutTime, forKey: "signOutTime")
-    //        }
+            record.setValue(sourceRecord.signInTime, forKey: "signInTime")
+
+            record.setValue(sourceRecord.signOutTime, forKey: "signOutTime")
             
             self.publicDB.save(record, completionHandler: { (savedRecord, saveError) in
                 if saveError != nil
@@ -3863,4 +3664,3 @@ extension CloudKitInteraction
         return returnArray
     }
 }
-

@@ -1286,8 +1286,9 @@ public class report: NSObject, Identifiable
     public init(teamID: Int64)
     {
         myTeamID = teamID
-        myReportID = myCloudDB.getNextID("Reports", teamID: teamID)
-        
+//        myReportID = myCloudDB.getNextID("Reports", teamID: teamID)
+        myReportID = myCloudDB.dateAsInt()
+
         if currentUser != nil
         {
             if currentUser.currentTeam != nil
