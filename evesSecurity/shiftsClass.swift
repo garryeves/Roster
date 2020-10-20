@@ -24,6 +24,9 @@ public let shiftStatusOpenNotDup = "Open not dup"
 public let shiftStatusClosed = "Closed"
 public let shiftStatusClosedNotDup = "Closed not dup"
 
+public let shiftStatusPlanned = "Planned"
+
+
 class mergedShiftList: Identifiable, ObservableObject
 {
     public let id = UUID()
@@ -130,6 +133,7 @@ class shifts: NSObject, Identifiable, ObservableObject
                                  teamID: myItem.teamID,
                                  weekEndDate: myItem.weekEndDate,
                                  status: myItem.status,
+                                 shiftStatus: myItem.shiftStatus,
                                  shiftLineID: myItem.shiftLineID,
                                  rateID: myItem.rateID,
                                  type: myItem.type,
@@ -167,6 +171,7 @@ class shifts: NSObject, Identifiable, ObservableObject
                                  teamID: myItem.teamID,
                                  weekEndDate: myItem.weekEndDate,
                                  status: myItem.status,
+                                 shiftStatus: myItem.shiftStatus,
                                  shiftLineID: myItem.shiftLineID,
                                  rateID: myItem.rateID,
                                  type: myItem.type,
@@ -228,6 +233,7 @@ class shifts: NSObject, Identifiable, ObservableObject
                                  teamID: myItem.teamID,
                                  weekEndDate: myItem.weekEndDate,
                                  status: myItem.status,
+                                 shiftStatus: myItem.shiftStatus,
                                  shiftLineID: myItem.shiftLineID,
                                  rateID: myItem.rateID,
                                  type: myItem.type,
@@ -294,6 +300,7 @@ class shifts: NSObject, Identifiable, ObservableObject
                                  teamID: myItem.teamID,
                                  weekEndDate: myItem.weekEndDate,
                                  status: statusDescriptionText,
+                                 shiftStatus: myItem.shiftStatus,
                                  shiftLineID: myItem.shiftLineID,
                                  rateID: myItem.rateID,
                                  type: typeText,
@@ -335,6 +342,7 @@ class shifts: NSObject, Identifiable, ObservableObject
                                  teamID: myItem.teamID,
                                  weekEndDate: myItem.weekEndDate,
                                  status: myItem.status,
+                                 shiftStatus: myItem.shiftStatus,
                                  shiftLineID: myItem.shiftLineID,
                                  rateID: myItem.rateID,
                                  type: myItem.type,
@@ -391,6 +399,7 @@ class shifts: NSObject, Identifiable, ObservableObject
                                  teamID: myItem.teamID,
                                  weekEndDate: myItem.weekEndDate,
                                  status: myItem.status,
+                                 shiftStatus: myItem.shiftStatus,
                                  shiftLineID: myItem.shiftLineID,
                                  rateID: myItem.rateID,
                                  type: myItem.type,
@@ -448,6 +457,7 @@ class shifts: NSObject, Identifiable, ObservableObject
                                  teamID: myItem.teamID,
                                  weekEndDate: myItem.weekEndDate,
                                  status: myItem.status,
+                                 shiftStatus: myItem.shiftStatus,
                                  shiftLineID: myItem.shiftLineID,
                                  rateID: myItem.rateID,
                                  type: myItem.type,
@@ -499,6 +509,7 @@ class shifts: NSObject, Identifiable, ObservableObject
                                  teamID: myItem.teamID,
                                  weekEndDate: myItem.weekEndDate,
                                  status: myItem.status,
+                                 shiftStatus: myItem.shiftStatus,
                                  shiftLineID: myItem.shiftLineID,
                                  rateID: myItem.rateID,
                                  type: myItem.type,
@@ -550,6 +561,7 @@ class shifts: NSObject, Identifiable, ObservableObject
                                  teamID: myItem.teamID,
                                  weekEndDate: myItem.weekEndDate,
                                  status: myItem.status,
+                                 shiftStatus: myItem.shiftStatus,
                                  shiftLineID: myItem.shiftLineID,
                                  rateID: myItem.rateID,
                                  type: myItem.type,
@@ -589,6 +601,7 @@ class shifts: NSObject, Identifiable, ObservableObject
                                  teamID: myItem.teamID,
                                  weekEndDate: myItem.weekEndDate,
                                  status: myItem.status,
+                                 shiftStatus: myItem.shiftStatus,
                                  shiftLineID: myItem.shiftLineID,
                                  rateID: myItem.rateID,
                                  type: myItem.type,
@@ -632,6 +645,7 @@ class shifts: NSObject, Identifiable, ObservableObject
                                  teamID: myItem.teamID,
                                  weekEndDate: myItem.weekEndDate,
                                  status: myItem.status,
+                                 shiftStatus: myItem.shiftStatus,
                                  shiftLineID: myItem.shiftLineID,
                                  rateID: myItem.rateID,
                                  type: myItem.type,
@@ -708,6 +722,7 @@ class shifts: NSObject, Identifiable, ObservableObject
                                      teamID: item.teamID,
                                      weekEndDate: item.weekEndDate,
                                      status: item.status,
+                                     shiftStatus: item.shiftStatus,
                                      shiftLineID: item.shiftLineID,
                                      rateID: item.rateID,
                                      type: item.type,
@@ -1221,6 +1236,7 @@ public class shift: NSObject, Identifiable, ObservableObject
     fileprivate var mysignOutTime: Date?
     fileprivate var myRecordID: CKRecord.ID?
     fileprivate var myClient: client!
+    fileprivate var myShiftStatus = ""
     
     public var recordID: CKRecord.ID?
     {
@@ -1296,6 +1312,7 @@ public class shift: NSObject, Identifiable, ObservableObject
         set
         {
             myPersonID = newValue
+            myShiftStatus = ""
         }
     }
     
@@ -1389,6 +1406,12 @@ public class shift: NSObject, Identifiable, ObservableObject
         set
         {
             myStatus = newValue
+        }
+    }
+    
+    public var shiftStatus: String {
+        get {
+            return myShiftStatus
         }
     }
     
@@ -1775,6 +1798,31 @@ public class shift: NSObject, Identifiable, ObservableObject
         
         newRecordDelay = saveDelay
     }
+
+    public init(projectID: Int64, workDate: Date, weekEndDate: Date, teamID: Int64, shiftLineID: Int64, type: String, shiftDescription: String, startTime: Date, endTime: Date, rateID: Int64, personID: Int64)
+    {
+        super.init()
+        
+        myProjectID = projectID
+        myTeamID = teamID
+        myWeekEndDate = weekEndDate
+        myStatus = shiftStatusOpen
+        myWorkDate = workDate
+        myShiftLineID = shiftLineID
+        myType = type
+        myShiftDescription = shiftDescription
+        myStartTime = startTime
+        myEndTime = endTime
+        myRateID = rateID
+        
+        if personID != 0 {
+            myPersonID = personID
+            myShiftStatus = shiftStatusPlanned
+        }
+  
+        newRecordDelay = saveDelay
+        save()
+    }
     
     public init(projectID: Int64, workDate: Date, weekEndDate: Date, teamID: Int64, shiftLineID: Int64, type: String, description: String) {
             super.init()
@@ -1860,6 +1908,7 @@ public class shift: NSObject, Identifiable, ObservableObject
                 teamID: Int64,
                 weekEndDate: Date,
                 status: String,
+                shiftStatus: String,
                 shiftLineID: Int64,
                 rateID: Int64,
                 type: String,
@@ -1882,6 +1931,7 @@ public class shift: NSObject, Identifiable, ObservableObject
         myTeamID = teamID
         myWeekEndDate = weekEndDate
         myStatus = status
+        myShiftStatus = shiftStatus
         myShiftLineID = shiftLineID
         myRateID = rateID
         myType = type
@@ -1920,6 +1970,7 @@ public class shift: NSObject, Identifiable, ObservableObject
                                   newshiftLineID: self.myShiftLineID,
                                   newstartTime: self.myStartTime,
                                   newstatus: self.myStatus,
+                                  newshiftstatus: self.myShiftStatus,
                                   newteamID: self.myTeamID,
                                   newtype: self.myType,
                                   newweekEndDate: self.myWeekEndDate,
@@ -1963,6 +2014,7 @@ public class shift: NSObject, Identifiable, ObservableObject
                                   newshiftLineID: self.myShiftLineID,
                                   newstartTime: self.myStartTime,
                                   newstatus: self.myStatus,
+                                  newshiftstatus: self.myShiftStatus,
                                   newteamID: self.myTeamID,
                                   newtype: self.myType,
                                   newweekEndDate: self.myWeekEndDate,
@@ -1995,6 +2047,11 @@ public class shift: NSObject, Identifiable, ObservableObject
             }
         }
         return false
+    }
+    
+    public func confirmShift() {
+        myShiftStatus = ""
+        save()
     }
 }
 
@@ -2982,6 +3039,7 @@ public class Shifts: Identifiable {
     public var shiftLineID: Int64
     public var startTime: Date
     public var status: String
+    public var shiftStatus: String
     public var teamID: Int64
     public var type: String
     public var weekEndDate: Date
@@ -3001,6 +3059,7 @@ public class Shifts: Identifiable {
                 newshiftLineID: Int64,
                 newstartTime: Date,
                 newstatus: String,
+                newshiftstatus: String,
                 newteamID: Int64,
                 newtype: String,
                 newweekEndDate: Date,
@@ -3020,6 +3079,7 @@ public class Shifts: Identifiable {
         shiftLineID = newshiftLineID
         startTime = newstartTime
         status = newstatus
+        shiftStatus = newshiftstatus
         teamID = newteamID
         type = newtype
         weekEndDate = newweekEndDate
@@ -3049,6 +3109,7 @@ extension CloudKitInteraction
                                   newshiftLineID: decodeInt64(record.object(forKey: "shiftLineID")),
                                   newstartTime: decodeDate(record.object(forKey: "startTime")),
                                   newstatus: decodeString(record.object(forKey: "status")),
+                                  newshiftstatus: decodeString(record.object(forKey: "shiftStatus")),
                                   newteamID: decodeInt64(record.object(forKey: "teamID")),
                                   newtype: decodeString(record.object(forKey: "type")),
                                   newweekEndDate: decodeDate(record.object(forKey: "weekEndDate")),
@@ -3076,6 +3137,7 @@ extension CloudKitInteraction
                       newshiftLineID: record.shiftLineID,
                       newstartTime: record.startTime,
                       newstatus: record.status,
+                      newshiftstatus: record.shiftStatus,
                       newteamID: record.teamID,
                       newtype: record.type,
                       newweekEndDate: record.weekEndDate,
@@ -3507,7 +3569,8 @@ extension CloudKitInteraction
         record.setValue(sourceRecord.type, forKey: "type")
         record.setValue(sourceRecord.clientInvoiceNumber, forKey: "clientInvoiceNumber")
         record.setValue(sourceRecord.personInvoiceNumber, forKey: "personInvoiceNumber")
-        
+        record.setValue(sourceRecord.shiftStatus, forKey: "shiftStatus")
+
         record.setValue(sourceRecord.signInTime, forKey: "signInTime")
         
         record.setValue(sourceRecord.signOutTime, forKey: "signOutTime")
@@ -3563,6 +3626,7 @@ extension CloudKitInteraction
         record.setValue(sourceRecord.endTime, forKey: "endTime")
         record.setValue(sourceRecord.weekEndDate, forKey: "weekEndDate")
         record.setValue(sourceRecord.status, forKey: "status")
+        record.setValue(sourceRecord.shiftStatus, forKey: "shiftStatus")
         record.setValue(sourceRecord.shiftLineID, forKey: "shiftLineID")
         record.setValue(sourceRecord.rateID, forKey: "rateID")
         record.setValue(sourceRecord.type, forKey: "type")
@@ -3600,6 +3664,7 @@ extension CloudKitInteraction
             record.setValue(sourceRecord.endTime, forKey: "endTime")
             record.setValue(sourceRecord.weekEndDate, forKey: "weekEndDate")
             record.setValue(sourceRecord.status, forKey: "status")
+            record.setValue(sourceRecord.shiftStatus, forKey: "shiftStatus")
             record.setValue(sourceRecord.shiftLineID, forKey: "shiftLineID")
             record.setValue(sourceRecord.rateID, forKey: "rateID")
             record.setValue(sourceRecord.type, forKey: "type")
