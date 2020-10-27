@@ -33,6 +33,9 @@ public let perInfoText = "Text/Number"
 public let perInfoDate = "Date"
 public let perInfoYesNo = "Yes/No"
 
+public let perInfoArray = [perInfoText, perInfoDate, perInfoYesNo]
+public let yesNoArray = ["Yes", "No"]
+
 var sharingPDF: Data!
 var sharingText: String!
 var sharingImage: UIImage!

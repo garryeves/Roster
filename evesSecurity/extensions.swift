@@ -756,8 +756,11 @@ struct PDFKitRepresentedView: UIViewRepresentable {
 
     func makeUIView(context: UIViewRepresentableContext<PDFKitRepresentedView>) -> PDFKitRepresentedView.UIViewType {
         // Create a `PDFView` and set its `PDFDocument`.
+
         let pdfView = PDFView()
         pdfView.document = PDFDocument(url: self.url)
+        pdfView.interpolationQuality = .none
+
         return pdfView
     }
 
@@ -773,7 +776,7 @@ struct PDFKitView: View {
     @State var sharePDF = false
     
     let activityViewController = ActivityViewController()
-    
+
     var body: some View {
         return VStack {
             
@@ -797,8 +800,9 @@ struct PDFKitView: View {
                 }
             }
             .padding()
-            
+
             PDFKitRepresentedView(url)
+
         }
     }
 }

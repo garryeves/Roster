@@ -7,7 +7,6 @@
 //
 
 import Foundation
-//import CoreData
 import CloudKit
 import SwiftUI
 
@@ -42,22 +41,8 @@ public class people: NSObject, Identifiable
             
             var tempFirstName: String = ""
             var tempTitle: String = ""
-//            if myItem.firstName == nil
-//            {
-//                tempFirstName = ""
-//            }
-//            else
-//            {
-                tempFirstName = myItem.firstName
-//            }
-//            if myItem.title == nil
-//            {
-//                tempTitle = ""
-//            }
-//            else
-//            {
-                tempTitle = myItem.title
-//            }
+            tempFirstName = myItem.firstName
+            tempTitle = myItem.title
             
             let myObject = person(personID: myItem.personID,
                                   name: myItem.name,
@@ -78,55 +63,6 @@ public class people: NSObject, Identifiable
         }
         sortArray()
     }
-    
-    //    public init(teamID: Int64, useAllowanceHours: Bool)
-    //    {
-    //        super.init()
-    //
-    //        let workingArray = myCloudDB.getPeople(teamID: teamID, useAllowanceHours: true)
-    //
-    //        for myItem in workingArray
-    //        {
-    //            let dob: Date = myItem.dob! as Date
-    //
-    //            var tempFirstName: String = ""
-    //            var tempTitle: String = ""
-    //            if myItem.firstName == nil
-    //            {
-    //                tempFirstName = ""
-    //            }
-    //            else
-    //            {
-    //                tempFirstName = myItem.firstName!
-    //            }
-    //            if myItem.title == nil
-    //            {
-    //                tempTitle = ""
-    //            }
-    //            else
-    //            {
-    //                tempTitle = myItem.title!
-    //            }
-    //            let myObject = person(personID: myItem.personID,
-    //                                  name: myItem.name!,
-    //                                  dob: dob,
-    //                                  teamID: myItem.teamID,
-    //                                  gender: myItem.gender!,
-    //                                  note: myItem.note!,
-    //                                  clientID: myItem.clientID,
-    //                                  projectID: myItem.projectID,
-    //                                  canRoster: myItem.canRoster!,
-    //                                  firstName: tempFirstName,
-    //                                  title: tempTitle,
-    //                                  emailOptIn: myItem.emailOptIn,
-    //                                  isActive: true,
-    //                                  useAllowanceHours: myItem.useAllowanceHours!
-    //            )
-    //            myPeople.append(myObject)
-    //        }
-    //        sortArray()
-    //    }
-    
     
     public init(teamID: Int64, canRoster: Bool)
     {
@@ -160,22 +96,9 @@ public class people: NSObject, Identifiable
             
             var tempFirstName: String = ""
             var tempTitle: String = ""
-//            if myItem.firstName == nil
-//            {
-//                tempFirstName = ""
-//            }
-//            else
-//            {
-                tempFirstName = myItem.firstName
- //           }
-//            if myItem.title == nil
-//            {
-//                tempTitle = ""
-//            }
-//            else
-//            {
-                tempTitle = myItem.title
-  //          }
+            tempFirstName = myItem.firstName
+            tempTitle = myItem.title
+
             let myObject = person(personID: myItem.personID,
                                   name: myItem.name,
                                   dob: dob,
@@ -221,22 +144,8 @@ public class people: NSObject, Identifiable
             
             var tempFirstName: String = ""
             var tempTitle: String = ""
-//            if myItem.firstName == nil
-//            {
-//                tempFirstName = ""
-//            }
-//            else
-//            {
-                tempFirstName = myItem.firstName
- //           }
-//            if myItem.title == nil
-//            {
-//                tempTitle = ""
-//            }
-//            else
-//            {
-                tempTitle = myItem.title
- //           }
+            tempFirstName = myItem.firstName
+            tempTitle = myItem.title
             
             let myObject = person(personID: myItem.personID,
                                   name: myItem.name,
@@ -283,22 +192,8 @@ public class people: NSObject, Identifiable
             
             var tempFirstName: String = ""
             var tempTitle: String = ""
-//            if myItem.firstName == nil
-//            {
-//                tempFirstName = ""
-//            }
-//            else
-//            {
-                tempFirstName = myItem.firstName
-//            }
-//            if myItem.title == nil
-//            {
-//                tempTitle = ""
-//            }
-//            else
-//            {
-                tempTitle = myItem.title
-//            }
+            tempFirstName = myItem.firstName
+            tempTitle = myItem.title
             
             let myObject = person(personID: myItem.personID,
                                   name: myItem.name,
@@ -332,15 +227,6 @@ public class people: NSObject, Identifiable
                         return $0.fullName < $1.fullName
                     }
             }
-//
-//            myRawData.sort {
-//                    if $0.fullName == $1.fullName {
-//                        return $0.name ?? "" < $1.name  ?? ""
-//                    }
-//                    else {
-//                        return $0.fullName < $1.fullName
-//                    }
-//            }
         }
     }
     
@@ -429,8 +315,32 @@ public class people: NSObject, Identifiable
         
         return workingArray
     }
+    
+    public var peopleNames: [String]
+    {
+        get
+        {
+            var temp: [String] = Array()
+            
+            for item in myPeople {
+                temp.append(item.name)
+            }
+            
+            return temp
+        }
+    }
+    
+    public func personRecord(_ searchText: String) -> person? {
+        for item in myPeople {
+            if item.name == searchText {
+                return item
+            }
+        }
+        return nil
+    }
 }
 
+let newPersonDefault = "No name entered"
 public class person: NSObject, Identifiable, ObservableObject
 {
     public let id = UUID()
@@ -443,7 +353,7 @@ public class person: NSObject, Identifiable, ObservableObject
     fileprivate var myDob: Date = getDefaultDate()
     fileprivate var myAddresses: personAddresses!
     fileprivate var myContacts: personContacts!
-    fileprivate var myAddInfo: personAddInfoEntries!
+    public var addInfo: personAddInfoEntries!
     fileprivate var myTeamID: Int64 = 0
     fileprivate var myCanRoster: Bool = true
     public var tempArray: [Any] = Array()
@@ -458,6 +368,8 @@ public class person: NSObject, Identifiable, ObservableObject
     fileprivate var myInvoices: clientInvoices!
     
     @Published var reloadScreen = false
+    
+    var personLoaded = false
     
     public var personID: Int64
     {
@@ -535,7 +447,7 @@ public class person: NSObject, Identifiable, ObservableObject
         {
             if (myFirstName == "") && (myName == "")
             {
-                return("No name entered")
+                return(newPersonDefault)
             }
             
             if (myFirstName == "")
@@ -562,29 +474,6 @@ public class person: NSObject, Identifiable, ObservableObject
         set
         {
             myTitle = newValue
-            reloadScreen.toggle()
-        }
-    }
-    
-    public var genderItem: Int
-    {
-        get
-        {
-            var indexCount = 0
-            for item in genderList
-            {
-                if item == myGender
-                {
-                    return indexCount
-                }
-                indexCount += 1
-            }
-            
-            return 0
-        }
-        set
-        {
-            myGender = genderList[newValue]
             reloadScreen.toggle()
         }
     }
@@ -670,20 +559,20 @@ public class person: NSObject, Identifiable, ObservableObject
         }
     }
     
-    public var addInfo: [personAddInfoEntry]
-    {
-        get
-        {
-            if myAddInfo == nil
-            {
-                return []
-            }
-            else
-            {
-                return myAddInfo.personAddEntries
-            }
-        }
-    }
+//    public var addInfo: [personAddInfoEntry]
+//    {
+//        get
+//        {
+//            if myAddInfo == nil
+//            {
+//                return []
+//            }
+//            else
+//            {
+//                return myAddInfo.personAddEntries
+//            }
+//        }
+//    }
     
     public var dobText: String
     {
@@ -803,7 +692,6 @@ public class person: NSObject, Identifiable, ObservableObject
     
     public func createPerson(teamID: Int64, personName: String = "")
     {
-//        myPersonID = myCloudDB.getNextID("Person", teamID: teamID)
         myPersonID = myCloudDB.dateAsInt()
         myTeamID = teamID
         myName = personName
@@ -825,13 +713,15 @@ public class person: NSObject, Identifiable, ObservableObject
         
         myAddresses = nil
         myContacts = nil
-        myAddInfo = nil
+        addInfo = nil
         
         tempArray.removeAll()
         mySessions = nil
         myMonthlyAllow.removeAll()
         myMonthYear = ""
         myInvoices = nil
+        
+        personLoaded = true
         
         save()
     }
@@ -857,75 +747,39 @@ public class person: NSObject, Identifiable, ObservableObject
         if myItem != nil
         {
             myPersonID = myItem.personID
-//            if myItem.name == nil
-//            {
-//                myName = ""
-//            }
-//            else
-//            {
-                myName = myItem.name
-  //          }
+            myName = myItem.name
             
             myDob = myItem.dob
             myTeamID = myItem.teamID
-//            if myItem.gender == nil
-//            {
-//                myGender = ""
-//            }
-//            else
-//            {
-                myGender = myItem.gender
- //           }
-            
-//            if myItem.note == nil
-//            {
-//                myNote = ""
-//            }
-//            else
-//            {
-                myNote = myItem.note
- //           }
+            myGender = myItem.gender
+
+            myNote = myItem.note
             
             myClientID = myItem.clientID
             myProjectID = myItem.projectID
-//            if myItem.canRoster == nil
-//            {
-//                myCanRoster = true
-//            }
-//            else
-//            {
-                myCanRoster = myItem.canRoster
-//            }
-            
-//            if myItem.firstName == nil
-//            {
-//                myFirstName = ""
-//            }
-//            else
-//            {
-                myFirstName = myItem.firstName
- //           }
-//            if myItem.title == nil
-//            {
-//                myTitle = ""
-//            }
-//            else
-//            {
-                myTitle = myItem.title
-//            }
+
+            myCanRoster = myItem.canRoster
+
+            myFirstName = myItem.firstName
+
+            myTitle = myItem.title
+
             myEmailOptIn = myItem.emailOptIn
             myIsActive = myItem.isActive
             myuseAllowanceHours = myItem.useAllowanceHours
             
             myAddresses = nil
             myContacts = nil
-            myAddInfo = nil
+            addInfo = nil
             
             tempArray.removeAll()
             mySessions = nil
             myMonthlyAllow.removeAll()
             myMonthYear = ""
             myInvoices = nil
+            
+            personLoaded = true
+
         }
     }
     
@@ -968,22 +822,9 @@ public class person: NSObject, Identifiable, ObservableObject
             myIsActive = myItem.isActive
             myuseAllowanceHours = myItem.useAllowanceHours
             
-//            if myItem.firstName == nil
-//            {
-//                myFirstName = ""
-//            }
-//            else
-//            {
-                myFirstName = myItem.firstName
-//            }
-//            if myItem.title == nil
-//            {
-//                myTitle = ""
-//            }
-//            else
-//            {
-                myTitle = myItem.title
-//            }
+            myFirstName = myItem.firstName
+            myTitle = myItem.title
+
             myEmailOptIn = myItem.emailOptIn
         }
     }
@@ -1024,15 +865,12 @@ public class person: NSObject, Identifiable, ObservableObject
     
     public func save()
     {
-        //     if currentUser.checkPermission(hrRoleType) == writePermission
-        //     {
         let temp = Person(canRoster: myCanRoster, clientID: myClientID, dob: dob, gender: myGender, name: myName, note: myNote, personID: myPersonID, projectID: myProjectID, teamID: myTeamID,
                           firstName: myFirstName,
                           title: myTitle,
                           emailOptIn: myEmailOptIn, isActive: myIsActive, useAllowanceHours: myuseAllowanceHours, fullName: "\(myFirstName) \(myName)")
         
         myCloudDB.savePersonRecordToCloudKit(temp)
-        //    }
     }
     
     public func delete()
@@ -1084,7 +922,7 @@ public class person: NSObject, Identifiable, ObservableObject
     
     public func removeAddInfo(addInfoType: String)
     {
-        for myItem in myAddInfo.personAddEntries
+        for myItem in addInfo.personAddEntries
         {
             if myItem.addInfoName == addInfoType
             {
@@ -1098,7 +936,7 @@ public class person: NSObject, Identifiable, ObservableObject
     
     public func loadAddInfo()
     {
-        myAddInfo = personAddInfoEntries(personID: myPersonID, teamID: myTeamID)
+        addInfo = personAddInfoEntries(personID: myPersonID, teamID: myTeamID)
     }
     
     public func loadSessions()
@@ -1310,7 +1148,6 @@ extension CloudKitInteraction
             return []
         }
     }
-    
     
     func getPeopleForClient(clientID: Int64, teamID: Int64, onlyActive: Bool)->[Person]
     {
@@ -1578,4 +1415,3 @@ extension CloudKitInteraction
         return shiftArray
     }
 }
-

@@ -231,6 +231,7 @@ public class userItem: NSObject, Identifiable, ObservableObject
         set
         {
             mydefaultCalendar = newValue
+            save()
         }
     }
     

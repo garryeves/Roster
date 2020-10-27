@@ -13,7 +13,7 @@ import SwiftUI
 
 let newTemplateName = "Template Name"
 
-public class eventTemplateHeads: NSObject, Identifiable
+public class eventTemplateHeads: NSObject, Identifiable, ObservableObject
 {
     public let id = UUID()
     fileprivate var myEventTemplateHead:[eventTemplateHead] = Array()
@@ -42,13 +42,36 @@ public class eventTemplateHeads: NSObject, Identifiable
             return myEventTemplateHead
         }
     }
+    
+    public var templateNames: [String]
+    {
+        get
+        {
+            var temp: [String] = Array()
+            
+            for item in myEventTemplateHead {
+                temp.append(item.templateName)
+            }
+            
+            return temp
+        }
+    }
+    
+    public func templateRecord(_ searchText: String) -> eventTemplateHead? {
+        for item in myEventTemplateHead {
+            if item.templateName == searchText {
+                return item
+            }
+        }
+        return nil
+    }
 }
 
-public class eventTemplateHead: NSObject, Identifiable
+public class eventTemplateHead: NSObject, Identifiable, ObservableObject
 {
     public let id = UUID()
     fileprivate var myTemplateID: Int64 = 0
-    fileprivate var myTemplateName: String = newTemplateName
+    @Published var templateName: String = newTemplateName
     fileprivate var myTeamID: Int64 = 0
     fileprivate var myRoles: eventTemplates!
     
@@ -60,18 +83,18 @@ public class eventTemplateHead: NSObject, Identifiable
         }
     }
     
-    public var templateName: String
-    {
-        get
-        {
-            return myTemplateName
-        }
-        set
-        {
-            myTemplateName = newValue
-         //   save()
-        }
-    }
+//    public var templateName: String
+//    {
+//        get
+//        {
+//            return myTemplateName
+//        }
+//        set
+//        {
+//            myTemplateName = newValue
+//         //   save()
+//        }
+//    }
     
     public var roles: eventTemplates?
     {
@@ -92,13 +115,6 @@ public class eventTemplateHead: NSObject, Identifiable
         createTemplate(teamID: teamID)
     }
     
-//    public init(eventID: Int64, teamID: Int64)
-//    {
-//        super.init()
-//
-//        loadTemplate(eventID: eventID, teamID: teamID)
-//    }
-    
     public init(eventID: Int64,
                 eventName: String,
                 teamID: Int64)
@@ -106,15 +122,14 @@ public class eventTemplateHead: NSObject, Identifiable
         super.init()
         
         myTemplateID = eventID
-        myTemplateName = eventName
+        templateName = eventName
         myTeamID = teamID
     }
     
     public func createTemplate(teamID: Int64) {
-//        myTemplateID = myCloudDB.getNextID("EventTemplateHead", teamID: teamID)
         myTemplateID = myCloudDB.dateAsInt()
         myTeamID = teamID
-        myTemplateName = newTemplateName
+        templateName = newTemplateName
         save()
         
         myRoles = nil
@@ -142,7 +157,7 @@ public class eventTemplateHead: NSObject, Identifiable
         if myItem != nil
         {
             myTemplateID = myItem.eventID
-            myTemplateName = myItem.eventName
+            templateName = myItem.eventName
             myTeamID = myItem.teamID
         }
     }
@@ -151,7 +166,7 @@ public class eventTemplateHead: NSObject, Identifiable
     {
         if currentUser.checkWritePermission(rosteringRoleType)
         {
-            let temp = EventTemplateHead(eventID: myTemplateID, eventName: myTemplateName, teamID: myTeamID)
+            let temp = EventTemplateHead(eventID: myTemplateID, eventName: templateName, teamID: myTeamID)
             
             myCloudDB.saveEventTemplateHeadRecordToCloudKit(temp)
         }
@@ -181,176 +196,6 @@ public class eventTemplateHead: NSObject, Identifiable
         newRole.numRequired = numRequired
     }
 }
-
-//extension coreDatabase
-//{
-//    func saveEventTemplateHead(_ templateID: Int,
-//                           templateName: String,
-//                           teamID: Int,
-//                           updateTime: Date =  Date(), updateType: String = "CODE")
-//    {
-//        var myItem: EventTemplateHead!
-//
-//        let myReturn = getEventTemplateHead(templateID: templateID, teamID: teamID)
-//
-//        if myReturn.count == 0
-//        { // Add
-//            myItem = EventTemplateHead(context: objectContext)
-//            myItem.eventID = Int64(templateID)
-//            myItem.eventName = templateName
-//            myItem.teamID = Int64(teamID)
-//
-//            if updateType == "CODE"
-//            {
-//                myItem.updateTime =  Date()
-//
-//                myItem.updateType = "Add"
-//            }
-//            else
-//            {
-//                myItem.updateTime = updateTime
-//                myItem.updateType = updateType
-//            }
-//        }
-//        else
-//        {
-//            myItem = myReturn[0]
-//            myItem.eventName = templateName
-//
-//            if updateType == "CODE"
-//            {
-//                myItem.updateTime =  Date()
-//                if myItem.updateType != "Add"
-//                {
-//                    myItem.updateType = "Update"
-//                }
-//            }
-//            else
-//            {
-//                myItem.updateTime = updateTime
-//                myItem.updateType = updateType
-//            }
-//        }
-//
-//        saveContext()
-//
-//        self.recordsProcessed += 1
-//    }
-//
-//    func resetAllEventTemplateHead()
-//    {
-//        let fetchRequest = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults = try objectContext.fetch(fetchRequest)
-//            for myItem in fetchResults
-//            {
-//                myItem.updateTime =  Date()
-//                myItem.updateType = "Delete"
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: F \(error.localizedDescription)")
-//        }
-//
-//        saveContext()
-//    }
-//
-//    func clearDeletedEventTemplateHead(predicate: NSPredicate)
-//    {
-//        let fetchRequest2 = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
-//
-//        // Set the predicate on the fetch request
-//        fetchRequest2.predicate = predicate
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-//            for myItem2 in fetchResults2
-//            {
-//                objectContext.delete(myItem2 as NSManagedObject)
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: G \(error.localizedDescription)")
-//        }
-//        saveContext()
-//    }
-//
-//    func clearSyncedEventTemplateHead(predicate: NSPredicate)
-//    {
-//        let fetchRequest2 = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
-//
-//        // Set the predicate on the fetch request
-//        fetchRequest2.predicate = predicate
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-//            for myItem2 in fetchResults2
-//            {
-//                myItem2.updateType = ""
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: H \(error.localizedDescription)")
-//        }
-//
-//        saveContext()
-//    }
-//
-//    func getEventTemplateHeadForSync(_ syncDate: Date) -> [EventTemplateHead]
-//    {
-//        let fetchRequest = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
-//
-//        let predicate = NSPredicate(format: "(updateTime >= %@)", syncDate as CVarArg)
-//
-//        // Set the predicate on the fetch request
-//
-//        fetchRequest.predicate = predicate
-//        // Execute the fetch request, and cast the results to an array of  objects
-//        do
-//        {
-//            let fetchResults = try objectContext.fetch(fetchRequest)
-//
-//            return fetchResults
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: I \(error.localizedDescription)")
-//            return []
-//        }
-//    }
-//
-//    func deleteAllEventTemplateHead()
-//    {
-//        let fetchRequest2 = NSFetchRequest<EventTemplateHead>(entityName: "EventTemplateHead")
-//
-//        // Execute the fetch request, and cast the results to an array of LogItem objects
-//        do
-//        {
-//            let fetchResults2 = try objectContext.fetch(fetchRequest2)
-//            for myItem2 in fetchResults2
-//            {
-//                self.objectContext.delete(myItem2 as NSManagedObject)
-//            }
-//        }
-//        catch
-//        {
-//            print("Error occurred during execution: J \(error.localizedDescription)")
-//        }
-//
-//        saveContext()
-//    }
-//}
-//
 
 public struct EventTemplateHead {
     public var eventID: Int64

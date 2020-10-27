@@ -97,6 +97,23 @@ public class rates: NSObject, Identifiable
         }
     }
     
+    public var rateNames: [String] {
+        var temp: [String] = Array()
+        for item in myRates {
+            temp.append(item.rateName)
+        }
+        return temp
+    }
+    
+    public func rateRecord(_ searchText: String) -> rate? {
+        for item in myRates {
+            if item.rateName == searchText {
+                return item
+            }
+        }
+        return nil
+    }
+    
     public func checkRate(_ rateID: Int64) -> Bool
     {
         let filteredItems = myRates.filter { $0.rateID == rateID}
@@ -110,6 +127,8 @@ public class rates: NSObject, Identifiable
             return false
         }
     }
+    
+    
 }
 
 public class rate: NSObject, Identifiable
@@ -241,6 +260,10 @@ public class rate: NSObject, Identifiable
             save()
             currentUser.currentTeam?.rates = nil
         }
+    }
+    
+    public override init() {
+        super.init()
     }
     
     public init(clientID: Int64, teamID: Int64)

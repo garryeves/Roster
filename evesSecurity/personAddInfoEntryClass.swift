@@ -11,7 +11,7 @@ import Foundation
 import CloudKit
 import SwiftUI
 
-public class personAddInfoEntries: NSObject, Identifiable
+public class personAddInfoEntries: NSObject, Identifiable, ObservableObject
 {
     public let id = UUID()
     fileprivate var myPersonAddEntries:[personAddInfoEntry] = Array()
@@ -36,9 +36,9 @@ public class personAddInfoEntries: NSObject, Identifiable
         for myItem in workingArray
         {
             let myObject = personAddInfoEntry(addInfoName: myItem.addInfoName,
-                                              dateValue: myItem.dateValue,
+                                              passeddateValue: myItem.dateValue,
                                               personID: myItem.personID,
-                                              stringValue: myItem.stringValue,
+                                              passedstringValue: myItem.stringValue,
                                               teamID: myItem.teamID
             )
             myPersonAddEntries.append(myObject)
@@ -65,9 +65,9 @@ public class personAddInfoEntries: NSObject, Identifiable
         for myItem in myCloudDB.getPersonAddInfoEntryList(addInfoName, teamID: teamID)
         {
             let myObject = personAddInfoEntry(addInfoName: myItem.addInfoName,
-                                              dateValue: myItem.dateValue,
+                                              passeddateValue: myItem.dateValue,
                                               personID: myItem.personID,
-                                              stringValue: myItem.stringValue,
+                                              passedstringValue: myItem.stringValue,
                                               teamID: myItem.teamID
             )
             myPersonAddEntries.append(myObject)
@@ -94,9 +94,9 @@ public class personAddInfoEntries: NSObject, Identifiable
         for myItem in workingArray
         {
             let myObject = personAddInfoEntry(addInfoName: myItem.addInfoName,
-                                              dateValue: myItem.dateValue,
+                                              passeddateValue: myItem.dateValue,
                                               personID: myItem.personID,
-                                              stringValue: myItem.stringValue,
+                                              passedstringValue: myItem.stringValue,
                                               teamID: myItem.teamID
             )
             myPersonAddEntries.append(myObject)
@@ -110,16 +110,21 @@ public class personAddInfoEntries: NSObject, Identifiable
             return myPersonAddEntries
         }
     }
+    
+    public func add(_ newItem: personAddInfoEntry) {
+        myPersonAddEntries.append(newItem)
+    }
 }
 
-public class personAddInfoEntry: NSObject, Identifiable
+public class personAddInfoEntry: NSObject, Identifiable, ObservableObject
 {
     public let id = UUID()
     fileprivate var myAddInfoName: String = ""
-    fileprivate var myDateValue: Date = getDefaultDate()
+    public var dateValue: Date = getDefaultDate()
     fileprivate var myPersonID: Int64 = 0
-    fileprivate var myStringValue: String = ""
+    public var stringValue: String = ""
     fileprivate var myTeamID: Int64 = 0
+    let addInfoRecords = personAdditionalInfos(teamID: currentUser.currentTeam!.teamID)
     
     public var addInfoName: String
     {
@@ -137,23 +142,29 @@ public class personAddInfoEntry: NSObject, Identifiable
         }
     }
     
-    public var dateValue: Date
-    {
-        get
-        {
-            return myDateValue
-        }
-        set
-        {
-            myDateValue = newValue
+    public var addInfoType: String {
+        get {
+            return addInfoRecords.getItem(myAddInfoName).addInfoType
         }
     }
+    
+//    public var dateValue: Date
+//    {
+//        get
+//        {
+//            return myDateValue
+//        }
+//        set
+//        {
+//            myDateValue = newValue
+//        }
+//    }
     
     public var dateString: String
     {
         get
         {
-            if myDateValue == getDefaultDate()
+            if dateValue == getDefaultDate()
             {
                 return "Select"
             }
@@ -161,22 +172,22 @@ public class personAddInfoEntry: NSObject, Identifiable
             {
                 let myDateFormatter = DateFormatter()
                 myDateFormatter.dateStyle = .short
-                return myDateFormatter.string(from: myDateValue)
+                return myDateFormatter.string(from: dateValue)
             }
         }
     }
     
-    public var stringValue: String
-    {
-        get
-        {
-            return myStringValue
-        }
-        set
-        {
-            myStringValue = newValue
-        }
-    }
+//    public var stringValue: String
+//    {
+//        get
+//        {
+//            return myStringValue
+//        }
+//        set
+//        {
+//            myStringValue = newValue
+//        }
+//    }
     
     override public init() {}
     
@@ -207,37 +218,50 @@ public class personAddInfoEntry: NSObject, Identifiable
         if myItem != nil
         {
             myAddInfoName = myItem.addInfoName
-            myDateValue = myItem.dateValue
+            dateValue = myItem.dateValue
             myPersonID = myItem.personID
-            myStringValue = myItem.stringValue
+            stringValue = myItem.stringValue
             myTeamID = myItem.teamID
         }
     }
     
-    public init(teamID: Int64, personID: Int64, newaddinfoName: String)
+    public init(teamID: Int64, personID: Int64, newaddinfoName: String, value: String)
     {
         super.init()
         
         myTeamID = teamID
         myPersonID = personID
         myAddInfoName = newaddinfoName
+        stringValue = value
+        
+        save()
+    }
+    
+    public init(teamID: Int64, personID: Int64, newaddinfoName: String, value: Date)
+    {
+        super.init()
+        
+        myTeamID = teamID
+        myPersonID = personID
+        myAddInfoName = newaddinfoName
+        dateValue = value
         
         save()
     }
     
     public init(addInfoName: String,
-                dateValue: Date,
+                passeddateValue: Date,
                 personID: Int64,
-                stringValue: String,
+                passedstringValue: String,
                 teamID: Int64
         )
     {
         super.init()
         
         myAddInfoName = addInfoName
-        myDateValue = dateValue
+        dateValue = passeddateValue
         myPersonID = personID
-        myStringValue = stringValue
+        stringValue = passedstringValue
         myTeamID = teamID
     }
     
@@ -245,7 +269,7 @@ public class personAddInfoEntry: NSObject, Identifiable
     {
         if currentUser.checkWritePermission(hrRoleType)
         {
-            let temp = PersonAddInfoEntry(addInfoName: myAddInfoName, dateValue: myDateValue, personID: myPersonID, stringValue: myStringValue, teamID: myTeamID)
+            let temp = PersonAddInfoEntry(addInfoName: myAddInfoName, dateValue: dateValue, personID: myPersonID, stringValue: stringValue, teamID: myTeamID)
             
             myCloudDB.savePersonAddInfoEntryRecordToCloudKit(temp)
         }

@@ -118,14 +118,38 @@ public class clients: NSObject, Identifiable
             return myClients
         }
     }
+    
+    public var clientNames: [String]
+    {
+        get
+        {
+            var temp: [String] = Array()
+            
+            for item in myClients {
+                temp.append(item.name)
+            }
+            
+            return temp
+        }
+    }
+    
+    public func clientRecord(_ searchText: String) -> client? {
+        for item in myClients {
+            if item.name == searchText {
+                return item
+            }
+        }
+        return nil
+    }
 }
 
+let newClientDefault = "New Client"
 @dynamicMemberLookup
 public class client: NSObject, Identifiable, ObservableObject
 {
     public let ID = UUID()
     fileprivate var myClientID: Int64 = 0
-    fileprivate var myClientName: String = "New Client"
+    fileprivate var myClientName: String = newClientDefault
     fileprivate var myClientContact: Int64 = 0
     fileprivate var myClientNote: String = ""
     fileprivate var myTeamID: Int64 = 0

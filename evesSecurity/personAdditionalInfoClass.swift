@@ -7,7 +7,6 @@
 //
 
 import Foundation
-//import CoreData
 import CloudKit
 import SwiftUI
 
@@ -40,6 +39,24 @@ public class personAdditionalInfos: NSObject, Identifiable
         {
             return myAdditional
         }
+    }
+    
+    public var personAdditionalInfoStrings: [String]
+    {
+        get
+        {
+            var temp: [String] = Array()
+            
+            for item in myAdditional {
+                temp.append(item.addInfoName)
+            }
+            return temp
+        }
+    }
+    
+    public func getItem(_ searchText: String) -> personAdditionalInfo {
+        return myAdditional.filter { $0.addInfoName == searchText }[0]
+        
     }
 }
 

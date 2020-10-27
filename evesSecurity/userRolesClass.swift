@@ -15,6 +15,8 @@ public let readPermission = "Read"
 public let writePermission = "Write"
 public let noPermission = "None"
 
+public var accessLevelArray = [noPermission, readPermission, writePermission]
+
 public let adminRoleType = "Admin"
 public let rosteringRoleType = "Rostering"
 public let invoicingRoleType = "Invoicing"
@@ -25,7 +27,7 @@ public let pmRoleType = "Project Manager"
 public let coachingRoleType = "Coaching"
 public let clientRoleType = "Client"
 
-public class userRoles: NSObject, Identifiable
+public class userRoles: NSObject, Identifiable, ObservableObject
 {
     public let id = UUID()
     fileprivate var myUserRoles:[userRoleItem] = Array()
@@ -72,7 +74,7 @@ public class userRoles: NSObject, Identifiable
     }
 }
 
-public class userRoleItem: NSObject, Identifiable
+public class userRoleItem: NSObject, Identifiable, ObservableObject
 {
     public let id = UUID()
     fileprivate var myUserID: Int64 = 0

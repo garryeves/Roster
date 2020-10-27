@@ -374,7 +374,7 @@ public let coursesStoryboard = UIStoryboard(name: "courses", bundle: frameworkBu
 public let salesStoryboard = UIStoryboard(name: "Leads", bundle: frameworkBundle)
 
 public var currentAddressBook: addressBookClass!
-public var currentUser: userItem!
+public var currentUser : userItem!
 
 public class displayMonthItem: NSObject, Identifiable
 {
