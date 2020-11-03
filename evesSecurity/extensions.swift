@@ -654,6 +654,19 @@ public func calculateMonthEndDate(month: Int64, year: Int64) -> Date {
     return tempDate.add(.minute, amount: -1)
 }
 
+public func calculateInvoiceMonthEndDate(month: Int64, year: Int64) -> Date {
+    let myCalendar = Calendar(identifier: .gregorian)
+
+    var workingDate = DateComponents()
+    workingDate.day = 1
+     
+    workingDate.month = Int(month)
+    workingDate.year = Int(year)
+
+    let tempDate = myCalendar.date(from: workingDate)!.add(.month, amount: 1)
+    return tempDate.add(.minute, amount: -1)
+}
+
 extension Double {
     var twoDP: String {
         let formatter = NumberFormatter()
